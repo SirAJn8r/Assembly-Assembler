@@ -1,0 +1,157 @@
+00000400 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 2/11/2021 1:48:42 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      : Disassmbler Test Program
+00000000                             3  * Written by : Munehiro Fukuda
+00000000                             4  * Date       : 2/11/2021
+00000000                             5  *-----------------------------------------------------------
+00000400                             6      ORG     $400
+00000400                             7  START:
+00000400                             8  
+00000400                             9  *-----------------------------------------------------------
+00000400                            10  * Op Code: 24pts
+00000400                            11  *
+00000400                            12  * CPU Instructions..........................................
+00000400                            13  * Total: 18pts
+00000400                            14  * 1pt each * 18 instructions = 18pts
+00000400                            15  * 1pt each * 10 extra instructions = 10 extra pts
+00000400                            16  *
+00000400                            17  * 0000: ORI, (ANDI, SUBI, ADDI, EORI, CMPI)
+00000400                            18  * 0001: MOVEA
+00000400                            19  * 0011: MOVE
+00000400                            20  * 0010:
+00000400                            21  * 0100: (CLR, NOP, EXT, TRAP,) NOT, (STOP, RTE, RTS, JSR, JMP), MOVEM, LEA
+00000400                            22  * 0101: ADDQ, (SUBQ)
+00000400                            23  * 0110: BRA, BSR, (BEQ)
+00000400                            24  * 0111: MOVEQ
+00000400                            25  * 1000: DIVU, (DIVS, OR)
+00000400                            26  * 1001: SUB
+00000400                            27  * 1011: (EOR), CMP
+00000400                            28  * 1100: MULU, (MULS, AND)
+00000400                            29  * 1101: ADD, ADDA
+00000400                            30  * 1110: ASL, ASR, (LSL, LSR, ROL, ROR)
+00000400                            31  *
+00000400                            32  
+00000400                            33  * Remove optional CPU instructions your disassembler haven't handled
+00000400                            34  
+00000400  0040 ABCD                 35        ORI.W     #$ABCD, D0  ; 1
+00000404  0241 ABCD                 36        ANDI.W    #$ABCD, D1  ; optional
+00000408  0442 ABCD                 37        SUBI.W    #$ABCD, D2  ; optional
+0000040C  0643 ABCD                 38        ADDI.W    #$ABCD, D3  ; optional
+00000410  0A44 ABCD                 39        EORI.W    #$ABCD, D4  ; optional
+00000414  0C45 ABCD                 40        CMPI.W    #$ABCD, D5  ; optional
+00000418                            41        
+00000418  3E46                      42        MOVEA.W   D6, A7      ; 2
+0000041A  3200                      43        MOVE.W    D0, D1      ; 3
+0000041C                            44        
+0000041C  4242                      45        CLR.W     D2          ; optional
+0000041E  4643                      46        NOT.W     D3          ; optional
+00000420  4884                      47        EXT.W     D4          ; optional       
+00000422  4E4F                      48        TRAP      #15         ; optional
+00000424  4E71                      49        NOP                   ; 4
+00000426  4E72 2700                 50        STOP      #$2700      ; optional
+0000042A  4E73                      51        RTE                   ; optional
+0000042C  4E75                      52        RTS                   ; optional
+0000042E  4E95                      53        JSR       (A5)        ; optional
+00000430  4ED6                      54        JMP       (A6)        ; optional
+00000432  4890 0080                 55        MOVEM.W   D7, (A0)    ; 5
+00000436  45D1                      56        LEA       (A1), A2    ; 6
+00000438                            57        
+00000438  5E43                      58        ADDQ.W    #$7, D3     ; 7
+0000043A  5F44                      59        SUBQ.W    #$7, D4     ; optional
+0000043C                            60        
+0000043C  6000 0DF6                 61        BRA       $1234       ; 16bit (word) displacement  8
+00000440  6100 0DF2                 62        BSR       $1234       ; 16bit (word) displacement  9
+00000444  6700 0DEE                 63        BEQ       $1234       ; optional
+00000448                            64        
+00000448  7AAB                      65        MOVEQ     #$AB, D5    ; 10
+0000044A                            66        
+0000044A  8EC6                      67        DIVU      D6, D7      ; 11
+0000044C  83C0                      68        DIVS      D0, D1      ; optional
+0000044E  8642                      69        OR.W      D2, D3      ; optional
+00000450                            70        
+00000450  9642                      71        SUB.W     D2, D3      ; 12
+00000452                            72        
+00000452  B945                      73        EOR.W     D4, D5      ; optional
+00000454  BE46                      74        CMP.W     D6, D7      ; 13
+00000456                            75        
+00000456  C2C0                      76        MULU      D0, D1      ; 14
+00000458  C7C2                      77        MULS      D2, D3      ; optional
+0000045A  C843                      78        AND.W     D3, D4      ; optional
+0000045C                            79        
+0000045C  DC45                      80        ADD.W     D5, D6      ; 15
+0000045E  DEC6                      81        ADDA.W    D6, A7      ; 16
+00000460                            82        
+00000460  E340                      83        ASL.W     #1, D0      ; 17
+00000462  E461                      84        ASR.W     D2, D1      ; 18
+00000464                            85        
+00000464  E74A                      86        LSL.W     #3, D2      ; optional
+00000466  E86B                      87        LSR.W     D4, D3      ; optional
+00000468  EB5C                      88        ROL.W     #5, D4      ; optional
+0000046A  EC7D                      89        ROR.W     D6, D5      ; optional
+0000046C                            90  
+0000046C                            91  * Data size distinction.....................................
+0000046C                            92  * Total: 6pts
+0000046C                            93  * .B: 2pts
+0000046C                            94  * .W: 2pt (Note this size was tested in the above OP code analysis)
+0000046C                            95  * .L: 2pt
+0000046C                            96  LOOP:
+0000046C  0000 00AB                 97        ORI.B     #$AB, D0    ; 1
+00000470  1401                      98        MOVE.B    D1, D2      ; 3
+00000472  5C03                      99        ADDQ.B    #$6, D3     ; 7
+00000474  60F6                     100        BRA       LOOP        ; 8bit (byte) displacement  9
+00000476  9A04                     101        SUB.B     D4, D5      ; 12
+00000478  BE06                     102        CMP.B     D6, D7      ; 13
+0000047A  D200                     103        ADD.B     D0, D1      ; 15
+0000047C  E503                     104        ASL.B     #2, D3      ; 17
+0000047E  E825                     105        ASR.B     D4, D5      ; 18
+00000480                           106  
+00000480  0080 ABCDEF12            107        ORI.L     #$ABCDEF12, D0   ; 1
+00000486  2441                     108        MOVEA.L   D1, A2           ; 2
+00000488  2803                     109        MOVE.L    D3, D4           ; 3
+0000048A  4CD0 0020                110        MOVEM.L   (A0), D5         ; 5
+0000048E  5C87                     111        ADDQ.L    #$6, D7          ; 7
+00000490  9280                     112        SUB.L     D0, D1           ; 12 
+00000492  B682                     113        CMP.L     D2, D3           ; 13
+00000494  DA84                     114        ADD.L     D4, D5           ; 15
+00000496  DFC6                     115        ADDA.L    D6, A7           ; 16
+00000498  ED85                     116        ASL.L     #6, D5           ; 17
+0000049A  E8A3                     117        ASR.L     D4, D3           ; 18
+0000049C                           118  
+0000049C                           119  *-----------------------------------------------------------
+0000049C                           120  * Effective Address: 38pts
+0000049C                           121  * Data Register Direct (mode 0).......................... 4
+0000049C                           122  * Address Register Direct (mode 1)....................... 4
+0000049C                           123  * Address Register Indirect (mode 2)..................... 5
+0000049C                           124  * Address Register Indirect with Post Increment (mode 3). 5
+0000049C                           125  * Address Register Indirect with Pre Decrement (mode 4).. 5
+0000049C                           126  * Absolute Word Address (mode 7 subclass 0).............. 5
+0000049C                           127  * Absolute Long Address (moe 7 subclass 1)............... 5
+0000049C                           128  * Immediate Data (mode 7 subclass 4)..................... 5
+0000049C                           129  
+0000049C  2208                     130        MOVE.L    A0, D1        ; mode 0 and mode 1                    4pts
+0000049E  2642                     131        MOVEA.L   D2, A3        ; mode 0 and mode 1                    4pts
+000004A0  2A14                     132        MOVE.L    (A4), D5      ; mode 2                               2.5pts
+000004A2  2C86                     133        MOVE.L    D6, (A6)      ; mode 2                               2.5pts
+000004A4  4CDF 8001                134        MOVEM.L   (A7)+, D0/A7  ; mode 3                               5pts
+000004A8  48E2 4002                135        MOVEM.L   D1/A6, -(A2)  ; mode 4                               5pts
+000004AC  2639 0000ABCD            136        MOVE.L    $ABCD, D3     ; mode 7 subclass 0                    2.5pts
+000004B2  E1F9 0000ABCD            137        ASL       $ABCD         ; mode 7 subclass 0                    2.5pts
+000004B8  23C4 ABCDEF12            138        MOVE.L    D4, ($ABCDEF12).L ; mode 7 subclass 1                2.5pts
+000004BE  E0F9 ABCDEF12            139        ASR       ($ABCDEF12).L     ; mode 7 subclass 1                2.5pts
+000004C4  2A3C 12345678            140        MOVE.L    #$12345678, D5    ; mode 7 subclass 4                2.5pts
+000004CA  23FC 12345678 ABCDEF12   141        MOVE.L    #$12345678, ($ABCDEF12).L ; mode 7 subclass 1 and 4  2.5pts
+000004D4                           142  
+000004D4                           143        END   START
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+LOOP                46C
+START               400
