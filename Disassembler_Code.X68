@@ -357,7 +357,7 @@ OP0110:
         JMP     ERRCOM
 
 JBRA:   JMP     BRA
-JBRS:   JMP     BRS
+JBSR:   JMP     BSR
 
 *----------
 OP0111:
