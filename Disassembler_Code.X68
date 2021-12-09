@@ -20,7 +20,7 @@ START:
                             ;A2 stores the start/current address
                             ;A3 stores the end address
                             ;A4 stores the print buffer
-        MOVEA   #$9000,A6   ;A6 stores the MOVEM storage location
+        LEA     MOVEMADDR,A6 ;A6 stores the MOVEM storage location
         
 *----------------------------------------------------------
 *Main Loop Section
@@ -31,6 +31,7 @@ STARTADDR:
         MOVE.B  #13,D0
         TRAP    #15         ;Print out start address message
         MOVE.B  #2,D0
+        LEA     INPADDR,A1
         TRAP    #15         ;Store input into A1
         CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
         BNE     JERRINS
@@ -43,6 +44,7 @@ ENDADDR:
         MOVE.B  #13,D0
         TRAP    #15         ;Print out end address message
         MOVE.B  #2,D0
+        LEA     INPADDR,A1
         TRAP    #15         ;Store input into A1
         CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
         BNE     JERRINS
@@ -103,8 +105,14 @@ CLRBUFLOOP:
         RTS
         
 MEMPRINT:
+        MOVE.L  A2,D6
+        LSR.L   #8,D6
+        LSR.L   #8,D6
+        JSR     HEX16B
+        
         MOVE.W  A2,D6
         JSR     HEX16B
+        
         MOVE.B  #$9,(A4)+
         RTS
 
@@ -857,16 +865,19 @@ ERRIN:
         TRAP    #15
         RTS
 ERROP:
+        ADDI.W  #1,D2
         LEA     ERROPMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
         JMP     LOOP
 ERRCOM:
+        ADDI.W  #1,D2
         LEA     ERRCOMMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
         JMP     LOOP
 ERRSIZE:
+        ADDI.W  #1,D2
         LEA     ERRSIZEMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
@@ -886,23 +897,27 @@ END:    SIMHALT
 BUFSIZE DC.B    64
 BUFFER: DS.B    BUFSIZE
 
+INPADDR:
+        DS.B    8
+MOVEMADDR   EQU     $9000        
+
 CR:     EQU     $0D
 LF:     EQU     $0A
 
 ITOA:   DC.B    '0123456789ABCDEF'
 
 STARTMSG:
-        DC.B    'Input the starting address for the decoder: ',0
+        DC.B    CR,LF,'Input the starting address for the decoder: ',0
 ENDMSG:
-        DC.B    'Input the ending address for the decoder: ',0
+        DC.B    CR,LF,'Input the ending address for the decoder: ',0
 REPORFINMSG:
-        DC.B    'Would you like to run the program again? (Y/N): ',0
+        DC.B    CR,LF,'Would you like to run the program again? (Y/N): ',0
 ERRINMSG:
-        DC.B    'Please enter 4 digit hexadecimal inputs only',CR,LF,0
+        DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
 ERROPMSG:
-        DC.B    'Found Invalid Opcode',CR,LF,0
+        DC.B    'Found Invalid Opcode',0
 ERRCOMMSG:
-        DC.B    'Found Not Implemented Command',CR,LF,0
+        DC.B    'Found Not Implemented Command',0
 ERRSIZEMSG:
         DC.B    'Found Invalid Size',0
 ERREAMSG:
