@@ -23,7 +23,7 @@ START:
         LEA     MOVEMADDR,A6 ;A6 stores the MOVEM storage location
         
 *----------------------------------------------------------
-*Main Loop Section
+*Input Section
 *----------------------------------------------------------
 
 STARTADDR:
@@ -56,23 +56,7 @@ ENDADDR:
         BRA     LOOP
 JERRINS:
         JMP     ERRIN
-
-LOOP:
-        ADDI.W  #1,D2
-        CMPI.W  #30,D2
-        BGE     WAITUSER
-
-        JSR     CLRBUF      ;Clear printing buffer
-        JSR     MEMPRINT    ;Add the memory address
         
-        MOVE.W  (A2)+,D3    ;Reads the next command
-        CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
-        BEQ     REPORFIN
-                
-        JSR     OPXXXX      ;Add the operation/operands
-        JSR     PRNTBUF     ;Print the printing buffer
-        BRA     LOOP
-
 WAITUSER:
         CLR.W   D2
         MOVE.B  #5,D0
@@ -90,6 +74,27 @@ REPORFIN:
         CMPI.B  #'N',D1     ;End if N
         BNE     REPORFIN    ;Re-ask if anything else
         JMP     END
+
+*----------------------------------------------------------
+*Main Loop Section
+*----------------------------------------------------------
+
+LOOP:
+        ADDI.W  #1,D2
+        CMPI.W  #30,D2
+        BGE     WAITUSER    ;If 30 lines are on the screen, pause
+
+        JSR     CLRBUF      ;Clear printing buffer
+        JSR     MEMPRINT    ;Add the memory address
+        MOVE.W  (A2)+,D3    ;Reads the next command
+
+        CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
+        BLE     REPORFIN    ;Then ask if the user is done
+
+        JSR     OPXXXX      ;Add the operation/operands
+        JSR     PRNTBUF     ;Print the printing buffer 
+        
+        BRA     LOOP
 
 *----------------------------------------------------------
 *Main Loop Helper Funcions Section
