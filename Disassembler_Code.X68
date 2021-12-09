@@ -61,11 +61,16 @@ LOOP:
         CMPI.W  #30,D2
         BGE     WAITUSER
 
-        MOVE.L  (A2)+,D3    ;Reads the next command
-        CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
-        BEQ     REPORFIN
         JSR     CLRBUF      ;Clear printing buffer
         JSR     MEMPRINT    ;Add the memory address
+        
+        MOVE.W  (A2)+,D3    ;Reads the next command
+        CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
+        BEQ     REPORFIN
+        
+        ;MOVE.B  #2,D0
+        ;TRAP    #15
+        
         JSR     OPXXXX      ;Add the operation/operands
         JSR     PRNTBUF     ;Print the printing buffer
         BRA     LOOP
@@ -211,72 +216,72 @@ PRNTHEX:
 *----------------------------------------------------------
 
 OPXXXX:
-        BTST    #31,D3
+        BTST    #15,D3
         BEQ     OP0XXX
         JMP     OP1XXX
 
-OP0XXX: BTST    #30,D3
+OP0XXX: BTST    #14,D3
         BEQ     OP00XX
         JMP     OP01XX
 
-OP1XXX: BTST    #30,D3
+OP1XXX: BTST    #14,D3
         BEQ     OP00XX
         JMP     OP01XX
 
 *----------
-OP00XX: BTST    #29,D3
+OP00XX: BTST    #13,D3
         BEQ     OP000X
         JMP     OP001X
 
-OP01XX: BTST    #29,D3
+OP01XX: BTST    #13,D3
         BEQ     OP010X
         JMP     OP011X
 
-OP10XX: BTST    #29,D3
+OP10XX: BTST    #13,D3
         BEQ     OP100X
         JMP     OP101X
 
-OP11XX: BTST    #29,D3
+OP11XX: BTST    #13,D3
         BEQ     OP110X
         JMP     OP111X
 
 *----------
-OP000X: BTST    #28,D3
+OP000X: BTST    #12,D3
         BEQ     J0000
         JMP     OP0001
 J0000:  JMP     OP0000
         
-OP001X: BTST    #28,D3
+OP001X: BTST    #12,D3
         BEQ     J0010
         JMP     OP0011
 J0010:  JMP     OP0010
         
-OP010X: BTST    #28,D3
+OP010X: BTST    #12,D3
         BEQ     J0100
         JMP     OP0101
 J0100:  JMP     OP0100
         
-OP011X: BTST    #28,D3
+OP011X: BTST    #12,D3
         BEQ     J0110
         JMP     OP0111
 J0110:  JMP     OP0110
 
-OP100X: BTST    #28,D3
+OP100X: BTST    #12,D3
         BEQ     J1000
         JMP     OP1001
 J1000:  JMP     OP1000
 
-OP101X: BTST    #28,D3
+OP101X: BTST    #12,D3
         BEQ     J1010
         JMP     OP1011
 J1010:  JMP     ERROP
 
-OP110X: BTST    #28,D3
+OP110X: BTST    #12,D3
         BEQ     J1100
         JMP     OP1101
 J1100:  JMP     OP1100
 
-OP111X: BTST    #28,D3
+OP111X: BTST    #12,D3
         BEQ     J1110
         JMP     ERROP
 J1110:  JMP     OP1110
@@ -286,7 +291,7 @@ J1110:  JMP     OP1110
 *----------------------------------------------------------
  
 *------
-OP0000:
+OP0000:      
         MOVE.W  D3,D4
         ROL.W   #7,D4
         ANDI.B  #$07,D4
@@ -318,7 +323,7 @@ OP0011:
         ANDI.B  #$07,D4
         
         CMPI.B  #$01,D4
-        BEQ     JMOVE
+        BNE     JMOVE
         JMP     MOVEA
 JMOVE:  JMP     MOVE
 
@@ -347,10 +352,9 @@ JNOP:   JMP     NOP
 *----------
 OP0101:
         BTST    #8,D3
-        BEQ     JSUBQ
+        BNE     JSUBQ
         JMP     ADDQ
-JSUBQ:
-        JMP     SUBQ
+JSUBQ:  JMP     SUBQ
 
 *----------
 OP0110:
@@ -531,7 +535,7 @@ MOVEA:
         MOVE.B  #'V',(A4)+
         MOVE.B  #'E',(A4)+
         MOVE.B  #'A',(A4)+
-        JSR     BLW13
+        JSR     LW13
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
         JSR     D11S5
@@ -552,6 +556,7 @@ MOVEM:
         MOVE.B  #'V',(A4)+
         MOVE.B  #'E',(A4)+
         MOVE.B  #'M',(A4)+
+        JSR     WL7
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
         JSR     EA5
@@ -720,7 +725,7 @@ ADDA:
         MOVE.B  #'D',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'A',(A4)+
-        JSR     WL8
+        JSR     WL9
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
         JSR     R11EA5
@@ -791,29 +796,38 @@ LSR:
 *----------------------------------------------------------
 
 BWL7:
-        BTST    #7,D1
+        BTST    #7,D3
         BNE     TSTLONG
-        BTST    #6,D1
+        BTST    #6,D3
         BEQ     BYTE
         BRA     WORD
 TSTLONG:
-        BTST    #6,D1
+        BTST    #6,D3
         BEQ     LONG
         JMP     ERRSIZE
 
+LW13:
+        BTST    #13,D3
+        BNE     BLW13
+        JMP     ERRSIZE
 BLW13:
-        BTST    #13,D1
+        BTST    #13,D3
         BEQ     TSTBYTE
-        BTST    #12,D1
+        BTST    #12,D3
         BEQ     LONG
         BRA     WORD
 TSTBYTE:
-        BTST    #12,D1
+        BTST    #12,D3
         BNE     BYTE
         JMP     ERRSIZE
 
-WL8:
-        BTST    #8,D1
+WL7:
+        BTST    #7,D3
+        BEQ     WORD
+        BRA     LONG
+        
+WL9:
+        BTST    #9,D3
         BEQ     WORD
         BRA     LONG
         
