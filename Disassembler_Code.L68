@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/8/2021 4:51:46 PM
+Created On: 12/8/2021 4:57:28 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Assembly Disassembler
@@ -63,7 +63,7 @@ Created On: 12/8/2021 4:51:46 PM
 00001066                            59  LOOP:
 00001066  5242                      60          ADDI.W  #1,D2
 00001068  0C42 001E                 61          CMPI.W  #30,D2
-0000106C  6700 0024                 62          BEQ     WAITUSER
+0000106C  6C00 0024                 62          BGE     WAITUSER
 00001070                            63  
 00001070  261A                      64          MOVE.L  (A2)+,D3    ;Reads the next command
 00001072  B6CA                      65          CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)

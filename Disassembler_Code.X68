@@ -59,7 +59,7 @@ JERRINS:
 LOOP:
         ADDI.W  #1,D2
         CMPI.W  #30,D2
-        BEQ     WAITUSER
+        BGE     WAITUSER
 
         MOVE.L  (A2)+,D3    ;Reads the next command
         CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
