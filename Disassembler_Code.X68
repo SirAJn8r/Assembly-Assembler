@@ -281,65 +281,60 @@ J1110:  JMP     OP1110
 OP0000:
         MOVE.W  D3,D4
         ROL.W   #7,D4
-        ANDI.W  #$07,D4
+        ANDI.B  #$07,D4
         
-        CMPI.W  #$00,D4
+        CMPI.B  #$00,D4
         BEQ     JORI
-        CMPI.W  #$01,D4
+        CMPI.B  #$01,D4
         BEQ     JANDI
-        CMPI.W  #$03,D4
+        CMPI.B  #$03,D4
         BEQ     JADDI
-        CMPI.W  #$05,D4
+        CMPI.B  #$05,D4
         BEQ     JEORI
-        CMPI.W  #$06,D4
+        CMPI.B  #$06,D4
         BEQ     JCMPI
         JMP     ERRCOM
         
-        BTST    #11,D3
-        BEQ     ORANAD
-        JMP     EOCM
-ORANAD:
-        BTST    #10,D3
-        BEQ     ORAN
-        JMP     ADDI
-ORAN:
-        BTST    #9,D3
-        BEQ     JORI
-        JMP     ANDI
-JORI:
-        JMP     ORI
-EOCM:
-        BTST    #10,D3
-        BEQ     JEORI
-        JMP     CMPI
-JEORI: 
-        JMP     EORI
+JADDI:  JMP     ADDI
+JANDI:  JMP     ANDI
+JORI:   JMP     ORI
+JCMPI:  JMP     CMPI
+JEORI:  JMP     EORI
 
 *----------
 OP0001:
 OP0010:
 OP0011:        
-        BTST    #7,D3
-        BNE     JMOVE
-        BTST    #6,D3
-        BNE     JMOVE
-        BTST    #5,D3
+        MOVE.W  D3,D4
+        ROR.W   #6,D4
+        ANDI.B  #$07,D4
+        
+        CMPI.B  #$01,D4
         BEQ     JMOVE
         JMP     MOVEA
-JMOVE:
-        JMP     MOVE
+JMOVE:  JMP     MOVE
 
 *----------
-OP0100:        
-        BTST    #8,D3
-        BEQ     NOMO
-        JMP     LEA
-NOMO:
-        BTST    #7,D3
+OP0100:  
+        MOVE.W  D3,D4
+        ROR.W   #7,D4
+        ANDI.B  #$07,D4
+        CMPI.B  #$01,D4
+        BEQ     JMOVEM
+        
+        MOVE.W  D3,D4
+        ROR.W   #6,D4
+        ANDI.B  #$07,D4
+        CMPI.B  #$07,D4
+        BEQ     JLEA
+        
+        CMPI.W  #$4E71,D3
         BEQ     JNOP
-        JMP     MOVEM
-JNOP:
-        JMP     NOP
+        JMP     ERRCOM
+
+JLEA:   JMP     LEA
+JMOVEM: JMP     MOVEM
+JNOP:   JMP     NOP
 
 *----------
 OP0101:
@@ -351,11 +346,18 @@ JSUBQ:
 
 *----------
 OP0110:
-        BTST    #8,D3
+        MOVE.W  D3,D4
+        ROR.W   #8,D4
+        ANDI.B  #$0F,D4
+        
+        CMPI.B  #$00,D4
         BEQ     JBRA
-        JMP     BSR
-JBRA:
-        JMP     BRA
+        CMPI.B  #$01,D4
+        BEQ     JBSR
+        JMP     ERRCOM
+
+JBRA:   JMP     BRA
+JBRS:   JMP     BRS
 
 *----------
 OP0111:
@@ -363,11 +365,18 @@ OP0111:
 
 *----------
 OP1000:
-        BTST    #8,D3
+        MOVE.W  D3,D4
+        ROR.W   #6,D4
+        ANDI.B  #$07,D4
+        
+        CMPI.B  #$03,D4
         BEQ     JDIVU
-        JMP     DIVS
-JDIVU:
-        JMP     DIVU
+        CMPI.B  #$07,D4
+        BEQ     JDIVS
+        JMP     ERRCOM
+
+JDIVU:  JMP     DIVU
+JDIVS:  JMP     DIVS
 
 *----------
 OP1001:
@@ -383,11 +392,18 @@ JCMP:
 
 *----------
 OP1100:
-        BTST    #8,D3
+        MOVE.W  D3,D4
+        ROR.W   #6,D4
+        ANDI.B  #$07,D4
+        
+        CMPI.B  #$03,D4
         BEQ     JMULU
-        JMP     MULS
-JMULU:
-        JMP     MULU
+        CMPI.B  #$07,D4
+        BEQ     JMULS
+        JMP     ERRCOM
+
+JMULU:  JMP     MULU
+JMULS:  JMP     MULS
 
 *----------
 OP1101:
@@ -401,21 +417,23 @@ JADDA:
 
 *----------
 OP1110: 
+        BTST    #4,D3
+        BNE     JROX
         BTST    #3,D3
         BEQ     ASAS
         JMP     LSLS
-ASAS:
-        BTST    #8,D3
+
+JROX:   JMP     ERRCOM
+
+ASAS:   BTST    #8,D3
         BEQ     JASL
         JMP     ASR
-JASL:
-        JMP     ASL
-LSLS:
-        BTST    #8,D3
+JASL:   JMP     ASL
+
+LSLS:   BTST    #8,D3
         BEQ     JLSL
         JMP     LSR
-JLSL:
-        JMP     LSL
+JLSL:   JMP     LSL
         
 *----------------------------------------------------------
 *Command Section
@@ -891,6 +909,7 @@ ERREAMSG:
         DC.B    'Found Invalid EA Mode',CR,LF,0
 
         END     START
+
 
 
 *~Font name~Courier New~
