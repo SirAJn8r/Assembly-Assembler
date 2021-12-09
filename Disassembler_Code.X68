@@ -52,6 +52,7 @@ ENDADDR:
         JSR     HEXTOBIN    ;Convert input into an address in D5
         MOVEA.W D5,A3       ;Move address into A3
         
+        CLR.W   D2
         BRA     LOOP
 JERRINS:
         JMP     ERRIN
@@ -67,17 +68,14 @@ LOOP:
         MOVE.W  (A2)+,D3    ;Reads the next command
         CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
         BEQ     REPORFIN
-        
-        ;MOVE.B  #2,D0
-        ;TRAP    #15
-        
+                
         JSR     OPXXXX      ;Add the operation/operands
         JSR     PRNTBUF     ;Print the printing buffer
         BRA     LOOP
 
 WAITUSER:
         CLR.W   D2
-        MOVE.B  #2,D0
+        MOVE.B  #5,D0
         TRAP    #15
         BRA     LOOP
 
@@ -225,8 +223,8 @@ OP0XXX: BTST    #14,D3
         JMP     OP01XX
 
 OP1XXX: BTST    #14,D3
-        BEQ     OP00XX
-        JMP     OP01XX
+        BEQ     OP10XX
+        JMP     OP11XX
 
 *----------
 OP00XX: BTST    #13,D3
@@ -420,12 +418,11 @@ JMULS:  JMP     MULS
 *----------
 OP1101:
         BTST    #7,D3
-        BEQ     JADDA
+        BEQ     JADD
         BTST    #6,D3
-        BEQ     JADDA
-        JMP     ADD
-JADDA:
+        BEQ     JADD
         JMP     ADDA
+JADD:   JMP     ADD
 
 *----------
 OP1110: 
@@ -438,12 +435,12 @@ OP1110:
 JROX:   JMP     ERRCOM
 
 ASAS:   BTST    #8,D3
-        BEQ     JASL
+        BNE     JASL
         JMP     ASR
 JASL:   JMP     ASL
 
 LSLS:   BTST    #8,D3
-        BEQ     JLSL
+        BNE     JLSL
         JMP     LSR
 JLSL:   JMP     LSL
         
@@ -556,7 +553,7 @@ MOVEM:
         MOVE.B  #'V',(A4)+
         MOVE.B  #'E',(A4)+
         MOVE.B  #'M',(A4)+
-        JSR     WL7
+        JSR     WL6
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
         JSR     EA5
@@ -725,7 +722,7 @@ ADDA:
         MOVE.B  #'D',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'A',(A4)+
-        JSR     WL9
+        JSR     WL8
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
         JSR     R11EA5
@@ -737,6 +734,7 @@ ADD:
         MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'D',(A4)+
+        JSR     BWL7
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
         JSR     R11EA5
@@ -821,13 +819,13 @@ TSTBYTE:
         BNE     BYTE
         JMP     ERRSIZE
 
-WL7:
-        BTST    #7,D3
+WL6:
+        BTST    #6,D3
         BEQ     WORD
         BRA     LONG
         
-WL9:
-        BTST    #9,D3
+WL8:
+        BTST    #8,D3
         BEQ     WORD
         BRA     LONG
         
@@ -887,7 +885,7 @@ ERROP:
 ERRCOM:
         ADDI.W  #1,D2
         LEA     ERRCOMMSG,A1
-        MOVE.B  #13,D0
+        MOVE.L  #13,D0
         TRAP    #15
         JMP     LOOP
 ERRSIZE:
@@ -911,8 +909,7 @@ END:    SIMHALT
 BUFSIZE DC.B    64
 BUFFER: DS.B    BUFSIZE
 
-INPADDR:
-        DS.B    8
+INPADDR     DS.B    8
 MOVEMADDR   EQU     $9000        
 
 CR:     EQU     $0D
@@ -935,7 +932,7 @@ ERRCOMMSG:
 ERRSIZEMSG:
         DC.B    'Found Invalid Size',0
 ERREAMSG:
-        DC.B    'Found Invalid EA Mode',CR,LF,0
+        DC.B    'Found Invalid EA Mode',0
 
         END     START
 
