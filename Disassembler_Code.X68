@@ -865,9 +865,9 @@ DP7:
         MOVE.B  D3,D6
         TST.B   D6
         BEQ     DP2WORD
-        
-        ADD.L   D4,D6
-        MOVE.L  D5,D6
+
+        EXT.W   D6
+        ADD.W   D4,D6
         JSR     HEX16B
         RTS
 DP2WORD:
