@@ -694,7 +694,7 @@ SUB:
         JSR     BWL7
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A3-A4,-(A6)
-        JSR     R11EA5
+        JSR     R11DEA5
         MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
@@ -718,7 +718,7 @@ EOR:
         JSR     BWL7
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A3-A4,-(A6)
-        JSR     R11EA5
+        JSR     R11DEA5
         MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
@@ -767,7 +767,7 @@ ADD:
         JSR     BWL7
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A3-A4,-(A6)
-        JSR     R11EA5
+        JSR     R11DEA5
         MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
@@ -895,6 +895,18 @@ D11S5:
         MOVE.B  #',',(A4)+
         JMP     GETEA5
 
+R11DEA5:
+        BTST    #8,D3
+        BEQ     R11EA5
+        
+        MOVE.B  #'D',(A4)+
+        MOVE.W  D3,D6
+        ROL.W   #7,D6
+        JSR     HEX3B
+
+        MOVE.B  #',',(A4)+
+        JMP     EA5
+
 R11EA5:
         JSR     EA5
         
@@ -967,15 +979,6 @@ FINSHIFT:
         MOVE.B  #'D',(A4)+
         ROR.W   #7,D6
         JMP     HEX3B
-        
-*--------------
-*Place input into D5
-*--------------
-GETEA5:
-        MOVE.B  #'X',(A4)+
-        MOVE.B  #'X',(A4)+
-        MOVE.B  #'X',(A4)+
-        RTS
 
 *--------------
 *Read Words After Opcode
@@ -1002,6 +1005,61 @@ READWORD:
 READLONG:
         MOVE.L  (A2)+,D6
         JMP     HEX32B
+
+*--------------
+*Place input into D5
+*--------------
+GETEA5:
+        MOVE.B  D5,D1
+        LSR.B   #3,D1
+        ANDI.B  #$7,D1
+        CMPI.B  #$00,D1
+        BEQ     DDIR
+        CMPI.B  #$01,D1
+        BEQ     ADIR
+        CMPI.B  #$02,D1
+        BEQ     AINDIR
+        CMPI.B  #$03,D1
+        BEQ     AINDIRPOST
+        CMPI.B  #$04,D1
+        BEQ     AINDIRPRE
+        CMPI.B  #$07,D1
+        BEQ     MODE7
+        BRA     ERREA
+
+DDIR:
+        MOVE.B  #'D',(A4)+
+        MOVE.B  D5,D6
+        JMP     HEX3B
+ADIR:
+        MOVE.B  #'A',(A4)+
+        MOVE.B  D5,D6
+        JMP     HEX3B
+AINDIR:
+        MOVE.B  #'(',(A4)+
+        MOVE.B  #'A',(A4)+
+        MOVE.B  D5,D6
+        JSR     HEX3B
+        MOVE.B  #')',(A4)+
+        RTS
+AINDIRPOST:
+        MOVE.B  #'(',(A4)+
+        MOVE.B  #'A',(A4)+
+        MOVE.B  D5,D6
+        JSR     HEX3B
+        MOVE.B  #')',(A4)+
+        MOVE.B  #'+',(A4)+
+        RTS
+AINDIRPRE:
+        MOVE.B  #'-',(A4)+
+        MOVE.B  #'(',(A4)+
+        MOVE.B  #'A',(A4)+
+        MOVE.B  D5,D6
+        JSR     HEX3B
+        MOVE.B  #')',(A4)+
+        RTS
+MODE7:
+        RTS
         
 *----------------------------------------------------------
 *EA Section Part 2
