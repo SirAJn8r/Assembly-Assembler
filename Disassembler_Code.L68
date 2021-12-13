@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/13/2021 11:59:19 AM
+Created On: 12/13/2021 12:06:45 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Assembly Disassembler
@@ -31,25 +31,25 @@ Created On: 12/13/2021 11:59:19 AM
 00001008                            27  *----------------------------------------------------------
 00001008                            28  
 00001008                            29  STARTADDR:
-00001008  43F9 00006F48             30          LEA     STARTMSG,A1
+00001008  43F9 00006FA0             30          LEA     STARTMSG,A1
 0000100E  103C 000D                 31          MOVE.B  #13,D0
 00001012  4E4F                      32          TRAP    #15         ;Print out start address message
-00001014  43F9 00006F2F             33          LEA     INPADDR,A1
+00001014  43F9 00006F87             33          LEA     INPADDR,A1
 0000101A  4EB9 000010E2             34          JSR     HEXTOBIN    ;Read input into Hex into D5
 00001020  2445                      35          MOVEA.L D5,A2       ;Move address into A2
 00001022                            36  
 00001022                            37  ENDADDR:
-00001022  43F9 00006F77             38          LEA     ENDMSG,A1
+00001022  43F9 00006FCF             38          LEA     ENDMSG,A1
 00001028  103C 000D                 39          MOVE.B  #13,D0
 0000102C  4E4F                      40          TRAP    #15         ;Print out end address message
-0000102E  43F9 00006F2F             41          LEA     INPADDR,A1
+0000102E  43F9 00006F87             41          LEA     INPADDR,A1
 00001034  4EB9 000010E2             42          JSR     HEXTOBIN    ;Read input into Hex into D5
 0000103A  2645                      43          MOVEA.L D5,A3       ;Move address into A3
 0000103C                            44          
 0000103C  4242                      45          CLR.W   D2
 0000103E  6000 0038                 46          BRA     LOOP
 00001042                            47  JERRINS:
-00001042  4EF9 00001B68             48          JMP     ERRIN
+00001042  4EF9 00001B7E             48          JMP     ERRIN
 00001048                            49          
 00001048                            50  WAITUSER:
 00001048  4242                      51          CLR.W   D2
@@ -58,7 +58,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001050  6000 0026                 54          BRA     LOOP
 00001054                            55  
 00001054                            56  REPORFIN:
-00001054  43F9 00006FA4             57          LEA     REPORFINMSG,A1
+00001054  43F9 00006FFC             57          LEA     REPORFINMSG,A1
 0000105A  103C 000D                 58          MOVE.B  #13,D0
 0000105E  4E4F                      59          TRAP    #15         ;Print out repeat or finish message
 00001060  103C 0005                 60          MOVE.B  #5,D0
@@ -67,7 +67,7 @@ Created On: 12/13/2021 11:59:19 AM
 0000106A  679C                      63          BEQ     STARTADDR
 0000106C  0C01 004E                 64          CMPI.B  #'N',D1     ;End if N
 00001070  66E2                      65          BNE     REPORFIN    ;Re-ask if anything else
-00001072  4EF9 00001BB4             66          JMP     END
+00001072  4EF9 00001BCA             66          JMP     END
 00001078                            67  
 00001078                            68  *----------------------------------------------------------
 00001078                            69  *Main Loop Section
@@ -96,14 +96,14 @@ Created On: 12/13/2021 11:59:19 AM
 000010A0                            92  
 000010A0                            93  CLRBUF:
 000010A0  4284                      94          CLR.L   D4
-000010A2  383C 3797                 95          MOVE.W  #BUFSIZE,D4
-000010A6  49F9 00003798             96          LEA     BUFFER,A4
+000010A2  383C 37C3                 95          MOVE.W  #BUFSIZE,D4
+000010A6  49F9 000037C4             96          LEA     BUFFER,A4
 000010AC                            97  CLRBUFLOOP:
 000010AC  18FC 0000                 98          MOVE.B  #0,(A4)+
 000010B0  5344                      99          SUBI.W  #1,D4
 000010B2  6EF8                     100          BGT     CLRBUFLOOP
 000010B4                           101  
-000010B4  49F9 00003798            102          LEA     BUFFER,A4
+000010B4  49F9 000037C4            102          LEA     BUFFER,A4
 000010BA  4E75                     103          RTS
 000010BC                           104          
 000010BC                           105  MEMPRINT:
@@ -119,7 +119,7 @@ Created On: 12/13/2021 11:59:19 AM
 000010D4                           115  
 000010D4                           116  PRNTBUF:
 000010D4  103C 000D                117          MOVE.B  #13,D0
-000010D8  43F9 00003798            118          LEA     BUFFER,A1
+000010D8  43F9 000037C4            118          LEA     BUFFER,A1
 000010DE  4E4F                     119          TRAP    #15
 000010E0  4E75                     120          RTS
 000010E2                           121  
@@ -177,7 +177,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001162  8A07                     173          OR.B    D7,D5
 00001164  4E75                     174          RTS
 00001166                           175  
-00001166  4EB9 00001B68            176  JERRIN  JSR     ERRIN
+00001166  4EB9 00001B7E            176  JERRIN  JSR     ERRIN
 0000116C  4EF8 1008                177          JMP     STARTADDR
 00001170                           178  
 00001170                           179  *----------------------------------------------------------
@@ -199,7 +199,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001190  4EF9 000011A6            195          JMP     PRNTHEX
 00001196                           196  HEX3B:  ;Uses Bits 2-0 of D6 to print out 1 Hex Char
 00001196  1006                     197          MOVE.B  D6,D0
-00001198  0886 0003                198          BCLR    #3,D6
+00001198  0206 0007                198          ANDI.B  #$7,D6
 0000119C  4EB9 000011A6            199          JSR     PRNTHEX
 000011A2  1C00                     200          MOVE.B  D0,D6
 000011A4  4E75                     201          RTS
@@ -209,7 +209,7 @@ Created On: 12/13/2021 11:59:19 AM
 000011A8  1E06                     205          MOVE.B  D6,D7
 000011AA  0207 000F                206          ANDI.B  #$0F,D7
 000011AE                           207          
-000011AE  41F9 00006F38            208          LEA     ITOA,A0
+000011AE  41F9 00006F90            208          LEA     ITOA,A0
 000011B4  D1C7                     209          ADDA.L  D7,A0
 000011B6  18D0                     210          MOVE.B  (A0),(A4)+
 000011B8  4E75                     211          RTS
@@ -277,7 +277,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001280  0803 000C                273  OP101X: BTST    #12,D3
 00001284  6700 0008                274          BEQ     J1010
 00001288  4EF9 000013E0            275          JMP     OP1011
-0000128E  4EF9 00001B78            276  J1010:  JMP     ERROP
+0000128E  4EF9 00001B8E            276  J1010:  JMP     ERROP
 00001294                           277  
 00001294  0803 000C                278  OP110X: BTST    #12,D3
 00001298  6700 0008                279          BEQ     J1100
@@ -286,7 +286,7 @@ Created On: 12/13/2021 11:59:19 AM
 000012A8                           282  
 000012A8  0803 000C                283  OP111X: BTST    #12,D3
 000012AC  6700 0008                284          BEQ     J1110
-000012B0  4EF9 00001B78            285          JMP     ERROP
+000012B0  4EF9 00001B8E            285          JMP     ERROP
 000012B6  4EF9 0000143A            286  J1110:  JMP     OP1110
 000012BC                           287    
 000012BC                           288  *----------------------------------------------------------
@@ -309,7 +309,7 @@ Created On: 12/13/2021 11:59:19 AM
 000012E0  6700 0028                305          BEQ     JEORI
 000012E4  0C04 0006                306          CMPI.B  #$06,D4
 000012E8  6700 001A                307          BEQ     JCMPI
-000012EC  4EF9 00001B88            308          JMP     ERRCOM
+000012EC  4EF9 00001B9E            308          JMP     ERRCOM
 000012F2                           309          
 000012F2  4EF9 000014CE            310  JADDI:  JMP     ADDI
 000012F8  4EF9 000014A4            311  JANDI:  JMP     ANDI
@@ -346,7 +346,7 @@ Created On: 12/13/2021 11:59:19 AM
 0000134C                           342          
 0000134C  0C43 4E71                343          CMPI.W  #$4E71,D3
 00001350  6700 0014                344          BEQ     JNOP
-00001354  4EF9 00001B88            345          JMP     ERRCOM
+00001354  4EF9 00001B9E            345          JMP     ERRCOM
 0000135A                           346  
 0000135A  4EF9 000015E0            347  JLEA:   JMP     LEA
 00001360  4EF9 000015B2            348  JMOVEM: JMP     MOVEM
@@ -369,7 +369,7 @@ Created On: 12/13/2021 11:59:19 AM
 0000138C  6700 0010                365          BEQ     JBRA
 00001390  0C04 0001                366          CMPI.B  #$01,D4
 00001394  6700 000E                367          BEQ     JBSR
-00001398  4EF9 00001B88            368          JMP     ERRCOM
+00001398  4EF9 00001B9E            368          JMP     ERRCOM
 0000139E                           369  
 0000139E  4EF9 00001654            370  JBRA:   JMP     BRA
 000013A4  4EF9 00001674            371  JBSR:   JMP     BSR
@@ -388,7 +388,7 @@ Created On: 12/13/2021 11:59:19 AM
 000013BC  6700 0010                384          BEQ     JDIVU
 000013C0  0C04 0007                385          CMPI.B  #$07,D4
 000013C4  6700 000E                386          BEQ     JDIVS
-000013C8  4EF9 00001B88            387          JMP     ERRCOM
+000013C8  4EF9 00001B9E            387          JMP     ERRCOM
 000013CE                           388  
 000013CE  4EF9 000016BC            389  JDIVU:  JMP     DIVU
 000013D4  4EF9 000016E0            390  JDIVS:  JMP     DIVS
@@ -415,7 +415,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001400  6700 0010                411          BEQ     JMULU
 00001404  0C04 0007                412          CMPI.B  #$07,D4
 00001408  6700 000E                413          BEQ     JMULS
-0000140C  4EF9 00001B88            414          JMP     ERRCOM
+0000140C  4EF9 00001B9E            414          JMP     ERRCOM
 00001412                           415  
 00001412  4EF9 00001776            416  JMULU:  JMP     MULU
 00001418  4EF9 0000179A            417  JMULS:  JMP     MULS
@@ -437,7 +437,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001446  6700 000E                433          BEQ     ASAS
 0000144A  4EF9 0000146A            434          JMP     LSLS
 00001450                           435  
-00001450  4EF9 00001B88            436  JROX:   JMP     ERRCOM
+00001450  4EF9 00001B9E            436  JROX:   JMP     ERRCOM
 00001456                           437  
 00001456  0803 0008                438  ASAS:   BTST    #8,D3
 0000145A  6600 0008                439          BNE     JASL
@@ -754,7 +754,7 @@ Created On: 12/13/2021 11:59:19 AM
 0000181A  4EB9 000018A6            750          JSR     BWL7
 00001820  18FC 0009                751          MOVE.B  #$9,(A4)+
 00001824  48A6 3038                752          MOVEM   D2-D3/A2-A4,-(A6)
-00001828  4EB9 00001958            753          JSR     SHIFTS
+00001828  4EB9 0000196E            753          JSR     SHIFTS
 0000182E  4C9E 1C0C                754          MOVEM   (A6)+,A2-A4/D2-D3
 00001832  4E75                     755          RTS
 00001834                           756  
@@ -766,7 +766,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001840  4EB9 000018A6            762          JSR     BWL7
 00001846  18FC 0009                763          MOVE.B  #$9,(A4)+
 0000184A  48A6 3038                764          MOVEM   D2-D3/A2-A4,-(A6)
-0000184E  4EB9 00001958            765          JSR     SHIFTS
+0000184E  4EB9 0000196E            765          JSR     SHIFTS
 00001854  4C9E 1C0C                766          MOVEM   (A6)+,A2-A4/D2-D3
 00001858  4E75                     767          RTS
 0000185A                           768  
@@ -778,7 +778,7 @@ Created On: 12/13/2021 11:59:19 AM
 00001866  4EB9 000018A6            774          JSR     BWL7
 0000186C  18FC 0009                775          MOVE.B  #$9,(A4)+
 00001870  48A6 3038                776          MOVEM   D2-D3/A2-A4,-(A6)
-00001874  4EB9 00001958            777          JSR     SHIFTS
+00001874  4EB9 0000196E            777          JSR     SHIFTS
 0000187A  4C9E 1C0C                778          MOVEM   (A6)+,A2-A4/D2-D3
 0000187E  4E75                     779          RTS
 00001880                           780  
@@ -790,7 +790,7 @@ Created On: 12/13/2021 11:59:19 AM
 0000188C  4EB9 000018A6            786          JSR     BWL7
 00001892  18FC 0009                787          MOVE.B  #$9,(A4)+
 00001896  48A6 3038                788          MOVEM   D2-D3/A2-A4,-(A6)
-0000189A  4EB9 00001958            789          JSR     SHIFTS
+0000189A  4EB9 0000196E            789          JSR     SHIFTS
 000018A0  4C9E 1C0C                790          MOVEM   (A6)+,A2-A4/D2-D3
 000018A4  4E75                     791          RTS
 000018A6                           792  
@@ -807,12 +807,12 @@ Created On: 12/13/2021 11:59:19 AM
 000018BA                           803  TSTLONG:
 000018BA  0803 0006                804          BTST    #6,D3
 000018BE  6700 0064                805          BEQ     LONG
-000018C2  4EF9 00001B96            806          JMP     ERRSIZE
+000018C2  4EF9 00001BAC            806          JMP     ERRSIZE
 000018C8                           807  
 000018C8                           808  LW13:
 000018C8  0803 000D                809          BTST    #13,D3
 000018CC  6600 0008                810          BNE     BLW13
-000018D0  4EF9 00001B96            811          JMP     ERRSIZE
+000018D0  4EF9 00001BAC            811          JMP     ERRSIZE
 000018D6                           812  BLW13:
 000018D6  0803 000D                813          BTST    #13,D3
 000018DA  6700 000E                814          BEQ     TSTBYTE
@@ -822,7 +822,7 @@ Created On: 12/13/2021 11:59:19 AM
 000018EA                           818  TSTBYTE:
 000018EA  0803 000C                819          BTST    #12,D3
 000018EE  6600 0020                820          BNE     BYTE
-000018F2  4EF9 00001B96            821          JMP     ERRSIZE
+000018F2  4EF9 00001BAC            821          JMP     ERRSIZE
 000018F8                           822  
 000018F8                           823  WL6:
 000018F8  0803 0006                824          BTST    #6,D3
@@ -881,291 +881,299 @@ Created On: 12/13/2021 11:59:19 AM
 00001954  4E75                     877          RTS
 00001956                           878  
 00001956                           879  R11D7:
-00001956  4E75                     880          RTS
-00001958                           881  
-00001958                           882  SHIFTS:
-00001958  4E75                     883          RTS
-0000195A                           884          
-0000195A                           885  *----------------------------------------------------------
-0000195A                           886  *EA Section Part 2
-0000195A                           887  *----------------------------------------------------------
-0000195A                           888  
-0000195A                           889  EACompare:      
-0000195A  0C03 0000                890          CMPI.B  #%000,D3
-0000195E  6700 00D2                891          BEQ     GetW            ;what is this exactly
-00001962  6600 0002                892          BNE     EACompareLong
-00001966                           893                  
-00001966                           894  EACompareLong:
-00001966  0C03 0001                895          CMPI.B  #%001,D3
-0000196A  6700 00E8                896          BEQ     GetL
-0000196E  6600 0002                897          BNE     EACompareData
-00001972                           898                  
-00001972                           899  EACompareData:
-00001972  0C03 0004                900          CMPI.B  #%100,D3
-00001976  6700 0014                901          BEQ     findImmediate
-0000197A  6600 0002                902          BNE     dataError
-0000197E                           903  
-0000197E                           904  dataError:
-0000197E  43F9 00001BB8            905          LEA     ERR,A1
-00001984  103C 000E                906          MOVE.B  #14,D0
-00001988  4E4F                     907          TRAP    #15
-0000198A  4E75                     908          RTS 
-0000198C                           909  *--------------------------------
-0000198C                           910  findImmediate:
-0000198C  18FC 0023                911          MOVE.B  #$23,(A4)+
-00001990  0C39 0004 00001BC2       912          CMPI.B  #4,opCodeB
-00001998  6D00 001C                913          BLT     moveData
-0000199C  0C39 0001 00001BC4       914          CMPI.B  #1,bitsSize     ;number of bits
-000019A4  6700 0030                915          BEQ     immediateType
-000019A8  0C39 0002 00001BCA       916          CMPI.B  #2,bitsOfSize
-000019B0  6700 003C                917          BEQ     dataTypeOther
-000019B4  60C8                     918          BRA     dataError
-000019B6                           919  
-000019B6                           920  moveData:
-000019B6  3A39 00001BC0            921          MOVE.W  opCodeSize, D5
-000019BC  0C05 0001                922          CMPI.B  #%01,D5
-000019C0  6700 004E                923          BEQ     GetByte
-000019C4  0C05 0003                924          CMPI.B  #%11,D5
-000019C8  6700 0068                925          BEQ     GetW
-000019CC  0C05 0002                926          CMPI.B  #%10,D5
-000019D0  6700 0082                927          BEQ     GetL
-000019D4  60A8                     928          BRA     dataError
-000019D6                           929  
-000019D6                           930  immediateType:
-000019D6  3A39 00001BC0            931          MOVE.W  opCodeSize,D5
-000019DC  0C05 0000                932          CMPI.B  #%0,D5
-000019E0  6700 0050                933          BEQ     GetW
-000019E4  0C05 0001                934          CMPI.B  #%1,D5
-000019E8  6700 006A                935          BEQ     GetL
-000019EC  6090                     936          BRA     dataError
-000019EE                           937  
-000019EE                           938  dataTypeOther:
-000019EE  3A39 00001BC0            939          MOVE.W  opCodeSize,D5
-000019F4  0C05 0000                940          CMPI.B  #%00,D5
-000019F8  6700 0016                941          BEQ     GetByte
-000019FC  0C05 0002                942          CMPI.B  #%10,D5
-00001A00  6700 0030                943          BEQ     GetW
-00001A04  0C05 0003                944          CMPI.B  #%11,D5
-00001A08  6700 004A                945          BEQ     GetL
-00001A0C  6000 FF70                946          BRA     dataError                
-00001A10                           947                 
-00001A10                           948  *---------------------------------------
-00001A10                           949  GetByte:
-00001A10  18FC 0024                950          MOVE.B  #$24,(A4)+
-00001A14  381A                     951          MOVE.W  (A2)+,D4
-00001A16  13FC 0002 00001BBF       952          MOVE.B  #2,hexLength   
-00001A1E  4239 00001BBE            953          CLR.B   counter         ;zero conter
-00001A24  143C 0018                954          MOVE.B  #24,D2
-00001A28  E5AC                     955          LSL.L   D2,D4
-00001A2A  4EB9 00001ABE            956          JSR     comparison
-00001A30  4E75                     957          RTS
-00001A32                           958  
-00001A32                           959  GetW:
-00001A32  18FC 0024                960          MOVE.B  #$24, (A4)+
-00001A36  381A                     961          MOVE.W  (A2)+,  D4
-00001A38  13FC 0004 00001BBF       962          MOVE.B  #4, hexLength
-00001A40  4239 00001BBE            963          CLR.B   counter
-00001A46  143C 0010                964          MOVE.B  #16, D2
-00001A4A  E5AC                     965          LSL.L   D2, D4
-00001A4C  4EB9 00001ABE            966          JSR     comparison
-00001A52  4E75                     967          RTS
-00001A54                           968  
-00001A54                           969  GetL:   
-00001A54  18FC 0024                970          MOVE.B  #$24, (A4)+
-00001A58  281A                     971          MOVE.L  (A2)+,D4
-00001A5A  13FC 0008 00001BBF       972          MOVE.B  #8, hexLength
-00001A62  4239 00001BBE            973          CLR.B   counter
-00001A68  4EB9 00001ABE            974          JSR     comparison
-00001A6E  4E75                     975          RTS
-00001A70                           976  
-00001A70                           977  SaveByte:
-00001A70  381A                     978          MOVE.W  (A2)+,D4
-00001A72  143C 0018                979          MOVE.B  #24,D2
-00001A76  E5AC                     980          LSL.L   D2,D4
-00001A78  23C4 00001BC6            981          MOVE.L  D4,saveAddress
-00001A7E  4E75                     982          RTS
-00001A80                           983  
-00001A80                           984  SaveWord:
-00001A80  381A                     985          MOVE.W  (A2)+,D4
-00001A82  143C 0010                986          MOVE.B  #16,D2
-00001A86  E5AC                     987          LSL.L   D2,D4
-00001A88  23C4 00001BC6            988          MOVE.L  D4,saveAddress
-00001A8E  4E75                     989          RTS
-00001A90                           990                  
-00001A90                           991  SaveLong:
-00001A90  281A                     992          MOVE.L  (A2)+,D4
-00001A92  23C4 00001BC6            993          MOVE.L  D4,saveAddress 
-00001A98  4E75                     994          RTS
-00001A9A                           995  
-00001A9A                           996  *----------------------HEX TO ASCII -----------------------
-00001A9A                           997  hexCalc:
-00001A9A  5239 00001BBE            998          ADDI.B  #1,counter 
-00001AA0  E99C                     999          ROL.L   #4,D4  
-00001AA2  1604                    1000          MOVE.B  D4,D3
-00001AA4  E90B                    1001          LSL.B   #4,D3
-00001AA6  E80B                    1002          LSR.B   #4,D3
-00001AA8  4EB9 00001ABE           1003          JSR     comparison
-00001AAE  1039 00001BBF           1004          MOVE.B  hexLength,D0 //what is hex length same as counter
-00001AB4  B039 00001BBE           1005          CMP.B   counter,D0
-00001ABA  66DE                    1006          BNE     hexCalc
-00001ABC                          1007          
-00001ABC  4E75                    1008          RTS
-00001ABE                          1009  
-00001ABE                          1010  comparison: 
-00001ABE  0C03 000A               1011          CMPI.B  #%1010,D3
-00001AC2  6C00 000E               1012          BGE     saveHexLetter
-00001AC6  6D00 0002               1013          BLT     saveHexNumber
-00001ACA                          1014  
-00001ACA                          1015  saveHexNumber:
-00001ACA  0603 0030               1016          ADDI.B  #$30,D3
-00001ACE  18C3                    1017          MOVE.B  D3,(A4)+
-00001AD0                          1018          
-00001AD0  4E75                    1019          RTS
-00001AD2                          1020  
-00001AD2                          1021  saveHexLetter:
-00001AD2  0603 0037               1022          ADDI.B  #$37,D3
-00001AD6  18C3                    1023          MOVE.B  D3,(A4)+
-00001AD8                          1024          
-00001AD8  4E75                    1025          RTS
-00001ADA                          1026  
-00001ADA                          1027  *------------Data Register Direct --
-00001ADA  3006                    1028          MOVE.W  D6,D0                   
-00001ADC  0240 0007               1029          ANDI.W  #$7,D0                  
-00001AE0  14FC 0044               1030          MOVE.B  #$44,(A2)+
-00001AE4  4EB8 1ABE               1031          JSR     comparison
-00001AE8  4286                    1032          CLR.L   D6
-00001AEA                          1033              
-00001AEA  4E75                    1034          RTS
-00001AEC                          1035  *------------Address Register Direct --
-00001AEC  18FC 0041               1036          MOVE.B  #$41, (A4)+
-00001AF0  4EB8 1ABE               1037          JSR     comparison
-00001AF4  4286                    1038          CLR.L   D6
-00001AF6                          1039              
-00001AF6  4E75                    1040          RTS
-00001AF8                          1041  *-------Indirect Address Register----------------
-00001AF8  18FC 0028               1042          MOVE.B  #$28,(A4)+
-00001AFC  18FC 0041               1043          MOVE.B  #$41,(A4)+
-00001B00  4EB8 1ABE               1044          JSR     comparison
-00001B04                          1045  
-00001B04  4286                    1046          CLR.L   D6
-00001B06  18FC 0029               1047          MOVE.B  #$29,(A4)+
-00001B0A                          1048  
-00001B0A  4E75                    1049          RTS
-00001B0C                          1050  *----Indirect Address Register Post Increment----
-00001B0C  18FC 0028               1051          MOVE.B  #$28,(A4)+
-00001B10  18FC 0041               1052          MOVE.B  #$41,(A4)+
-00001B14  4EB8 1ABE               1053          JSR     comparison
-00001B18                          1054  
-00001B18  4286                    1055          CLR.L   D6
-00001B1A                          1056  
-00001B1A  18FC 0029               1057          MOVE.B  #$29,(A4)+
-00001B1E  18FC 002B               1058          MOVE.B  #$2B,(A4)+
-00001B22                          1059  
-00001B22  4E75                    1060          RTS
-00001B24                          1061  *----Indirect Address Register Pre Decrement-----------
-00001B24  18FC 002D               1062          MOVE.B  #$2D,(A4)+
-00001B28  18FC 0028               1063          MOVE.B  #$28,(A4)+
-00001B2C  18FC 0041               1064          MOVE.B  #$41,(A4)+
-00001B30  4EB8 1ABE               1065          JSR     comparison
-00001B34                          1066  
-00001B34  4286                    1067          CLR.L   D6
-00001B36                          1068  
-00001B36  18FC 0029               1069          MOVE.B  #$29,(A4)+
-00001B3A  4286                    1070          CLR.L   D6
-00001B3C                          1071              
-00001B3C  4E75                    1072          RTS
-00001B3E                          1073  *----EA Address Long-----------
-00001B3E  18FC 0024               1074          MOVE.B  #$24,(A4)+
-00001B42  4E75                    1075          RTS
-00001B44                          1076  
-00001B44                          1077  *------------Immediate Data-----------------------
-00001B44  18FC 0024               1078          MOVE.B  #$24,(A4)+
-00001B48  18FC 0023               1079          MOVE.B  #$23,(A4)+
-00001B4C  2839 00001BCC           1080          MOVE.L  ImmData,D4      ;this is the temp copy for the Hex decode
-00001B52  13F9 00001BCB 00001BBF  1081          MOVE.B  ImmDataSize,HexLength
-00001B5C  4239 00001BBE           1082          CLR.B   counter         ;reset Counter before every Hex Decode
-00001B62  4EB8 1A9A               1083          JSR     hexCalc
-00001B66  4E75                    1084          RTS
-00001B68                          1085  
-00001B68                          1086  *----------------------------------------------------------
-00001B68                          1087  *Error Catching Section
-00001B68                          1088  *----------------------------------------------------------
-00001B68                          1089  
-00001B68                          1090  ERRIN:
-00001B68  43F9 00006FD7           1091          LEA     ERRINMSG,A1
-00001B6E  103C 000D               1092          MOVE.B  #13,D0
-00001B72  4E4F                    1093          TRAP    #15
-00001B74  4EF8 1008               1094          JMP     STARTADDR
-00001B78                          1095  ERROP:
-00001B78  43F9 00007006           1096          LEA     ERROPMSG,A1
-00001B7E  103C 000D               1097          MOVE.B  #13,D0
-00001B82  4E4F                    1098          TRAP    #15
-00001B84  4EF8 1078               1099          JMP     LOOP
-00001B88                          1100  ERRCOM:
-00001B88  43F9 0000701B           1101          LEA     ERRCOMMSG,A1
-00001B8E  700D                    1102          MOVE.L  #13,D0
-00001B90  4E4F                    1103          TRAP    #15
-00001B92  4EF8 1078               1104          JMP     LOOP
-00001B96                          1105  ERRSIZE:
-00001B96  43F9 00007039           1106          LEA     ERRSIZEMSG,A1
-00001B9C  103C 000D               1107          MOVE.B  #13,D0
-00001BA0  4E4F                    1108          TRAP    #15
-00001BA2  4E75                    1109          RTS
-00001BA4                          1110  ERREA:
-00001BA4  43F9 0000704C           1111          LEA     ERREAMSG,A1
-00001BAA  103C 000D               1112          MOVE.B  #13,D0
-00001BAE  4E4F                    1113          TRAP    #15
-00001BB0  4EF8 1078               1114          JMP     LOOP
-00001BB4                          1115  
-00001BB4                          1116  *----------------------------------------------------------
-00001BB4                          1117  *Variable Section (And End Simulation)
-00001BB4                          1118  *----------------------------------------------------------
-00001BB4                          1119  
-00001BB4  FFFF FFFF               1120  END:    SIMHALT
-00001BB8                          1121  
-00001BB8                          1122  *--
-00001BB8= 65 72 72 6F 72 00       1123  ERR         DC.B    'error',0
-00001BBE                          1124  counter     DS.B    1
-00001BBF                          1125  hexlength   DS.B    1
-00001BC0                          1126  OpCodeSize  DS.W    1
-00001BC2                          1127  OpCodeB     DS.W    1
-00001BC4                          1128  bitsSize    DS.B    1
-00001BC6                          1129  saveAddress DS.L    1
-00001BCA                          1130  
-00001BCA                          1131  bitsOfSize  DS.B    1
-00001BCB= 10                      1132  ImmDataSize DC.B    $10
-00001BCC                          1133  ImmData    DS.B     ImmDataSize
-00003797                          1134  *--
-00003797                          1135  
-00003797= 40                      1136  BUFSIZE DC.B    $40
-00003798                          1137  BUFFER: DS.B    BUFSIZE
-00006F2F                          1138  
-00006F2F                          1139  INPADDR     DS.B    9
-00006F38  =00009000               1140  MOVEMADDR   EQU     $9000        
-00006F38                          1141  
-00006F38  =0000000D               1142  CR:     EQU     $0D
-00006F38  =0000000A               1143  LF:     EQU     $0A
-00006F38                          1144  
-00006F38= 30 31 32 33 34 35 ...   1145  ITOA:   DC.B    '0123456789ABCDEF'
-00006F48                          1146  
-00006F48                          1147  STARTMSG:
-00006F48= 0D 0A 49 6E 70 75 ...   1148          DC.B    CR,LF,'Input the starting address for the decoder: ',0
-00006F77                          1149  ENDMSG:
-00006F77= 0D 0A 49 6E 70 75 ...   1150          DC.B    CR,LF,'Input the ending address for the decoder: ',0
-00006FA4                          1151  REPORFINMSG:
-00006FA4= 0D 0A 57 6F 75 6C ...   1152          DC.B    CR,LF,'Would you like to run the program again? (Y/N): ',0
-00006FD7                          1153  ERRINMSG:
-00006FD7= 0D 0A 50 6C 65 61 ...   1154          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
-00007006                          1155  ERROPMSG:
-00007006= 46 6F 75 6E 64 20 ...   1156          DC.B    'Found Invalid Opcode',0
-0000701B                          1157  ERRCOMMSG:
-0000701B= 46 6F 75 6E 64 20 ...   1158          DC.B    'Found Not Implemented Command',0
-00007039                          1159  ERRSIZEMSG:
-00007039= 46 6F 75 6E 64 20 ...   1160          DC.B    'Found Invalid Size',0
-0000704C                          1161  ERREAMSG:
-0000704C= 46 6F 75 6E 64 20 ...   1162          DC.B    'Found Invalid EA Mode',0
-00007062                          1163  
-00007062                          1164          END     START
+00001956  1C03                     880          MOVE.B  D3,D6
+00001958  4EB8 1180                881          JSR     HEX8B
+0000195C  18FC 002C                882          MOVE.B  #',',(A4)+
+00001960                           883          
+00001960  18FC 0044                884          MOVE.B  #'D',(A4)+
+00001964  3C03                     885          MOVE.W  D3,D6
+00001966  EF5E                     886          ROL.W   #7,D6
+00001968  4EB8 1196                887          JSR     HEX3B
+0000196C  4E75                     888          RTS
+0000196E                           889  
+0000196E                           890  SHIFTS:
+0000196E  4E75                     891          RTS
+00001970                           892          
+00001970                           893  *----------------------------------------------------------
+00001970                           894  *EA Section Part 2
+00001970                           895  *----------------------------------------------------------
+00001970                           896  
+00001970                           897  EACompare:      
+00001970  0C03 0000                898          CMPI.B  #%000,D3
+00001974  6700 00D2                899          BEQ     GetW            ;what is this exactly
+00001978  6600 0002                900          BNE     EACompareLong
+0000197C                           901                  
+0000197C                           902  EACompareLong:
+0000197C  0C03 0001                903          CMPI.B  #%001,D3
+00001980  6700 00E8                904          BEQ     GetL
+00001984  6600 0002                905          BNE     EACompareData
+00001988                           906                  
+00001988                           907  EACompareData:
+00001988  0C03 0004                908          CMPI.B  #%100,D3
+0000198C  6700 0014                909          BEQ     findImmediate
+00001990  6600 0002                910          BNE     dataError
+00001994                           911  
+00001994                           912  dataError:
+00001994  43F9 00001BCE            913          LEA     ERR,A1
+0000199A  103C 000E                914          MOVE.B  #14,D0
+0000199E  4E4F                     915          TRAP    #15
+000019A0  4E75                     916          RTS 
+000019A2                           917  *--------------------------------
+000019A2                           918  findImmediate:
+000019A2  18FC 0023                919          MOVE.B  #$23,(A4)+
+000019A6  0C39 0004 00001BD8       920          CMPI.B  #4,opCodeB
+000019AE  6D00 001C                921          BLT     moveData
+000019B2  0C39 0001 00001BDA       922          CMPI.B  #1,bitsSize     ;number of bits
+000019BA  6700 0030                923          BEQ     immediateType
+000019BE  0C39 0002 00001BE0       924          CMPI.B  #2,bitsOfSize
+000019C6  6700 003C                925          BEQ     dataTypeOther
+000019CA  60C8                     926          BRA     dataError
+000019CC                           927  
+000019CC                           928  moveData:
+000019CC  3A39 00001BD6            929          MOVE.W  opCodeSize, D5
+000019D2  0C05 0001                930          CMPI.B  #%01,D5
+000019D6  6700 004E                931          BEQ     GetByte
+000019DA  0C05 0003                932          CMPI.B  #%11,D5
+000019DE  6700 0068                933          BEQ     GetW
+000019E2  0C05 0002                934          CMPI.B  #%10,D5
+000019E6  6700 0082                935          BEQ     GetL
+000019EA  60A8                     936          BRA     dataError
+000019EC                           937  
+000019EC                           938  immediateType:
+000019EC  3A39 00001BD6            939          MOVE.W  opCodeSize,D5
+000019F2  0C05 0000                940          CMPI.B  #%0,D5
+000019F6  6700 0050                941          BEQ     GetW
+000019FA  0C05 0001                942          CMPI.B  #%1,D5
+000019FE  6700 006A                943          BEQ     GetL
+00001A02  6090                     944          BRA     dataError
+00001A04                           945  
+00001A04                           946  dataTypeOther:
+00001A04  3A39 00001BD6            947          MOVE.W  opCodeSize,D5
+00001A0A  0C05 0000                948          CMPI.B  #%00,D5
+00001A0E  6700 0016                949          BEQ     GetByte
+00001A12  0C05 0002                950          CMPI.B  #%10,D5
+00001A16  6700 0030                951          BEQ     GetW
+00001A1A  0C05 0003                952          CMPI.B  #%11,D5
+00001A1E  6700 004A                953          BEQ     GetL
+00001A22  6000 FF70                954          BRA     dataError                
+00001A26                           955                 
+00001A26                           956  *---------------------------------------
+00001A26                           957  GetByte:
+00001A26  18FC 0024                958          MOVE.B  #$24,(A4)+
+00001A2A  381A                     959          MOVE.W  (A2)+,D4
+00001A2C  13FC 0002 00001BD5       960          MOVE.B  #2,hexLength   
+00001A34  4239 00001BD4            961          CLR.B   counter         ;zero conter
+00001A3A  143C 0018                962          MOVE.B  #24,D2
+00001A3E  E5AC                     963          LSL.L   D2,D4
+00001A40  4EB9 00001AD4            964          JSR     comparison
+00001A46  4E75                     965          RTS
+00001A48                           966  
+00001A48                           967  GetW:
+00001A48  18FC 0024                968          MOVE.B  #$24, (A4)+
+00001A4C  381A                     969          MOVE.W  (A2)+,  D4
+00001A4E  13FC 0004 00001BD5       970          MOVE.B  #4, hexLength
+00001A56  4239 00001BD4            971          CLR.B   counter
+00001A5C  143C 0010                972          MOVE.B  #16, D2
+00001A60  E5AC                     973          LSL.L   D2, D4
+00001A62  4EB9 00001AD4            974          JSR     comparison
+00001A68  4E75                     975          RTS
+00001A6A                           976  
+00001A6A                           977  GetL:   
+00001A6A  18FC 0024                978          MOVE.B  #$24, (A4)+
+00001A6E  281A                     979          MOVE.L  (A2)+,D4
+00001A70  13FC 0008 00001BD5       980          MOVE.B  #8, hexLength
+00001A78  4239 00001BD4            981          CLR.B   counter
+00001A7E  4EB9 00001AD4            982          JSR     comparison
+00001A84  4E75                     983          RTS
+00001A86                           984  
+00001A86                           985  SaveByte:
+00001A86  381A                     986          MOVE.W  (A2)+,D4
+00001A88  143C 0018                987          MOVE.B  #24,D2
+00001A8C  E5AC                     988          LSL.L   D2,D4
+00001A8E  23C4 00001BDC            989          MOVE.L  D4,saveAddress
+00001A94  4E75                     990          RTS
+00001A96                           991  
+00001A96                           992  SaveWord:
+00001A96  381A                     993          MOVE.W  (A2)+,D4
+00001A98  143C 0010                994          MOVE.B  #16,D2
+00001A9C  E5AC                     995          LSL.L   D2,D4
+00001A9E  23C4 00001BDC            996          MOVE.L  D4,saveAddress
+00001AA4  4E75                     997          RTS
+00001AA6                           998                  
+00001AA6                           999  SaveLong:
+00001AA6  281A                    1000          MOVE.L  (A2)+,D4
+00001AA8  23C4 00001BDC           1001          MOVE.L  D4,saveAddress 
+00001AAE  4E75                    1002          RTS
+00001AB0                          1003  
+00001AB0                          1004  *----------------------HEX TO ASCII -----------------------
+00001AB0                          1005  hexCalc:
+00001AB0  5239 00001BD4           1006          ADDI.B  #1,counter 
+00001AB6  E99C                    1007          ROL.L   #4,D4  
+00001AB8  1604                    1008          MOVE.B  D4,D3
+00001ABA  E90B                    1009          LSL.B   #4,D3
+00001ABC  E80B                    1010          LSR.B   #4,D3
+00001ABE  4EB9 00001AD4           1011          JSR     comparison
+00001AC4  1039 00001BD5           1012          MOVE.B  hexLength,D0 //what is hex length same as counter
+00001ACA  B039 00001BD4           1013          CMP.B   counter,D0
+00001AD0  66DE                    1014          BNE     hexCalc
+00001AD2                          1015          
+00001AD2  4E75                    1016          RTS
+00001AD4                          1017  
+00001AD4                          1018  comparison: 
+00001AD4  0C03 000A               1019          CMPI.B  #%1010,D3
+00001AD8  6C00 000E               1020          BGE     saveHexLetter
+00001ADC  6D00 0002               1021          BLT     saveHexNumber
+00001AE0                          1022  
+00001AE0                          1023  saveHexNumber:
+00001AE0  0603 0030               1024          ADDI.B  #$30,D3
+00001AE4  18C3                    1025          MOVE.B  D3,(A4)+
+00001AE6                          1026          
+00001AE6  4E75                    1027          RTS
+00001AE8                          1028  
+00001AE8                          1029  saveHexLetter:
+00001AE8  0603 0037               1030          ADDI.B  #$37,D3
+00001AEC  18C3                    1031          MOVE.B  D3,(A4)+
+00001AEE                          1032          
+00001AEE  4E75                    1033          RTS
+00001AF0                          1034  
+00001AF0                          1035  *------------Data Register Direct --
+00001AF0  3006                    1036          MOVE.W  D6,D0                   
+00001AF2  0240 0007               1037          ANDI.W  #$7,D0                  
+00001AF6  14FC 0044               1038          MOVE.B  #$44,(A2)+
+00001AFA  4EB8 1AD4               1039          JSR     comparison
+00001AFE  4286                    1040          CLR.L   D6
+00001B00                          1041              
+00001B00  4E75                    1042          RTS
+00001B02                          1043  *------------Address Register Direct --
+00001B02  18FC 0041               1044          MOVE.B  #$41, (A4)+
+00001B06  4EB8 1AD4               1045          JSR     comparison
+00001B0A  4286                    1046          CLR.L   D6
+00001B0C                          1047              
+00001B0C  4E75                    1048          RTS
+00001B0E                          1049  *-------Indirect Address Register----------------
+00001B0E  18FC 0028               1050          MOVE.B  #$28,(A4)+
+00001B12  18FC 0041               1051          MOVE.B  #$41,(A4)+
+00001B16  4EB8 1AD4               1052          JSR     comparison
+00001B1A                          1053  
+00001B1A  4286                    1054          CLR.L   D6
+00001B1C  18FC 0029               1055          MOVE.B  #$29,(A4)+
+00001B20                          1056  
+00001B20  4E75                    1057          RTS
+00001B22                          1058  *----Indirect Address Register Post Increment----
+00001B22  18FC 0028               1059          MOVE.B  #$28,(A4)+
+00001B26  18FC 0041               1060          MOVE.B  #$41,(A4)+
+00001B2A  4EB8 1AD4               1061          JSR     comparison
+00001B2E                          1062  
+00001B2E  4286                    1063          CLR.L   D6
+00001B30                          1064  
+00001B30  18FC 0029               1065          MOVE.B  #$29,(A4)+
+00001B34  18FC 002B               1066          MOVE.B  #$2B,(A4)+
+00001B38                          1067  
+00001B38  4E75                    1068          RTS
+00001B3A                          1069  *----Indirect Address Register Pre Decrement-----------
+00001B3A  18FC 002D               1070          MOVE.B  #$2D,(A4)+
+00001B3E  18FC 0028               1071          MOVE.B  #$28,(A4)+
+00001B42  18FC 0041               1072          MOVE.B  #$41,(A4)+
+00001B46  4EB8 1AD4               1073          JSR     comparison
+00001B4A                          1074  
+00001B4A  4286                    1075          CLR.L   D6
+00001B4C                          1076  
+00001B4C  18FC 0029               1077          MOVE.B  #$29,(A4)+
+00001B50  4286                    1078          CLR.L   D6
+00001B52                          1079              
+00001B52  4E75                    1080          RTS
+00001B54                          1081  *----EA Address Long-----------
+00001B54  18FC 0024               1082          MOVE.B  #$24,(A4)+
+00001B58  4E75                    1083          RTS
+00001B5A                          1084  
+00001B5A                          1085  *------------Immediate Data-----------------------
+00001B5A  18FC 0024               1086          MOVE.B  #$24,(A4)+
+00001B5E  18FC 0023               1087          MOVE.B  #$23,(A4)+
+00001B62  2839 00001BE2           1088          MOVE.L  ImmData,D4      ;this is the temp copy for the Hex decode
+00001B68  13F9 00001BE1 00001BD5  1089          MOVE.B  ImmDataSize,HexLength
+00001B72  4239 00001BD4           1090          CLR.B   counter         ;reset Counter before every Hex Decode
+00001B78  4EB8 1AB0               1091          JSR     hexCalc
+00001B7C  4E75                    1092          RTS
+00001B7E                          1093  
+00001B7E                          1094  *----------------------------------------------------------
+00001B7E                          1095  *Error Catching Section
+00001B7E                          1096  *----------------------------------------------------------
+00001B7E                          1097  
+00001B7E                          1098  ERRIN:
+00001B7E  43F9 0000702F           1099          LEA     ERRINMSG,A1
+00001B84  103C 000D               1100          MOVE.B  #13,D0
+00001B88  4E4F                    1101          TRAP    #15
+00001B8A  4EF8 1008               1102          JMP     STARTADDR
+00001B8E                          1103  ERROP:
+00001B8E  43F9 0000705E           1104          LEA     ERROPMSG,A1
+00001B94  103C 000D               1105          MOVE.B  #13,D0
+00001B98  4E4F                    1106          TRAP    #15
+00001B9A  4EF8 1078               1107          JMP     LOOP
+00001B9E                          1108  ERRCOM:
+00001B9E  43F9 00007073           1109          LEA     ERRCOMMSG,A1
+00001BA4  700D                    1110          MOVE.L  #13,D0
+00001BA6  4E4F                    1111          TRAP    #15
+00001BA8  4EF8 1078               1112          JMP     LOOP
+00001BAC                          1113  ERRSIZE:
+00001BAC  43F9 00007091           1114          LEA     ERRSIZEMSG,A1
+00001BB2  103C 000D               1115          MOVE.B  #13,D0
+00001BB6  4E4F                    1116          TRAP    #15
+00001BB8  4E75                    1117          RTS
+00001BBA                          1118  ERREA:
+00001BBA  43F9 000070A4           1119          LEA     ERREAMSG,A1
+00001BC0  103C 000D               1120          MOVE.B  #13,D0
+00001BC4  4E4F                    1121          TRAP    #15
+00001BC6  4EF8 1078               1122          JMP     LOOP
+00001BCA                          1123  
+00001BCA                          1124  *----------------------------------------------------------
+00001BCA                          1125  *Variable Section (And End Simulation)
+00001BCA                          1126  *----------------------------------------------------------
+00001BCA                          1127  
+00001BCA  FFFF FFFF               1128  END:    SIMHALT
+00001BCE                          1129  
+00001BCE                          1130  *--
+00001BCE= 65 72 72 6F 72 00       1131  ERR         DC.B    'error',0
+00001BD4                          1132  counter     DS.B    1
+00001BD5                          1133  hexlength   DS.B    1
+00001BD6                          1134  OpCodeSize  DS.W    1
+00001BD8                          1135  OpCodeB     DS.W    1
+00001BDA                          1136  bitsSize    DS.B    1
+00001BDC                          1137  saveAddress DS.L    1
+00001BE0                          1138  
+00001BE0                          1139  bitsOfSize  DS.B    1
+00001BE1= 10                      1140  ImmDataSize DC.B    $10
+00001BE2                          1141  ImmData    DS.B     ImmDataSize
+000037C3                          1142  *--
+000037C3                          1143  
+000037C3= 40                      1144  BUFSIZE DC.B    $40
+000037C4                          1145  BUFFER: DS.B    BUFSIZE
+00006F87                          1146  
+00006F87                          1147  INPADDR     DS.B    9
+00006F90  =00009000               1148  MOVEMADDR   EQU     $9000        
+00006F90                          1149  
+00006F90  =0000000D               1150  CR:     EQU     $0D
+00006F90  =0000000A               1151  LF:     EQU     $0A
+00006F90                          1152  
+00006F90= 30 31 32 33 34 35 ...   1153  ITOA:   DC.B    '0123456789ABCDEF'
+00006FA0                          1154  
+00006FA0                          1155  STARTMSG:
+00006FA0= 0D 0A 49 6E 70 75 ...   1156          DC.B    CR,LF,'Input the starting address for the decoder: ',0
+00006FCF                          1157  ENDMSG:
+00006FCF= 0D 0A 49 6E 70 75 ...   1158          DC.B    CR,LF,'Input the ending address for the decoder: ',0
+00006FFC                          1159  REPORFINMSG:
+00006FFC= 0D 0A 57 6F 75 6C ...   1160          DC.B    CR,LF,'Would you like to run the program again? (Y/N): ',0
+0000702F                          1161  ERRINMSG:
+0000702F= 0D 0A 50 6C 65 61 ...   1162          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
+0000705E                          1163  ERROPMSG:
+0000705E= 46 6F 75 6E 64 20 ...   1164          DC.B    'Found Invalid Opcode',0
+00007073                          1165  ERRCOMMSG:
+00007073= 46 6F 75 6E 64 20 ...   1166          DC.B    'Found Not Implemented Command',0
+00007091                          1167  ERRSIZEMSG:
+00007091= 46 6F 75 6E 64 20 ...   1168          DC.B    'Found Invalid Size',0
+000070A4                          1169  ERREAMSG:
+000070A4= 46 6F 75 6E 64 20 ...   1170          DC.B    'Found Invalid EA Mode',0
+000070BA                          1171  
+000070BA                          1172          END     START
 
 No errors detected
 No warnings generated
@@ -1182,54 +1190,54 @@ ANDI                14A4
 ASAS                1456
 ASL                 180E
 ASR                 1834
-BITSOFSIZE          1BCA
-BITSSIZE            1BC4
+BITSOFSIZE          1BE0
+BITSSIZE            1BDA
 BLW13               18D6
 BRA                 1654
 BSR                 1674
-BUFFER              3798
-BUFSIZE             3797
+BUFFER              37C4
+BUFSIZE             37C3
 BWL7                18A6
 BYTE                1910
 CLRBUF              10A0
 CLRBUFLOOP          10AC
 CMP                 172A
 CMPI                1522
-COMPARISON          1ABE
-COUNTER             1BBE
+COMPARISON          1AD4
+COUNTER             1BD4
 CR                  D
 D11S5               1930
-DATAERROR           197E
-DATATYPEOTHER       19EE
+DATAERROR           1994
+DATATYPEOTHER       1A04
 DIVS                16E0
 DIVU                16BC
 DP2WORD             194C
 DP7                 1936
 DT11EA5             1934
 EA5                 192E
-EACOMPARE           195A
-EACOMPAREDATA       1972
-EACOMPARELONG       1966
-END                 1BB4
+EACOMPARE           1970
+EACOMPAREDATA       1988
+EACOMPARELONG       197C
+END                 1BCA
 ENDADDR             1022
-ENDMSG              6F77
+ENDMSG              6FCF
 EOR                 1750
 EORI                14F8
-ERR                 1BB8
-ERRCOM              1B88
-ERRCOMMSG           701B
-ERREA               1BA4
-ERREAMSG            704C
-ERRIN               1B68
-ERRINMSG            6FD7
-ERROP               1B78
-ERROPMSG            7006
-ERRSIZE             1B96
-ERRSIZEMSG          7039
-FINDIMMEDIATE       198C
-GETBYTE             1A10
-GETL                1A54
-GETW                1A32
+ERR                 1BCE
+ERRCOM              1B9E
+ERRCOMMSG           7073
+ERREA               1BBA
+ERREAMSG            70A4
+ERRIN               1B7E
+ERRINMSG            702F
+ERROP               1B8E
+ERROPMSG            705E
+ERRSIZE             1BAC
+ERRSIZEMSG          7091
+FINDIMMEDIATE       19A2
+GETBYTE             1A26
+GETL                1A6A
+GETW                1A48
 H2BCHAR             111C
 H2BLONG             10FE
 H2BLOOP             110C
@@ -1238,14 +1246,14 @@ HEX16B              1170
 HEX3B               1196
 HEX4B               1190
 HEX8B               1180
-HEXCALC             1A9A
-HEXLENGTH           1BBF
+HEXCALC             1AB0
+HEXLENGTH           1BD5
 HEXTOBIN            10E2
-IMMDATA             1BCC
-IMMDATASIZE         1BCB
-IMMEDIATETYPE       19D6
-INPADDR             6F2F
-ITOA                6F38
+IMMDATA             1BE2
+IMMDATASIZE         1BE1
+IMMEDIATETYPE       19EC
+INPADDR             6F87
+ITOA                6F90
 J0000               122A
 J0010               123E
 J0100               1252
@@ -1289,7 +1297,7 @@ LW13                18C8
 MEMPRINT            10BC
 MOVE                154C
 MOVEA               1576
-MOVEDATA            19B6
+MOVEDATA            19CC
 MOVEM               15B2
 MOVEMADDR           9000
 MOVEQ               1694
@@ -1325,8 +1333,8 @@ OP1110              143A
 OP111X              12A8
 OP11XX              120E
 OP1XXX              11D6
-OPCODEB             1BC2
-OPCODESIZE          1BC0
+OPCODEB             1BD8
+OPCODESIZE          1BD6
 OPXXXX              11BA
 ORI                 147E
 PRNTBUF             10D4
@@ -1334,17 +1342,17 @@ PRNTHEX             11A6
 R11D7               1956
 R11EA5              1932
 REPORFIN            1054
-REPORFINMSG         6FA4
-SAVEADDRESS         1BC6
-SAVEBYTE            1A70
-SAVEHEXLETTER       1AD2
-SAVEHEXNUMBER       1ACA
-SAVELONG            1A90
-SAVEWORD            1A80
-SHIFTS              1958
+REPORFINMSG         6FFC
+SAVEADDRESS         1BDC
+SAVEBYTE            1A86
+SAVEHEXLETTER       1AE8
+SAVEHEXNUMBER       1AE0
+SAVELONG            1AA6
+SAVEWORD            1A96
+SHIFTS              196E
 START               1000
 STARTADDR           1008
-STARTMSG            6F48
+STARTMSG            6FA0
 SUB                 1704
 SUBQ                1600
 TSTBYTE             18EA

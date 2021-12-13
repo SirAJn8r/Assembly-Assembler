@@ -195,7 +195,7 @@ HEX4B:  ;Uses Bits 3-0 of D6 to print out 1 Hex Char
         JMP     PRNTHEX
 HEX3B:  ;Uses Bits 2-0 of D6 to print out 1 Hex Char
         MOVE.B  D6,D0
-        BCLR    #3,D6
+        ANDI.B  #$7,D6
         JSR     PRNTHEX
         MOVE.B  D0,D6
         RTS
@@ -877,6 +877,13 @@ DP2WORD:
         RTS
 
 R11D7:
+        MOVE.B  D3,D6
+        JSR     HEX8B
+        MOVE.B  #',',(A4)+
+        MOVE.B  #'D',(A4)+
+        MOVE.W  D3,D6
+        ROL.W   #7,D6
+        JSR     HEX3B
         RTS
 
 SHIFTS:
