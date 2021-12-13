@@ -1058,8 +1058,25 @@ AINDIRPRE:
         JSR     HEX3B
         MOVE.B  #')',(A4)+
         RTS
+
 MODE7:
-        RTS
+        MOVE.B  D5,D1
+        ANDI.B  #$7,D1
+        CMPI.B  #$00,D1
+        BEQ     ABSSHORT
+        CMPI.B  #$01,D1
+        BEQ     ABSLONG
+        CMPI.B  #$04,D1
+        BEQ     LITERAL
+        BRA     ERREA
+ABSSHORT:
+        MOVE.B  #'$',(A4)+
+        JMP     READWORD
+ABSLONG:
+        MOVE.B  #'$',(A4)+
+        JMP     READLONG
+LITERAL:
+        JMP     READIMM
         
 *----------------------------------------------------------
 *EA Section Part 2

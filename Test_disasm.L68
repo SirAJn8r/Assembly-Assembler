@@ -1,6 +1,6 @@
 00000400 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/8/2021 4:37:13 PM
+Created On: 12/13/2021 1:55:18 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Disassmbler Test Program
@@ -123,13 +123,11 @@ Created On: 12/8/2021 4:37:13 PM
 00000480  4CDF 8001                119        MOVEM.L   (A7)+, D0/A7  ; mode 3                               5pts
 00000484  48E2 4002                120        MOVEM.L   D1/A6, -(A2)  ; mode 4                               5pts
 00000488  2639 0000ABCD            121        MOVE.L    $ABCD, D3     ; mode 7 subclass 0                    2.5pts
-0000048E  E1F9 0000ABCD            122        ASL       $ABCD         ; mode 7 subclass 0                    2.5pts
-00000494  23C4 ABCDEF12            123        MOVE.L    D4, ($ABCDEF12).L ; mode 7 subclass 1                2.5pts
-0000049A  E0F9 ABCDEF12            124        ASR       ($ABCDEF12).L     ; mode 7 subclass 1                2.5pts
-000004A0  2A3C 12345678            125        MOVE.L    #$12345678, D5    ; mode 7 subclass 4                2.5pts
-000004A6  23FC 12345678 ABCDEF12   126        MOVE.L    #$12345678, ($ABCDEF12).L ; mode 7 subclass 1 and 4  2.5pts
-000004B0                           127  
-000004B0                           128        END   START
+0000048E  23C4 ABCDEF12            122        MOVE.L    D4, ($ABCDEF12).L ; mode 7 subclass 1                2.5pts
+00000494  2A3C 12345678            123        MOVE.L    #$12345678, D5    ; mode 7 subclass 4                2.5pts
+0000049A  23FC 12345678 ABCDEF12   124        MOVE.L    #$12345678, ($ABCDEF12).L ; mode 7 subclass 1 and 4  2.5pts
+000004A4                           125  
+000004A4                           126        END   START
 
 No errors detected
 No warnings generated

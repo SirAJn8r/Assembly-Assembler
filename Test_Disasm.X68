@@ -119,13 +119,12 @@ LOOP:
       MOVEM.L	(A7)+, D0/A7  ; mode 3                               5pts
       MOVEM.L	D1/A6, -(A2)  ; mode 4                               5pts
       MOVE.L	$ABCD, D3	  ; mode 7 subclass 0                    2.5pts
-      ASL	    $ABCD         ; mode 7 subclass 0                    2.5pts
       MOVE.L	D4, ($ABCDEF12).L ; mode 7 subclass 1                2.5pts
-      ASR	    ($ABCDEF12).L	  ; mode 7 subclass 1                2.5pts
       MOVE.L	#$12345678, D5	  ; mode 7 subclass 4                2.5pts
       MOVE.L    #$12345678, ($ABCDEF12).L ; mode 7 subclass 1 and 4  2.5pts
 
       END   START
+
 
 
 
