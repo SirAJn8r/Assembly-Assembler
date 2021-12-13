@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/12/2021 11:44:56 PM
+Created On: 12/12/2021 11:54:21 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Assembly Disassembler
@@ -31,25 +31,25 @@ Created On: 12/12/2021 11:44:56 PM
 00001008                            27  *----------------------------------------------------------
 00001008                            28  
 00001008                            29  STARTADDR:
-00001008  43F9 0000333A             30          LEA     STARTMSG,A1
+00001008  43F9 00003332             30          LEA     STARTMSG,A1
 0000100E  103C 000D                 31          MOVE.B  #13,D0
 00001012  4E4F                      32          TRAP    #15         ;Print out start address message
-00001014  43F9 00003321             33          LEA     INPADDR,A1
-0000101A  4EB9 000010E4             34          JSR     HEXTOBIN    ;Read input into Hex into D5
+00001014  43F9 00003319             33          LEA     INPADDR,A1
+0000101A  4EB9 000010E2             34          JSR     HEXTOBIN    ;Read input into Hex into D5
 00001020  2445                      35          MOVEA.L D5,A2       ;Move address into A2
 00001022                            36  
 00001022                            37  ENDADDR:
-00001022  43F9 00003369             38          LEA     ENDMSG,A1
+00001022  43F9 00003361             38          LEA     ENDMSG,A1
 00001028  103C 000D                 39          MOVE.B  #13,D0
 0000102C  4E4F                      40          TRAP    #15         ;Print out end address message
-0000102E  43F9 00003321             41          LEA     INPADDR,A1
-00001034  4EB9 000010E4             42          JSR     HEXTOBIN    ;Read input into Hex into D5
+0000102E  43F9 00003319             41          LEA     INPADDR,A1
+00001034  4EB9 000010E2             42          JSR     HEXTOBIN    ;Read input into Hex into D5
 0000103A  2645                      43          MOVEA.L D5,A3       ;Move address into A3
 0000103C                            44          
 0000103C  4242                      45          CLR.W   D2
 0000103E  6000 0038                 46          BRA     LOOP
 00001042                            47  JERRINS:
-00001042  4EF9 0000193A             48          JMP     ERRIN
+00001042  4EF9 0000193C             48          JMP     ERRIN
 00001048                            49          
 00001048                            50  WAITUSER:
 00001048  4242                      51          CLR.W   D2
@@ -58,7 +58,7 @@ Created On: 12/12/2021 11:44:56 PM
 00001050  6000 0026                 54          BRA     LOOP
 00001054                            55  
 00001054                            56  REPORFIN:
-00001054  43F9 00003396             57          LEA     REPORFINMSG,A1
+00001054  43F9 0000338E             57          LEA     REPORFINMSG,A1
 0000105A  103C 000D                 58          MOVE.B  #13,D0
 0000105E  4E4F                      59          TRAP    #15         ;Print out repeat or finish message
 00001060  103C 0005                 60          MOVE.B  #5,D0
@@ -67,7 +67,7 @@ Created On: 12/12/2021 11:44:56 PM
 0000106A  679C                      63          BEQ     STARTADDR
 0000106C  0C01 004E                 64          CMPI.B  #'N',D1     ;End if N
 00001070  66E2                      65          BNE     REPORFIN    ;Re-ask if anything else
-00001072  4EF9 0000198C             66          JMP     END
+00001072  4EF9 00001988             66          JMP     END
 00001078                            67  
 00001078                            68  *----------------------------------------------------------
 00001078                            69  *Main Loop Section
@@ -75,8 +75,8 @@ Created On: 12/12/2021 11:44:56 PM
 00001078                            71  
 00001078                            72  LOOP:
 00001078  5242                      73          ADDI.W  #1,D2
-0000107A  0C42 0020                 74          CMPI.W  #32,D2
-0000107E  6CC8                      75          BGE     WAITUSER    ;If 32 lines are on the screen, pause
+0000107A  0C42 001E                 74          CMPI.W  #30,D2
+0000107E  6CC8                      75          BGE     WAITUSER    ;If 30 lines are on the screen, pause
 00001080                            76  
 00001080  4EB9 000010A0             77          JSR     CLRBUF      ;Clear printing buffer
 00001086  4EB9 000010BC             78          JSR     MEMPRINT    ;Add the memory address
@@ -85,8 +85,8 @@ Created On: 12/12/2021 11:44:56 PM
 0000108E  B6CA                      81          CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
 00001090  6FC2                      82          BLE     REPORFIN    ;Then ask if the user is done
 00001092                            83  
-00001092  4EB9 000011B8             84          JSR     OPXXXX      ;Add the operation/operands
-00001098  4EB9 000010D6             85          JSR     PRNTBUF     ;Print the printing buffer 
+00001092  4EB9 000011BA             84          JSR     OPXXXX      ;Add the operation/operands
+00001098  4EB9 000010D4             85          JSR     PRNTBUF     ;Print the printing buffer 
 0000109E                            86          
 0000109E  60D8                      87          BRA     LOOP
 000010A0                            88  
@@ -96,848 +96,849 @@ Created On: 12/12/2021 11:44:56 PM
 000010A0                            92  
 000010A0                            93  CLRBUF:
 000010A0  4284                      94          CLR.L   D4
-000010A2  383C 1990                 95          MOVE.W  #BUFSIZE,D4
-000010A6  49F9 00001991             96          LEA     BUFFER,A4
+000010A2  383C 198C                 95          MOVE.W  #BUFSIZE,D4
+000010A6  49F9 0000198D             96          LEA     BUFFER,A4
 000010AC                            97  CLRBUFLOOP:
 000010AC  18FC 0000                 98          MOVE.B  #0,(A4)+
 000010B0  5344                      99          SUBI.W  #1,D4
 000010B2  6EF8                     100          BGT     CLRBUFLOOP
 000010B4                           101  
-000010B4  49F9 00001991            102          LEA     BUFFER,A4
+000010B4  49F9 0000198D            102          LEA     BUFFER,A4
 000010BA  4E75                     103          RTS
 000010BC                           104          
 000010BC                           105  MEMPRINT:
 000010BC  2C0A                     106          MOVE.L  A2,D6
-000010BE  E08E                     107          LSR.L   #8,D6
-000010C0  E08E                     108          LSR.L   #8,D6
-000010C2  4EB9 00001172            109          JSR     HEX16B
-000010C8                           110          
-000010C8  3C0A                     111          MOVE.W  A2,D6
-000010CA  4EB9 00001172            112          JSR     HEX16B
-000010D0                           113          
-000010D0  18FC 0009                114          MOVE.B  #$9,(A4)+
-000010D4  4E75                     115          RTS
-000010D6                           116  
-000010D6                           117  PRNTBUF:
-000010D6  103C 000D                118          MOVE.B  #13,D0
-000010DA  43F9 00001991            119          LEA     BUFFER,A1
-000010E0  4E4F                     120          TRAP    #15
-000010E2  4E75                     121          RTS
-000010E4                           122  
-000010E4                           123  *----------------------------------------------------------
-000010E4                           124  *Hex to Binary Section (ITOA)
-000010E4                           125  *----------------------------------------------------------
-000010E4                           126  
-000010E4                           127  HEXTOBIN:
-000010E4  4285                     128          CLR.L   D5          ;Clear output
-000010E6  103C 0002                129          MOVE.B  #2,D0
-000010EA  4E4F                     130          TRAP    #15         ;Read input into A1
-000010EC  0C41 0004                131          CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
-000010F0  6700 0016                132          BEQ     H2BWORD
-000010F4  0C41 0008                133          CMPI.W  #8,D1
-000010F8  6700 0006                134          BEQ     H2BLONG
-000010FC  6000 FF44                135          BRA     JERRINS
-00001100                           136  
-00001100                           137  H2BLONG:                    ;Reads 8 chars as a long of binary
-00001100  183C 0008                138          MOVE.B  #8,D4
-00001104  6000 0008                139          BRA     H2BLOOP
-00001108                           140  H2BWORD:                   ;Reads 4 chars as a word of binary 
-00001108  183C 0004                141          MOVE.B  #4,D4
-0000110C  4245                     142          CLR.W   D5          ;Clear output
-0000110E                           143  
-0000110E                           144  H2BLOOP:
-0000110E  1219                     145          MOVE.B  (A1)+,D1    ;Get next char
-00001110  E99D                     146          ROL.L   #4,D5       ;Make room for the next output
-00001112  4EB9 0000111E            147          JSR     H2BCHAR     ;Read the char into D5
-00001118  5304                     148          SUBI.B  #1,D4
-0000111A  66F2                     149          BNE     H2BLOOP
-0000111C  4E75                     150          RTS
-0000111E                           151  H2BCHAR:
-0000111E  1E01                     152          MOVE.B  D1,D7
-00001120  0207 00F0                153          ANDI.B  #$F0,D7
-00001124  0C07 0030                154          CMPI.B  #$30,D7
-00001128  6700 0016                155          BEQ     NUM         ;Go to Number parser if it's 0-9
-0000112C  0C07 0040                156          CMPI.B  #$40,D7
-00001130  6700 0018                157          BEQ     LETTER      ;Go to Letter parser if it's A-F
-00001134  0C07 0060                158          CMPI.B  #$60,D7
-00001138  6700 0010                159          BEQ     LETTER      ;Go to Letter parser if it's a-f
-0000113C  6000 002A                160          BRA     JERRIN
-00001140                           161  NUM:                        ;Lowest ascii nibble is exactly the binary number
-00001140  1E01                     162          MOVE.B  D1,D7
-00001142  0207 000F                163          ANDI.B  #$0F,D7
-00001146  8A07                     164          OR.B    D7,D5
-00001148  4E75                     165          RTS
-0000114A                           166  LETTER:                     ;Lowest ascii nibble for caps and lowercase
-0000114A  1E01                     167          MOVE.B  D1,D7       ; after adding 9 is the binary number
-0000114C  0607 0009                168          ADD.B   #9,D7
-00001150  0207 000F                169          ANDI.B  #$0F,D7
-00001154  0C07 0006                170          CMPI.B  #$06,D7
-00001158  6D00 000E                171          BLT     JERRIN
-0000115C  0C07 0000                172          CMPI.B  #$00,D7
-00001160  6700 0006                173          BEQ     JERRIN
-00001164  8A07                     174          OR.B    D7,D5
-00001166  4E75                     175          RTS
-00001168                           176  
-00001168  4EB9 0000193A            177  JERRIN  JSR     ERRIN
-0000116E  4EF8 1008                178          JMP     STARTADDR
-00001172                           179  
-00001172                           180  *----------------------------------------------------------
-00001172                           181  *Print in Hex Section (ATOI)
-00001172                           182  *----------------------------------------------------------
-00001172                           183  
-00001172                           184  HEX16B: ;Uses Bits 16-0 of D6 to print out 4 Hex Chars
-00001172  4EB9 0000117E            185          JSR     HEX8B
-00001178  4EF9 0000117E            186          JMP     HEX8B
-0000117E                           187  HEX8B:  ;Uses Bits 7-0 of D6 to print out 2 Hex Chars
-0000117E  E91E                     188          ROL.B   #4,D6
-00001180  4EB9 000011A4            189          JSR     PRNTHEX
-00001186  E91E                     190          ROL.B   #4,D6
-00001188  4EF9 000011A4            191          JMP     PRNTHEX
-0000118E                           192  HEX4B:  ;Uses Bits 3-0 of D6 to print out 1 Hex Char
-0000118E  4EF9 000011A4            193          JMP     PRNTHEX
-00001194                           194  HEX3B:  ;Uses Bits 2-0 of D6 to print out 1 Hex Char
-00001194  1006                     195          MOVE.B  D6,D0
-00001196  0886 0003                196          BCLR    #3,D6
-0000119A  4EB9 000011A4            197          JSR     PRNTHEX
-000011A0  1C00                     198          MOVE.B  D0,D6
-000011A2  4E75                     199          RTS
-000011A4                           200          
-000011A4                           201  PRNTHEX:
-000011A4  4287                     202          CLR.L   D7
-000011A6  1E06                     203          MOVE.B  D6,D7
-000011A8  0207 000F                204          ANDI.B  #$0F,D7
-000011AC                           205          
-000011AC  41F9 0000332A            206          LEA     ITOA,A0
-000011B2  D1C7                     207          ADDA.L  D7,A0
-000011B4  18D0                     208          MOVE.B  (A0),(A4)+
-000011B6  4E75                     209          RTS
-000011B8                           210  
-000011B8                           211  *----------------------------------------------------------
-000011B8                           212  *Get Opcode Section
-000011B8                           213  *----------------------------------------------------------
-000011B8                           214  
-000011B8                           215  OPXXXX:
-000011B8  0803 000F                216          BTST    #15,D3
-000011BC  6700 0008                217          BEQ     OP0XXX
-000011C0  4EF9 000011D4            218          JMP     OP1XXX
-000011C6                           219  
-000011C6  0803 000E                220  OP0XXX: BTST    #14,D3
-000011CA  6700 0016                221          BEQ     OP00XX
-000011CE  4EF9 000011F0            222          JMP     OP01XX
-000011D4                           223  
-000011D4  0803 000E                224  OP1XXX: BTST    #14,D3
-000011D8  6700 0024                225          BEQ     OP10XX
-000011DC  4EF9 0000120C            226          JMP     OP11XX
-000011E2                           227  
-000011E2                           228  *----------
-000011E2  0803 000D                229  OP00XX: BTST    #13,D3
-000011E6  6700 0032                230          BEQ     OP000X
-000011EA  4EF9 0000122E            231          JMP     OP001X
-000011F0                           232  
-000011F0  0803 000D                233  OP01XX: BTST    #13,D3
-000011F4  6700 004C                234          BEQ     OP010X
-000011F8  4EF9 00001256            235          JMP     OP011X
-000011FE                           236  
-000011FE  0803 000D                237  OP10XX: BTST    #13,D3
-00001202  6700 0066                238          BEQ     OP100X
-00001206  4EF9 0000127E            239          JMP     OP101X
-0000120C                           240  
-0000120C  0803 000D                241  OP11XX: BTST    #13,D3
-00001210  6700 0080                242          BEQ     OP110X
-00001214  4EF9 000012A6            243          JMP     OP111X
-0000121A                           244  
-0000121A                           245  *----------
-0000121A  0803 000C                246  OP000X: BTST    #12,D3
-0000121E  6700 0008                247          BEQ     J0000
-00001222  4EF9 0000130E            248          JMP     OP0001
-00001228  4EF9 000012BA            249  J0000:  JMP     OP0000
-0000122E                           250          
-0000122E  0803 000C                251  OP001X: BTST    #12,D3
-00001232  6700 0008                252          BEQ     J0010
-00001236  4EF9 0000130E            253          JMP     OP0011
-0000123C  4EF9 0000130E            254  J0010:  JMP     OP0010
-00001242                           255          
-00001242  0803 000C                256  OP010X: BTST    #12,D3
-00001246  6700 0008                257          BEQ     J0100
-0000124A  4EF9 0000136A            258          JMP     OP0101
-00001250  4EF9 0000132A            259  J0100:  JMP     OP0100
-00001256                           260          
-00001256  0803 000C                261  OP011X: BTST    #12,D3
-0000125A  6700 0008                262          BEQ     J0110
-0000125E  4EF9 000013A8            263          JMP     OP0111
-00001264  4EF9 0000137E            264  J0110:  JMP     OP0110
-0000126A                           265  
-0000126A  0803 000C                266  OP100X: BTST    #12,D3
-0000126E  6700 0008                267          BEQ     J1000
-00001272  4EF9 000013D8            268          JMP     OP1001
-00001278  4EF9 000013AE            269  J1000:  JMP     OP1000
-0000127E                           270  
-0000127E  0803 000C                271  OP101X: BTST    #12,D3
-00001282  6700 0008                272          BEQ     J1010
-00001286  4EF9 000013DE            273          JMP     OP1011
-0000128C  4EF9 0000194A            274  J1010:  JMP     ERROP
-00001292                           275  
-00001292  0803 000C                276  OP110X: BTST    #12,D3
-00001296  6700 0008                277          BEQ     J1100
-0000129A  4EF9 0000141C            278          JMP     OP1101
-000012A0  4EF9 000013F2            279  J1100:  JMP     OP1100
-000012A6                           280  
-000012A6  0803 000C                281  OP111X: BTST    #12,D3
-000012AA  6700 0008                282          BEQ     J1110
-000012AE  4EF9 0000194A            283          JMP     ERROP
-000012B4  4EF9 00001438            284  J1110:  JMP     OP1110
-000012BA                           285    
-000012BA                           286  *----------------------------------------------------------
-000012BA                           287  *Opcode to Command Section
-000012BA                           288  *----------------------------------------------------------
-000012BA                           289   
-000012BA                           290  *------
-000012BA                           291  OP0000:      
-000012BA  3803                     292          MOVE.W  D3,D4
-000012BC  EF5C                     293          ROL.W   #7,D4
-000012BE  0204 0007                294          ANDI.B  #$07,D4
-000012C2                           295          
-000012C2  0C04 0000                296          CMPI.B  #$00,D4
-000012C6  6700 0034                297          BEQ     JORI
-000012CA  0C04 0001                298          CMPI.B  #$01,D4
-000012CE  6700 0026                299          BEQ     JANDI
-000012D2  0C04 0003                300          CMPI.B  #$03,D4
-000012D6  6700 0018                301          BEQ     JADDI
-000012DA  0C04 0005                302          CMPI.B  #$05,D4
-000012DE  6700 0028                303          BEQ     JEORI
-000012E2  0C04 0006                304          CMPI.B  #$06,D4
-000012E6  6700 001A                305          BEQ     JCMPI
-000012EA  4EF9 0000195C            306          JMP     ERRCOM
-000012F0                           307          
-000012F0  4EF9 000014CC            308  JADDI:  JMP     ADDI
-000012F6  4EF9 000014A2            309  JANDI:  JMP     ANDI
-000012FC  4EF9 0000147C            310  JORI:   JMP     ORI
-00001302  4EF9 00001520            311  JCMPI:  JMP     CMPI
-00001308  4EF9 000014F6            312  JEORI:  JMP     EORI
-0000130E                           313  
-0000130E                           314  *----------
-0000130E                           315  OP0001:
-0000130E                           316  OP0010:
-0000130E                           317  OP0011:        
-0000130E  3803                     318          MOVE.W  D3,D4
-00001310  EC5C                     319          ROR.W   #6,D4
-00001312  0204 0007                320          ANDI.B  #$07,D4
-00001316                           321          
-00001316  0C04 0001                322          CMPI.B  #$01,D4
-0000131A  6600 0008                323          BNE     JMOVE
-0000131E  4EF9 00001574            324          JMP     MOVEA
-00001324  4EF9 0000154A            325  JMOVE:  JMP     MOVE
-0000132A                           326  
-0000132A                           327  *----------
-0000132A                           328  OP0100:  
-0000132A  3803                     329          MOVE.W  D3,D4
-0000132C  EE5C                     330          ROR.W   #7,D4
-0000132E  0204 0007                331          ANDI.B  #$07,D4
-00001332  0C04 0001                332          CMPI.B  #$01,D4
-00001336  6700 0026                333          BEQ     JMOVEM
-0000133A                           334          
-0000133A  3803                     335          MOVE.W  D3,D4
-0000133C  EC5C                     336          ROR.W   #6,D4
-0000133E  0204 0007                337          ANDI.B  #$07,D4
-00001342  0C04 0007                338          CMPI.B  #$07,D4
-00001346  6700 0010                339          BEQ     JLEA
-0000134A                           340          
-0000134A  0C43 4E71                341          CMPI.W  #$4E71,D3
-0000134E  6700 0014                342          BEQ     JNOP
-00001352  4EF9 0000195C            343          JMP     ERRCOM
-00001358                           344  
-00001358  4EF9 000015DE            345  JLEA:   JMP     LEA
-0000135E  4EF9 000015B0            346  JMOVEM: JMP     MOVEM
-00001364  4EF9 000015A2            347  JNOP:   JMP     NOP
-0000136A                           348  
-0000136A                           349  *----------
-0000136A                           350  OP0101:
-0000136A  0803 0008                351          BTST    #8,D3
-0000136E  6600 0008                352          BNE     JSUBQ
-00001372  4EF9 00001628            353          JMP     ADDQ
-00001378  4EF9 000015FE            354  JSUBQ:  JMP     SUBQ
-0000137E                           355  
-0000137E                           356  *----------
-0000137E                           357  OP0110:
-0000137E  3803                     358          MOVE.W  D3,D4
-00001380  E05C                     359          ROR.W   #8,D4
-00001382  0204 000F                360          ANDI.B  #$0F,D4
-00001386                           361          
-00001386  0C04 0000                362          CMPI.B  #$00,D4
-0000138A  6700 0010                363          BEQ     JBRA
-0000138E  0C04 0001                364          CMPI.B  #$01,D4
-00001392  6700 000E                365          BEQ     JBSR
-00001396  4EF9 0000195C            366          JMP     ERRCOM
-0000139C                           367  
-0000139C  4EF9 00001652            368  JBRA:   JMP     BRA
-000013A2  4EF9 00001672            369  JBSR:   JMP     BSR
-000013A8                           370  
-000013A8                           371  *----------
-000013A8                           372  OP0111:
-000013A8  4EF9 00001692            373          JMP     MOVEQ
-000013AE                           374  
-000013AE                           375  *----------
-000013AE                           376  OP1000:
-000013AE  3803                     377          MOVE.W  D3,D4
-000013B0  EC5C                     378          ROR.W   #6,D4
-000013B2  0204 0007                379          ANDI.B  #$07,D4
-000013B6                           380          
-000013B6  0C04 0003                381          CMPI.B  #$03,D4
-000013BA  6700 0010                382          BEQ     JDIVU
-000013BE  0C04 0007                383          CMPI.B  #$07,D4
-000013C2  6700 000E                384          BEQ     JDIVS
-000013C6  4EF9 0000195C            385          JMP     ERRCOM
-000013CC                           386  
-000013CC  4EF9 000016BA            387  JDIVU:  JMP     DIVU
-000013D2  4EF9 000016DE            388  JDIVS:  JMP     DIVS
-000013D8                           389  
-000013D8                           390  *----------
-000013D8                           391  OP1001:
-000013D8  4EF9 00001702            392          JMP     SUB
-000013DE                           393  
-000013DE                           394  *----------
-000013DE                           395  OP1011:
-000013DE  0803 0008                396          BTST    #8,D3
-000013E2  6700 0008                397          BEQ     JCMP
-000013E6  4EF9 0000174E            398          JMP     EOR
-000013EC                           399  JCMP:
-000013EC  4EF9 00001728            400          JMP     CMP
-000013F2                           401  
-000013F2                           402  *----------
-000013F2                           403  OP1100:
-000013F2  3803                     404          MOVE.W  D3,D4
-000013F4  EC5C                     405          ROR.W   #6,D4
-000013F6  0204 0007                406          ANDI.B  #$07,D4
-000013FA                           407          
-000013FA  0C04 0003                408          CMPI.B  #$03,D4
-000013FE  6700 0010                409          BEQ     JMULU
-00001402  0C04 0007                410          CMPI.B  #$07,D4
-00001406  6700 000E                411          BEQ     JMULS
-0000140A  4EF9 0000195C            412          JMP     ERRCOM
-00001410                           413  
-00001410  4EF9 00001774            414  JMULU:  JMP     MULU
-00001416  4EF9 00001798            415  JMULS:  JMP     MULS
-0000141C                           416  
-0000141C                           417  *----------
-0000141C                           418  OP1101:
-0000141C  0803 0007                419          BTST    #7,D3
-00001420  6700 0010                420          BEQ     JADD
-00001424  0803 0006                421          BTST    #6,D3
-00001428  6700 0008                422          BEQ     JADD
-0000142C  4EF9 000017BC            423          JMP     ADDA
-00001432  4EF9 000017E6            424  JADD:   JMP     ADD
-00001438                           425  
-00001438                           426  *----------
-00001438                           427  OP1110: 
-00001438  0803 0004                428          BTST    #4,D3
-0000143C  6600 0010                429          BNE     JROX
-00001440  0803 0003                430          BTST    #3,D3
-00001444  6700 000E                431          BEQ     ASAS
-00001448  4EF9 00001468            432          JMP     LSLS
-0000144E                           433  
-0000144E  4EF9 0000195C            434  JROX:   JMP     ERRCOM
-00001454                           435  
-00001454  0803 0008                436  ASAS:   BTST    #8,D3
-00001458  6600 0008                437          BNE     JASL
-0000145C  4EF9 00001832            438          JMP     ASR
-00001462  4EF9 0000180C            439  JASL:   JMP     ASL
-00001468                           440  
-00001468  0803 0008                441  LSLS:   BTST    #8,D3
-0000146C  6600 0008                442          BNE     JLSL
-00001470  4EF9 0000187E            443          JMP     LSR
-00001476  4EF9 00001858            444  JLSL:   JMP     LSL
-0000147C                           445          
-0000147C                           446  *----------------------------------------------------------
-0000147C                           447  *Command Section
-0000147C                           448  *----------------------------------------------------------
-0000147C                           449  
-0000147C                           450  *--------------
-0000147C                           451  ORI:
-0000147C  18FC 004F                452          MOVE.B  #'O',(A4)+
-00001480  18FC 0052                453          MOVE.B  #'R',(A4)+
-00001484  18FC 0049                454          MOVE.B  #'I',(A4)+
-00001488  4EB9 000018A4            455          JSR     BWL7
-0000148E  18FC 0009                456          MOVE.B  #$9,(A4)+
-00001492  48A6 3038                457          MOVEM   D2-D3/A2-A4,-(A6)
-00001496  4EB9 0000192C            458          JSR     EA5
-0000149C  4C9E 1C0C                459          MOVEM   (A6)+,A2-A4/D2-D3
-000014A0  4E75                     460          RTS
-000014A2                           461  
-000014A2                           462  *--------------
-000014A2                           463  ANDI:
-000014A2  18FC 0041                464          MOVE.B  #'A',(A4)+
-000014A6  18FC 004E                465          MOVE.B  #'N',(A4)+
-000014AA  18FC 0044                466          MOVE.B  #'D',(A4)+
-000014AE  18FC 0049                467          MOVE.B  #'I',(A4)+
-000014B2  4EB9 000018A4            468          JSR     BWL7
-000014B8  18FC 0009                469          MOVE.B  #$9,(A4)+
-000014BC  48A6 3038                470          MOVEM   D2-D3/A2-A4,-(A6)
-000014C0  4EB9 0000192C            471          JSR     EA5
-000014C6  4C9E 1C0C                472          MOVEM   (A6)+,A2-A4/D2-D3
-000014CA  4E75                     473          RTS
-000014CC                           474  
-000014CC                           475  *--------------
-000014CC                           476  ADDI:
-000014CC  18FC 0041                477          MOVE.B  #'A',(A4)+
-000014D0  18FC 0044                478          MOVE.B  #'D',(A4)+
-000014D4  18FC 0044                479          MOVE.B  #'D',(A4)+
-000014D8  18FC 0049                480          MOVE.B  #'I',(A4)+
-000014DC  4EB9 000018A4            481          JSR     BWL7
-000014E2  18FC 0009                482          MOVE.B  #$9,(A4)+
-000014E6  48A6 3038                483          MOVEM   D2-D3/A2-A4,-(A6)
-000014EA  4EB9 0000192C            484          JSR     EA5
-000014F0  4C9E 1C0C                485          MOVEM   (A6)+,A2-A4/D2-D3
-000014F4  4E75                     486          RTS
-000014F6                           487  
-000014F6                           488  *--------------
-000014F6                           489  EORI:
-000014F6  18FC 0045                490          MOVE.B  #'E',(A4)+
-000014FA  18FC 004F                491          MOVE.B  #'O',(A4)+
-000014FE  18FC 0052                492          MOVE.B  #'R',(A4)+
-00001502  18FC 0049                493          MOVE.B  #'I',(A4)+
-00001506  4EB9 000018A4            494          JSR     BWL7
-0000150C  18FC 0009                495          MOVE.B  #$9,(A4)+
-00001510  48A6 3038                496          MOVEM   D2-D3/A2-A4,-(A6)
-00001514  4EB9 0000192C            497          JSR     EA5
-0000151A  4C9E 1C0C                498          MOVEM   (A6)+,A2-A4/D2-D3
-0000151E  4E75                     499          RTS
-00001520                           500  
-00001520                           501  *--------------
-00001520                           502  CMPI:
-00001520  18FC 0043                503          MOVE.B  #'C',(A4)+
-00001524  18FC 004D                504          MOVE.B  #'M',(A4)+
-00001528  18FC 0050                505          MOVE.B  #'P',(A4)+
-0000152C  18FC 0049                506          MOVE.B  #'I',(A4)+
-00001530  4EB9 000018A4            507          JSR     BWL7
-00001536  18FC 0009                508          MOVE.B  #$9,(A4)+
-0000153A  48A6 3038                509          MOVEM   D2-D3/A2-A4,-(A6)
-0000153E  4EB9 0000192C            510          JSR     EA5
-00001544  4C9E 1C0C                511          MOVEM   (A6)+,A2-A4/D2-D3
-00001548  4E75                     512          RTS
-0000154A                           513  
-0000154A                           514  *--------------
-0000154A                           515  MOVE:
-0000154A  18FC 004D                516          MOVE.B  #'M',(A4)+
-0000154E  18FC 004F                517          MOVE.B  #'O',(A4)+
-00001552  18FC 0056                518          MOVE.B  #'V',(A4)+
-00001556  18FC 0045                519          MOVE.B  #'E',(A4)+
-0000155A  4EB9 000018D4            520          JSR     BLW13
-00001560  18FC 0009                521          MOVE.B  #$9,(A4)+
-00001564  48A6 3038                522          MOVEM   D2-D3/A2-A4,-(A6)
-00001568  4EB9 0000192E            523          JSR     D11S5
-0000156E  4C9E 1C0C                524          MOVEM   (A6)+,A2-A4/D2-D3
-00001572  4E75                     525          RTS
-00001574                           526  
-00001574                           527  *--------------
-00001574                           528  MOVEA:
-00001574  18FC 004D                529          MOVE.B  #'M',(A4)+
-00001578  18FC 004F                530          MOVE.B  #'O',(A4)+
-0000157C  18FC 0056                531          MOVE.B  #'V',(A4)+
-00001580  18FC 0045                532          MOVE.B  #'E',(A4)+
-00001584  18FC 0041                533          MOVE.B  #'A',(A4)+
-00001588  4EB9 000018C6            534          JSR     LW13
-0000158E  18FC 0009                535          MOVE.B  #$9,(A4)+
-00001592  48A6 3038                536          MOVEM   D2-D3/A2-A4,-(A6)
-00001596  4EB9 0000192E            537          JSR     D11S5
-0000159C  4C9E 1C0C                538          MOVEM   (A6)+,A2-A4/D2-D3
-000015A0  4E75                     539          RTS
-000015A2                           540  
-000015A2                           541  *--------------
-000015A2                           542  NOP:
-000015A2  18FC 004E                543          MOVE.B  #'N',(A4)+
-000015A6  18FC 004F                544          MOVE.B  #'O',(A4)+
-000015AA  18FC 0050                545          MOVE.B  #'P',(A4)+
-000015AE  4E75                     546          RTS
-000015B0                           547  
-000015B0                           548  *--------------
-000015B0                           549  MOVEM:
-000015B0  18FC 004D                550          MOVE.B  #'M',(A4)+
-000015B4  18FC 004F                551          MOVE.B  #'O',(A4)+
-000015B8  18FC 0056                552          MOVE.B  #'V',(A4)+
-000015BC  18FC 0045                553          MOVE.B  #'E',(A4)+
-000015C0  18FC 004D                554          MOVE.B  #'M',(A4)+
-000015C4  4EB9 000018F6            555          JSR     WL6
-000015CA  18FC 0009                556          MOVE.B  #$9,(A4)+
-000015CE  48A6 3038                557          MOVEM   D2-D3/A2-A4,-(A6)
-000015D2  4EB9 0000192C            558          JSR     EA5
-000015D8  4C9E 1C0C                559          MOVEM   (A6)+,A2-A4/D2-D3
-000015DC  4E75                     560          RTS
-000015DE                           561  
-000015DE                           562  *--------------
-000015DE                           563  LEA:
-000015DE  18FC 004C                564          MOVE.B  #'L',(A4)+
-000015E2  18FC 0045                565          MOVE.B  #'E',(A4)+
-000015E6  18FC 0041                566          MOVE.B  #'A',(A4)+
-000015EA  18FC 0009                567          MOVE.B  #$9,(A4)+
-000015EE  48A6 3038                568          MOVEM   D2-D3/A2-A4,-(A6)
-000015F2  4EB9 00001930            569          JSR     R11EA5
-000015F8  4C9E 1C0C                570          MOVEM   (A6)+,A2-A4/D2-D3
-000015FC  4E75                     571          RTS
-000015FE                           572  
-000015FE                           573  *--------------
-000015FE                           574  SUBQ:
-000015FE  18FC 0053                575          MOVE.B  #'S',(A4)+
-00001602  18FC 0055                576          MOVE.B  #'U',(A4)+
-00001606  18FC 0042                577          MOVE.B  #'B',(A4)+
-0000160A  18FC 0051                578          MOVE.B  #'Q',(A4)+
-0000160E  4EB9 000018A4            579          JSR     BWL7
-00001614  18FC 0009                580          MOVE.B  #$9,(A4)+
-00001618  48A6 3038                581          MOVEM   D2-D3/A2-A4,-(A6)
-0000161C  4EB9 00001932            582          JSR     D11EA5
-00001622  4C9E 1C0C                583          MOVEM   (A6)+,A2-A4/D2-D3
-00001626  4E75                     584          RTS
-00001628                           585  
-00001628                           586  *--------------
-00001628                           587  ADDQ:
-00001628  18FC 0041                588          MOVE.B  #'A',(A4)+
-0000162C  18FC 0044                589          MOVE.B  #'D',(A4)+
-00001630  18FC 0044                590          MOVE.B  #'D',(A4)+
-00001634  18FC 0051                591          MOVE.B  #'Q',(A4)+
-00001638  4EB9 000018A4            592          JSR     BWL7
-0000163E  18FC 0009                593          MOVE.B  #$9,(A4)+
-00001642  48A6 3038                594          MOVEM   D2-D3/A2-A4,-(A6)
-00001646  4EB9 00001932            595          JSR     D11EA5
-0000164C  4C9E 1C0C                596          MOVEM   (A6)+,A2-A4/D2-D3
-00001650  4E75                     597          RTS
-00001652                           598  
-00001652                           599  *--------------
-00001652                           600  BRA:
-00001652  18FC 0042                601          MOVE.B  #'B',(A4)+
-00001656  18FC 0052                602          MOVE.B  #'R',(A4)+
-0000165A  18FC 0041                603          MOVE.B  #'A',(A4)+
-0000165E  18FC 0009                604          MOVE.B  #$9,(A4)+
-00001662  48A6 3038                605          MOVEM   D2-D3/A2-A4,-(A6)
-00001666  4EB9 00001934            606          JSR     DP7
-0000166C  4C9E 1C0C                607          MOVEM   (A6)+,A2-A4/D2-D3
-00001670  4E75                     608          RTS
-00001672                           609  
-00001672                           610  *--------------
-00001672                           611  BSR:
-00001672  18FC 0042                612          MOVE.B  #'B',(A4)+
-00001676  18FC 0053                613          MOVE.B  #'S',(A4)+
-0000167A  18FC 0052                614          MOVE.B  #'R',(A4)+
-0000167E  18FC 0009                615          MOVE.B  #$9,(A4)+
-00001682  48A6 3038                616          MOVEM   D2-D3/A2-A4,-(A6)
-00001686  4EB9 00001934            617          JSR     DP7
-0000168C  4C9E 1C0C                618          MOVEM   (A6)+,A2-A4/D2-D3
-00001690  4E75                     619          RTS
-00001692                           620  
-00001692                           621  *--------------
-00001692                           622  MOVEQ:
-00001692  18FC 004D                623          MOVE.B  #'M',(A4)+
-00001696  18FC 004F                624          MOVE.B  #'O',(A4)+
-0000169A  18FC 0056                625          MOVE.B  #'V',(A4)+
-0000169E  18FC 0045                626          MOVE.B  #'E',(A4)+
-000016A2  18FC 0051                627          MOVE.B  #'Q',(A4)+
-000016A6  18FC 0009                628          MOVE.B  #$9,(A4)+
-000016AA  48A6 3038                629          MOVEM   D2-D3/A2-A4,-(A6)
-000016AE  4EB9 00001936            630          JSR     R11D7
-000016B4  4C9E 1C0C                631          MOVEM   (A6)+,A2-A4/D2-D3
-000016B8  4E75                     632          RTS
-000016BA                           633  
-000016BA                           634  *--------------
-000016BA                           635  DIVU:
-000016BA  18FC 0044                636          MOVE.B  #'D',(A4)+
-000016BE  18FC 0049                637          MOVE.B  #'I',(A4)+
-000016C2  18FC 0056                638          MOVE.B  #'V',(A4)+
-000016C6  18FC 0055                639          MOVE.B  #'U',(A4)+
-000016CA  18FC 0009                640          MOVE.B  #$9,(A4)+
-000016CE  48A6 3038                641          MOVEM   D2-D3/A2-A4,-(A6)
-000016D2  4EB9 00001930            642          JSR     R11EA5
-000016D8  4C9E 1C0C                643          MOVEM   (A6)+,A2-A4/D2-D3
-000016DC  4E75                     644          RTS
-000016DE                           645  
-000016DE                           646  *--------------
-000016DE                           647  DIVS:
-000016DE  18FC 0044                648          MOVE.B  #'D',(A4)+
-000016E2  18FC 0049                649          MOVE.B  #'I',(A4)+
-000016E6  18FC 0056                650          MOVE.B  #'V',(A4)+
-000016EA  18FC 0053                651          MOVE.B  #'S',(A4)+
-000016EE  18FC 0009                652          MOVE.B  #$9,(A4)+
-000016F2  48A6 3038                653          MOVEM   D2-D3/A2-A4,-(A6)
-000016F6  4EB9 00001930            654          JSR     R11EA5
-000016FC  4C9E 1C0C                655          MOVEM   (A6)+,A2-A4/D2-D3
-00001700  4E75                     656          RTS
-00001702                           657  
-00001702                           658  *--------------
-00001702                           659  SUB:
-00001702  18FC 0053                660          MOVE.B  #'S',(A4)+
-00001706  18FC 0055                661          MOVE.B  #'U',(A4)+
-0000170A  18FC 0042                662          MOVE.B  #'B',(A4)+
-0000170E  4EB9 000018A4            663          JSR     BWL7
-00001714  18FC 0009                664          MOVE.B  #$9,(A4)+
-00001718  48A6 3038                665          MOVEM   D2-D3/A2-A4,-(A6)
-0000171C  4EB9 00001930            666          JSR     R11EA5
-00001722  4C9E 1C0C                667          MOVEM   (A6)+,A2-A4/D2-D3
-00001726  4E75                     668          RTS
-00001728                           669  
-00001728                           670  *--------------
-00001728                           671  CMP:
-00001728  18FC 0043                672          MOVE.B  #'C',(A4)+
-0000172C  18FC 004D                673          MOVE.B  #'M',(A4)+
-00001730  18FC 0050                674          MOVE.B  #'P',(A4)+
-00001734  4EB9 000018A4            675          JSR     BWL7
-0000173A  18FC 0009                676          MOVE.B  #$9,(A4)+
-0000173E  48A6 3038                677          MOVEM   D2-D3/A2-A4,-(A6)
-00001742  4EB9 00001930            678          JSR     R11EA5
-00001748  4C9E 1C0C                679          MOVEM   (A6)+,A2-A4/D2-D3
-0000174C  4E75                     680          RTS
-0000174E                           681  
-0000174E                           682  *--------------
-0000174E                           683  EOR:
-0000174E  18FC 0045                684          MOVE.B  #'E',(A4)+
-00001752  18FC 004F                685          MOVE.B  #'O',(A4)+
-00001756  18FC 0052                686          MOVE.B  #'R',(A4)+
-0000175A  4EB9 000018A4            687          JSR     BWL7
-00001760  18FC 0009                688          MOVE.B  #$9,(A4)+
-00001764  48A6 3038                689          MOVEM   D2-D3/A2-A4,-(A6)
-00001768  4EB9 00001930            690          JSR     R11EA5
-0000176E  4C9E 1C0C                691          MOVEM   (A6)+,A2-A4/D2-D3
-00001772  4E75                     692          RTS
-00001774                           693  
-00001774                           694  *--------------
-00001774                           695  MULU:
-00001774  18FC 004D                696          MOVE.B  #'M',(A4)+
-00001778  18FC 0055                697          MOVE.B  #'U',(A4)+
-0000177C  18FC 004C                698          MOVE.B  #'L',(A4)+
-00001780  18FC 0055                699          MOVE.B  #'U',(A4)+
-00001784  18FC 0009                700          MOVE.B  #$9,(A4)+
-00001788  48A6 3038                701          MOVEM   D2-D3/A2-A4,-(A6)
-0000178C  4EB9 00001930            702          JSR     R11EA5
-00001792  4C9E 1C0C                703          MOVEM   (A6)+,A2-A4/D2-D3
-00001796  4E75                     704          RTS
-00001798                           705  
-00001798                           706  *--------------
-00001798                           707  MULS:
-00001798  18FC 004D                708          MOVE.B  #'M',(A4)+
-0000179C  18FC 0055                709          MOVE.B  #'U',(A4)+
-000017A0  18FC 004C                710          MOVE.B  #'L',(A4)+
-000017A4  18FC 0053                711          MOVE.B  #'S',(A4)+
-000017A8  18FC 0009                712          MOVE.B  #$9,(A4)+
-000017AC  48A6 3038                713          MOVEM   D2-D3/A2-A4,-(A6)
-000017B0  4EB9 00001930            714          JSR     R11EA5
-000017B6  4C9E 1C0C                715          MOVEM   (A6)+,A2-A4/D2-D3
-000017BA  4E75                     716          RTS
-000017BC                           717  
-000017BC                           718  *--------------
-000017BC                           719  ADDA:
-000017BC  18FC 0041                720          MOVE.B  #'A',(A4)+
-000017C0  18FC 0044                721          MOVE.B  #'D',(A4)+
-000017C4  18FC 0044                722          MOVE.B  #'D',(A4)+
-000017C8  18FC 0041                723          MOVE.B  #'A',(A4)+
-000017CC  4EB9 00001902            724          JSR     WL8
-000017D2  18FC 0009                725          MOVE.B  #$9,(A4)+
-000017D6  48A6 3038                726          MOVEM   D2-D3/A2-A4,-(A6)
-000017DA  4EB9 00001930            727          JSR     R11EA5
-000017E0  4C9E 1C0C                728          MOVEM   (A6)+,A2-A4/D2-D3
-000017E4  4E75                     729          RTS
-000017E6                           730  
-000017E6                           731  *--------------
-000017E6                           732  ADD:
-000017E6  18FC 0041                733          MOVE.B  #'A',(A4)+
-000017EA  18FC 0044                734          MOVE.B  #'D',(A4)+
-000017EE  18FC 0044                735          MOVE.B  #'D',(A4)+
-000017F2  4EB9 000018A4            736          JSR     BWL7
-000017F8  18FC 0009                737          MOVE.B  #$9,(A4)+
-000017FC  48A6 3038                738          MOVEM   D2-D3/A2-A4,-(A6)
-00001800  4EB9 00001930            739          JSR     R11EA5
-00001806  4C9E 1C0C                740          MOVEM   (A6)+,A2-A4/D2-D3
-0000180A  4E75                     741          RTS
-0000180C                           742  
-0000180C                           743  *--------------
-0000180C                           744  ASL:
-0000180C  18FC 0041                745          MOVE.B  #'A',(A4)+
-00001810  18FC 0053                746          MOVE.B  #'S',(A4)+
-00001814  18FC 004C                747          MOVE.B  #'L',(A4)+
-00001818  4EB9 000018A4            748          JSR     BWL7
-0000181E  18FC 0009                749          MOVE.B  #$9,(A4)+
-00001822  48A6 3038                750          MOVEM   D2-D3/A2-A4,-(A6)
-00001826  4EB9 00001938            751          JSR     SHIFTS
-0000182C  4C9E 1C0C                752          MOVEM   (A6)+,A2-A4/D2-D3
-00001830  4E75                     753          RTS
-00001832                           754  
-00001832                           755  *--------------
-00001832                           756  ASR:
-00001832  18FC 0041                757          MOVE.B  #'A',(A4)+
-00001836  18FC 0053                758          MOVE.B  #'S',(A4)+
-0000183A  18FC 0052                759          MOVE.B  #'R',(A4)+
-0000183E  4EB9 000018A4            760          JSR     BWL7
-00001844  18FC 0009                761          MOVE.B  #$9,(A4)+
-00001848  48A6 3038                762          MOVEM   D2-D3/A2-A4,-(A6)
-0000184C  4EB9 00001938            763          JSR     SHIFTS
-00001852  4C9E 1C0C                764          MOVEM   (A6)+,A2-A4/D2-D3
-00001856  4E75                     765          RTS
-00001858                           766  
-00001858                           767  *--------------
-00001858                           768  LSL:
-00001858  18FC 004C                769          MOVE.B  #'L',(A4)+
-0000185C  18FC 0053                770          MOVE.B  #'S',(A4)+
-00001860  18FC 004C                771          MOVE.B  #'L',(A4)+
-00001864  4EB9 000018A4            772          JSR     BWL7
-0000186A  18FC 0009                773          MOVE.B  #$9,(A4)+
-0000186E  48A6 3038                774          MOVEM   D2-D3/A2-A4,-(A6)
-00001872  4EB9 00001938            775          JSR     SHIFTS
-00001878  4C9E 1C0C                776          MOVEM   (A6)+,A2-A4/D2-D3
-0000187C  4E75                     777          RTS
-0000187E                           778  
-0000187E                           779  *--------------
-0000187E                           780  LSR:
-0000187E  18FC 004C                781          MOVE.B  #'L',(A4)+
-00001882  18FC 0053                782          MOVE.B  #'S',(A4)+
-00001886  18FC 0052                783          MOVE.B  #'R',(A4)+
-0000188A  4EB9 000018A4            784          JSR     BWL7
-00001890  18FC 0009                785          MOVE.B  #$9,(A4)+
-00001894  48A6 3038                786          MOVEM   D2-D3/A2-A4,-(A6)
-00001898  4EB9 00001938            787          JSR     SHIFTS
-0000189E  4C9E 1C0C                788          MOVEM   (A6)+,A2-A4/D2-D3
-000018A2  4E75                     789          RTS
-000018A4                           790  
-000018A4                           791  *----------------------------------------------------------
-000018A4                           792  *Size Section
-000018A4                           793  *----------------------------------------------------------
-000018A4                           794  
-000018A4                           795  BWL7:
-000018A4  0803 0007                796          BTST    #7,D3
-000018A8  6600 000E                797          BNE     TSTLONG
-000018AC  0803 0006                798          BTST    #6,D3
-000018B0  6700 005C                799          BEQ     BYTE
-000018B4  6000 0062                800          BRA     WORD
-000018B8                           801  TSTLONG:
-000018B8  0803 0006                802          BTST    #6,D3
-000018BC  6700 0064                803          BEQ     LONG
-000018C0  4EF9 0000196C            804          JMP     ERRSIZE
-000018C6                           805  
-000018C6                           806  LW13:
-000018C6  0803 000D                807          BTST    #13,D3
-000018CA  6600 0008                808          BNE     BLW13
-000018CE  4EF9 0000196C            809          JMP     ERRSIZE
-000018D4                           810  BLW13:
-000018D4  0803 000D                811          BTST    #13,D3
-000018D8  6700 000E                812          BEQ     TSTBYTE
-000018DC  0803 000C                813          BTST    #12,D3
-000018E0  6700 0040                814          BEQ     LONG
-000018E4  6000 0032                815          BRA     WORD
-000018E8                           816  TSTBYTE:
-000018E8  0803 000C                817          BTST    #12,D3
-000018EC  6600 0020                818          BNE     BYTE
-000018F0  4EF9 0000196C            819          JMP     ERRSIZE
-000018F6                           820  
-000018F6                           821  WL6:
-000018F6  0803 0006                822          BTST    #6,D3
-000018FA  6700 001C                823          BEQ     WORD
-000018FE  6000 0022                824          BRA     LONG
-00001902                           825          
-00001902                           826  WL8:
-00001902  0803 0008                827          BTST    #8,D3
-00001906  6700 0010                828          BEQ     WORD
-0000190A  6000 0016                829          BRA     LONG
-0000190E                           830          
-0000190E                           831  BYTE:
-0000190E  18FC 002E                832          MOVE.B  #'.',(A4)+
-00001912  18FC 0042                833          MOVE.B  #'B',(A4)+
-00001916  4E75                     834          RTS
-00001918                           835  WORD:
-00001918  18FC 002E                836          MOVE.B  #'.',(A4)+
-0000191C  18FC 0057                837          MOVE.B  #'W',(A4)+
-00001920  4E75                     838          RTS
-00001922                           839  LONG:
-00001922  18FC 002E                840          MOVE.B  #'.',(A4)+
-00001926  18FC 004C                841          MOVE.B  #'L',(A4)+
-0000192A  4E75                     842          RTS
-0000192C                           843  
-0000192C                           844  *----------------------------------------------------------
-0000192C                           845  *EA Section
-0000192C                           846  *----------------------------------------------------------
-0000192C                           847  
-0000192C                           848  EA5:
-0000192C  4E75                     849          RTS
-0000192E                           850  
-0000192E                           851  D11S5:
-0000192E  4E75                     852          RTS
-00001930                           853  
-00001930                           854  R11EA5:
-00001930  4E75                     855          RTS
-00001932                           856  
-00001932                           857  D11EA5:
-00001932  4E75                     858          RTS
-00001934                           859  
-00001934                           860  DP7:
-00001934  4E75                     861          RTS
-00001936                           862  
-00001936                           863  R11D7:
-00001936  4E75                     864          RTS
-00001938                           865  
-00001938                           866  SHIFTS:
-00001938  4E75                     867          RTS
-0000193A                           868  
-0000193A                           869  *----------------------------------------------------------
-0000193A                           870  *Error Catching Section
-0000193A                           871  *----------------------------------------------------------
-0000193A                           872  
-0000193A                           873  ERRIN:
-0000193A  43F9 000033C9            874          LEA     ERRINMSG,A1
-00001940  103C 000D                875          MOVE.B  #13,D0
-00001944  4E4F                     876          TRAP    #15
-00001946  4EF8 1008                877          JMP     STARTADDR
-0000194A                           878  ERROP:
-0000194A  5242                     879          ADDI.W  #1,D2
-0000194C  43F9 000033F8            880          LEA     ERROPMSG,A1
-00001952  103C 000D                881          MOVE.B  #13,D0
-00001956  4E4F                     882          TRAP    #15
-00001958  4EF8 1078                883          JMP     LOOP
-0000195C                           884  ERRCOM:
-0000195C  5242                     885          ADDI.W  #1,D2
-0000195E  43F9 0000340D            886          LEA     ERRCOMMSG,A1
-00001964  700D                     887          MOVE.L  #13,D0
-00001966  4E4F                     888          TRAP    #15
-00001968  4EF8 1078                889          JMP     LOOP
-0000196C                           890  ERRSIZE:
-0000196C  5242                     891          ADDI.W  #1,D2
-0000196E  43F9 0000342B            892          LEA     ERRSIZEMSG,A1
-00001974  103C 000D                893          MOVE.B  #13,D0
-00001978  4E4F                     894          TRAP    #15
-0000197A  4E75                     895          RTS
-0000197C                           896  ERREA:
-0000197C  43F9 0000343E            897          LEA     ERREAMSG,A1
-00001982  103C 000D                898          MOVE.B  #13,D0
-00001986  4E4F                     899          TRAP    #15
-00001988  4EF8 1078                900          JMP     LOOP
-0000198C                           901  
-0000198C                           902  *----------------------------------------------------------
-0000198C                           903  *Variable Section (And End Simulation)
-0000198C                           904  *----------------------------------------------------------
-0000198C                           905  
-0000198C  FFFF FFFF                906  END:    SIMHALT
-00001990                           907  
-00001990= 40                       908  BUFSIZE DC.B    $40
-00001991                           909  BUFFER: DS.B    BUFSIZE
-00003321                           910  
-00003321                           911  INPADDR     DS.B    9
-0000332A  =00009000                912  MOVEMADDR   EQU     $9000        
-0000332A                           913  
-0000332A  =0000000D                914  CR:     EQU     $0D
-0000332A  =0000000A                915  LF:     EQU     $0A
-0000332A                           916  
-0000332A= 30 31 32 33 34 35 ...    917  ITOA:   DC.B    '0123456789ABCDEF'
-0000333A                           918  
-0000333A                           919  STARTMSG:
-0000333A= 0D 0A 49 6E 70 75 ...    920          DC.B    CR,LF,'Input the starting address for the decoder: ',0
-00003369                           921  ENDMSG:
-00003369= 0D 0A 49 6E 70 75 ...    922          DC.B    CR,LF,'Input the ending address for the decoder: ',0
-00003396                           923  REPORFINMSG:
-00003396= 0D 0A 57 6F 75 6C ...    924          DC.B    CR,LF,'Would you like to run the program again? (Y/N): ',0
-000033C9                           925  ERRINMSG:
-000033C9= 0D 0A 50 6C 65 61 ...    926          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
-000033F8                           927  ERROPMSG:
-000033F8= 46 6F 75 6E 64 20 ...    928          DC.B    'Found Invalid Opcode',0
-0000340D                           929  ERRCOMMSG:
-0000340D= 46 6F 75 6E 64 20 ...    930          DC.B    'Found Not Implemented Command',0
-0000342B                           931  ERRSIZEMSG:
-0000342B= 46 6F 75 6E 64 20 ...    932          DC.B    'Found Invalid Size',0
-0000343E                           933  ERREAMSG:
-0000343E= 46 6F 75 6E 64 20 ...    934          DC.B    'Found Invalid EA Mode',0
-00003454                           935  
-00003454                           936          END     START
+000010BE  4846                     107          SWAP    D6
+000010C0  4EB9 00001170            108          JSR     HEX16B
+000010C6                           109          
+000010C6  4846                     110          SWAP    D6
+000010C8  4EB9 00001170            111          JSR     HEX16B
+000010CE                           112          
+000010CE  18FC 0009                113          MOVE.B  #$9,(A4)+
+000010D2  4E75                     114          RTS
+000010D4                           115  
+000010D4                           116  PRNTBUF:
+000010D4  103C 000D                117          MOVE.B  #13,D0
+000010D8  43F9 0000198D            118          LEA     BUFFER,A1
+000010DE  4E4F                     119          TRAP    #15
+000010E0  4E75                     120          RTS
+000010E2                           121  
+000010E2                           122  *----------------------------------------------------------
+000010E2                           123  *Hex to Binary Section (ITOA)
+000010E2                           124  *----------------------------------------------------------
+000010E2                           125  
+000010E2                           126  HEXTOBIN:
+000010E2  4285                     127          CLR.L   D5          ;Clear output
+000010E4  103C 0002                128          MOVE.B  #2,D0
+000010E8  4E4F                     129          TRAP    #15         ;Read input into A1
+000010EA  0C41 0004                130          CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
+000010EE  6700 0016                131          BEQ     H2BWORD
+000010F2  0C41 0008                132          CMPI.W  #8,D1
+000010F6  6700 0006                133          BEQ     H2BLONG
+000010FA  6000 FF46                134          BRA     JERRINS
+000010FE                           135  
+000010FE                           136  H2BLONG:                    ;Reads 8 chars as a long of binary
+000010FE  183C 0008                137          MOVE.B  #8,D4
+00001102  6000 0008                138          BRA     H2BLOOP
+00001106                           139  H2BWORD:                   ;Reads 4 chars as a word of binary 
+00001106  183C 0004                140          MOVE.B  #4,D4
+0000110A  4245                     141          CLR.W   D5          ;Clear output
+0000110C                           142  
+0000110C                           143  H2BLOOP:
+0000110C  1219                     144          MOVE.B  (A1)+,D1    ;Get next char
+0000110E  E99D                     145          ROL.L   #4,D5       ;Make room for the next output
+00001110  4EB9 0000111C            146          JSR     H2BCHAR     ;Read the char into D5
+00001116  5304                     147          SUBI.B  #1,D4
+00001118  66F2                     148          BNE     H2BLOOP
+0000111A  4E75                     149          RTS
+0000111C                           150  H2BCHAR:
+0000111C  1E01                     151          MOVE.B  D1,D7
+0000111E  0207 00F0                152          ANDI.B  #$F0,D7
+00001122  0C07 0030                153          CMPI.B  #$30,D7
+00001126  6700 0016                154          BEQ     NUM         ;Go to Number parser if it's 0-9
+0000112A  0C07 0040                155          CMPI.B  #$40,D7
+0000112E  6700 0018                156          BEQ     LETTER      ;Go to Letter parser if it's A-F
+00001132  0C07 0060                157          CMPI.B  #$60,D7
+00001136  6700 0010                158          BEQ     LETTER      ;Go to Letter parser if it's a-f
+0000113A  6000 002A                159          BRA     JERRIN
+0000113E                           160  NUM:                        ;Lowest ascii nibble is exactly the binary number
+0000113E  1E01                     161          MOVE.B  D1,D7
+00001140  0207 000F                162          ANDI.B  #$0F,D7
+00001144  8A07                     163          OR.B    D7,D5
+00001146  4E75                     164          RTS
+00001148                           165  LETTER:                     ;Lowest ascii nibble for caps and lowercase
+00001148  1E01                     166          MOVE.B  D1,D7       ; after adding 9 is the binary number
+0000114A  0607 0009                167          ADD.B   #9,D7
+0000114E  0207 000F                168          ANDI.B  #$0F,D7
+00001152  0C07 0006                169          CMPI.B  #$06,D7
+00001156  6D00 000E                170          BLT     JERRIN
+0000115A  0C07 0000                171          CMPI.B  #$00,D7
+0000115E  6700 0006                172          BEQ     JERRIN
+00001162  8A07                     173          OR.B    D7,D5
+00001164  4E75                     174          RTS
+00001166                           175  
+00001166  4EB9 0000193C            176  JERRIN  JSR     ERRIN
+0000116C  4EF8 1008                177          JMP     STARTADDR
+00001170                           178  
+00001170                           179  *----------------------------------------------------------
+00001170                           180  *Print in Hex Section (ATOI)
+00001170                           181  *----------------------------------------------------------
+00001170                           182  
+00001170                           183  HEX16B: ;Uses Bits 16-0 of D6 to print out 4 Hex Chars
+00001170  E15E                     184          ROL.W   #8,D6
+00001172  4EB9 00001180            185          JSR     HEX8B
+00001178  E15E                     186          ROL.W   #8,D6
+0000117A  4EF9 00001180            187          JMP     HEX8B
+00001180                           188  HEX8B:  ;Uses Bits 7-0 of D6 to print out 2 Hex Chars
+00001180  E91E                     189          ROL.B   #4,D6
+00001182  4EB9 000011A6            190          JSR     PRNTHEX
+00001188  E91E                     191          ROL.B   #4,D6
+0000118A  4EF9 000011A6            192          JMP     PRNTHEX
+00001190                           193  HEX4B:  ;Uses Bits 3-0 of D6 to print out 1 Hex Char
+00001190  4EF9 000011A6            194          JMP     PRNTHEX
+00001196                           195  HEX3B:  ;Uses Bits 2-0 of D6 to print out 1 Hex Char
+00001196  1006                     196          MOVE.B  D6,D0
+00001198  0886 0003                197          BCLR    #3,D6
+0000119C  4EB9 000011A6            198          JSR     PRNTHEX
+000011A2  1C00                     199          MOVE.B  D0,D6
+000011A4  4E75                     200          RTS
+000011A6                           201          
+000011A6                           202  PRNTHEX:
+000011A6  4287                     203          CLR.L   D7
+000011A8  1E06                     204          MOVE.B  D6,D7
+000011AA  0207 000F                205          ANDI.B  #$0F,D7
+000011AE                           206          
+000011AE  41F9 00003322            207          LEA     ITOA,A0
+000011B4  D1C7                     208          ADDA.L  D7,A0
+000011B6  18D0                     209          MOVE.B  (A0),(A4)+
+000011B8  4E75                     210          RTS
+000011BA                           211  
+000011BA                           212  *----------------------------------------------------------
+000011BA                           213  *Get Opcode Section
+000011BA                           214  *----------------------------------------------------------
+000011BA                           215  
+000011BA                           216  OPXXXX:
+000011BA  0803 000F                217          BTST    #15,D3
+000011BE  6700 0008                218          BEQ     OP0XXX
+000011C2  4EF9 000011D6            219          JMP     OP1XXX
+000011C8                           220  
+000011C8  0803 000E                221  OP0XXX: BTST    #14,D3
+000011CC  6700 0016                222          BEQ     OP00XX
+000011D0  4EF9 000011F2            223          JMP     OP01XX
+000011D6                           224  
+000011D6  0803 000E                225  OP1XXX: BTST    #14,D3
+000011DA  6700 0024                226          BEQ     OP10XX
+000011DE  4EF9 0000120E            227          JMP     OP11XX
+000011E4                           228  
+000011E4                           229  *----------
+000011E4  0803 000D                230  OP00XX: BTST    #13,D3
+000011E8  6700 0032                231          BEQ     OP000X
+000011EC  4EF9 00001230            232          JMP     OP001X
+000011F2                           233  
+000011F2  0803 000D                234  OP01XX: BTST    #13,D3
+000011F6  6700 004C                235          BEQ     OP010X
+000011FA  4EF9 00001258            236          JMP     OP011X
+00001200                           237  
+00001200  0803 000D                238  OP10XX: BTST    #13,D3
+00001204  6700 0066                239          BEQ     OP100X
+00001208  4EF9 00001280            240          JMP     OP101X
+0000120E                           241  
+0000120E  0803 000D                242  OP11XX: BTST    #13,D3
+00001212  6700 0080                243          BEQ     OP110X
+00001216  4EF9 000012A8            244          JMP     OP111X
+0000121C                           245  
+0000121C                           246  *----------
+0000121C  0803 000C                247  OP000X: BTST    #12,D3
+00001220  6700 0008                248          BEQ     J0000
+00001224  4EF9 00001310            249          JMP     OP0001
+0000122A  4EF9 000012BC            250  J0000:  JMP     OP0000
+00001230                           251          
+00001230  0803 000C                252  OP001X: BTST    #12,D3
+00001234  6700 0008                253          BEQ     J0010
+00001238  4EF9 00001310            254          JMP     OP0011
+0000123E  4EF9 00001310            255  J0010:  JMP     OP0010
+00001244                           256          
+00001244  0803 000C                257  OP010X: BTST    #12,D3
+00001248  6700 0008                258          BEQ     J0100
+0000124C  4EF9 0000136C            259          JMP     OP0101
+00001252  4EF9 0000132C            260  J0100:  JMP     OP0100
+00001258                           261          
+00001258  0803 000C                262  OP011X: BTST    #12,D3
+0000125C  6700 0008                263          BEQ     J0110
+00001260  4EF9 000013AA            264          JMP     OP0111
+00001266  4EF9 00001380            265  J0110:  JMP     OP0110
+0000126C                           266  
+0000126C  0803 000C                267  OP100X: BTST    #12,D3
+00001270  6700 0008                268          BEQ     J1000
+00001274  4EF9 000013DA            269          JMP     OP1001
+0000127A  4EF9 000013B0            270  J1000:  JMP     OP1000
+00001280                           271  
+00001280  0803 000C                272  OP101X: BTST    #12,D3
+00001284  6700 0008                273          BEQ     J1010
+00001288  4EF9 000013E0            274          JMP     OP1011
+0000128E  4EF9 0000194C            275  J1010:  JMP     ERROP
+00001294                           276  
+00001294  0803 000C                277  OP110X: BTST    #12,D3
+00001298  6700 0008                278          BEQ     J1100
+0000129C  4EF9 0000141E            279          JMP     OP1101
+000012A2  4EF9 000013F4            280  J1100:  JMP     OP1100
+000012A8                           281  
+000012A8  0803 000C                282  OP111X: BTST    #12,D3
+000012AC  6700 0008                283          BEQ     J1110
+000012B0  4EF9 0000194C            284          JMP     ERROP
+000012B6  4EF9 0000143A            285  J1110:  JMP     OP1110
+000012BC                           286    
+000012BC                           287  *----------------------------------------------------------
+000012BC                           288  *Opcode to Command Section
+000012BC                           289  *----------------------------------------------------------
+000012BC                           290   
+000012BC                           291  *------
+000012BC                           292  OP0000:      
+000012BC  3803                     293          MOVE.W  D3,D4
+000012BE  EF5C                     294          ROL.W   #7,D4
+000012C0  0204 0007                295          ANDI.B  #$07,D4
+000012C4                           296          
+000012C4  0C04 0000                297          CMPI.B  #$00,D4
+000012C8  6700 0034                298          BEQ     JORI
+000012CC  0C04 0001                299          CMPI.B  #$01,D4
+000012D0  6700 0026                300          BEQ     JANDI
+000012D4  0C04 0003                301          CMPI.B  #$03,D4
+000012D8  6700 0018                302          BEQ     JADDI
+000012DC  0C04 0005                303          CMPI.B  #$05,D4
+000012E0  6700 0028                304          BEQ     JEORI
+000012E4  0C04 0006                305          CMPI.B  #$06,D4
+000012E8  6700 001A                306          BEQ     JCMPI
+000012EC  4EF9 0000195C            307          JMP     ERRCOM
+000012F2                           308          
+000012F2  4EF9 000014CE            309  JADDI:  JMP     ADDI
+000012F8  4EF9 000014A4            310  JANDI:  JMP     ANDI
+000012FE  4EF9 0000147E            311  JORI:   JMP     ORI
+00001304  4EF9 00001522            312  JCMPI:  JMP     CMPI
+0000130A  4EF9 000014F8            313  JEORI:  JMP     EORI
+00001310                           314  
+00001310                           315  *----------
+00001310                           316  OP0001:
+00001310                           317  OP0010:
+00001310                           318  OP0011:        
+00001310  3803                     319          MOVE.W  D3,D4
+00001312  EC5C                     320          ROR.W   #6,D4
+00001314  0204 0007                321          ANDI.B  #$07,D4
+00001318                           322          
+00001318  0C04 0001                323          CMPI.B  #$01,D4
+0000131C  6600 0008                324          BNE     JMOVE
+00001320  4EF9 00001576            325          JMP     MOVEA
+00001326  4EF9 0000154C            326  JMOVE:  JMP     MOVE
+0000132C                           327  
+0000132C                           328  *----------
+0000132C                           329  OP0100:  
+0000132C  3803                     330          MOVE.W  D3,D4
+0000132E  EE5C                     331          ROR.W   #7,D4
+00001330  0204 0007                332          ANDI.B  #$07,D4
+00001334  0C04 0001                333          CMPI.B  #$01,D4
+00001338  6700 0026                334          BEQ     JMOVEM
+0000133C                           335          
+0000133C  3803                     336          MOVE.W  D3,D4
+0000133E  EC5C                     337          ROR.W   #6,D4
+00001340  0204 0007                338          ANDI.B  #$07,D4
+00001344  0C04 0007                339          CMPI.B  #$07,D4
+00001348  6700 0010                340          BEQ     JLEA
+0000134C                           341          
+0000134C  0C43 4E71                342          CMPI.W  #$4E71,D3
+00001350  6700 0014                343          BEQ     JNOP
+00001354  4EF9 0000195C            344          JMP     ERRCOM
+0000135A                           345  
+0000135A  4EF9 000015E0            346  JLEA:   JMP     LEA
+00001360  4EF9 000015B2            347  JMOVEM: JMP     MOVEM
+00001366  4EF9 000015A4            348  JNOP:   JMP     NOP
+0000136C                           349  
+0000136C                           350  *----------
+0000136C                           351  OP0101:
+0000136C  0803 0008                352          BTST    #8,D3
+00001370  6600 0008                353          BNE     JSUBQ
+00001374  4EF9 0000162A            354          JMP     ADDQ
+0000137A  4EF9 00001600            355  JSUBQ:  JMP     SUBQ
+00001380                           356  
+00001380                           357  *----------
+00001380                           358  OP0110:
+00001380  3803                     359          MOVE.W  D3,D4
+00001382  E05C                     360          ROR.W   #8,D4
+00001384  0204 000F                361          ANDI.B  #$0F,D4
+00001388                           362          
+00001388  0C04 0000                363          CMPI.B  #$00,D4
+0000138C  6700 0010                364          BEQ     JBRA
+00001390  0C04 0001                365          CMPI.B  #$01,D4
+00001394  6700 000E                366          BEQ     JBSR
+00001398  4EF9 0000195C            367          JMP     ERRCOM
+0000139E                           368  
+0000139E  4EF9 00001654            369  JBRA:   JMP     BRA
+000013A4  4EF9 00001674            370  JBSR:   JMP     BSR
+000013AA                           371  
+000013AA                           372  *----------
+000013AA                           373  OP0111:
+000013AA  4EF9 00001694            374          JMP     MOVEQ
+000013B0                           375  
+000013B0                           376  *----------
+000013B0                           377  OP1000:
+000013B0  3803                     378          MOVE.W  D3,D4
+000013B2  EC5C                     379          ROR.W   #6,D4
+000013B4  0204 0007                380          ANDI.B  #$07,D4
+000013B8                           381          
+000013B8  0C04 0003                382          CMPI.B  #$03,D4
+000013BC  6700 0010                383          BEQ     JDIVU
+000013C0  0C04 0007                384          CMPI.B  #$07,D4
+000013C4  6700 000E                385          BEQ     JDIVS
+000013C8  4EF9 0000195C            386          JMP     ERRCOM
+000013CE                           387  
+000013CE  4EF9 000016BC            388  JDIVU:  JMP     DIVU
+000013D4  4EF9 000016E0            389  JDIVS:  JMP     DIVS
+000013DA                           390  
+000013DA                           391  *----------
+000013DA                           392  OP1001:
+000013DA  4EF9 00001704            393          JMP     SUB
+000013E0                           394  
+000013E0                           395  *----------
+000013E0                           396  OP1011:
+000013E0  0803 0008                397          BTST    #8,D3
+000013E4  6700 0008                398          BEQ     JCMP
+000013E8  4EF9 00001750            399          JMP     EOR
+000013EE                           400  JCMP:
+000013EE  4EF9 0000172A            401          JMP     CMP
+000013F4                           402  
+000013F4                           403  *----------
+000013F4                           404  OP1100:
+000013F4  3803                     405          MOVE.W  D3,D4
+000013F6  EC5C                     406          ROR.W   #6,D4
+000013F8  0204 0007                407          ANDI.B  #$07,D4
+000013FC                           408          
+000013FC  0C04 0003                409          CMPI.B  #$03,D4
+00001400  6700 0010                410          BEQ     JMULU
+00001404  0C04 0007                411          CMPI.B  #$07,D4
+00001408  6700 000E                412          BEQ     JMULS
+0000140C  4EF9 0000195C            413          JMP     ERRCOM
+00001412                           414  
+00001412  4EF9 00001776            415  JMULU:  JMP     MULU
+00001418  4EF9 0000179A            416  JMULS:  JMP     MULS
+0000141E                           417  
+0000141E                           418  *----------
+0000141E                           419  OP1101:
+0000141E  0803 0007                420          BTST    #7,D3
+00001422  6700 0010                421          BEQ     JADD
+00001426  0803 0006                422          BTST    #6,D3
+0000142A  6700 0008                423          BEQ     JADD
+0000142E  4EF9 000017BE            424          JMP     ADDA
+00001434  4EF9 000017E8            425  JADD:   JMP     ADD
+0000143A                           426  
+0000143A                           427  *----------
+0000143A                           428  OP1110: 
+0000143A  0803 0004                429          BTST    #4,D3
+0000143E  6600 0010                430          BNE     JROX
+00001442  0803 0003                431          BTST    #3,D3
+00001446  6700 000E                432          BEQ     ASAS
+0000144A  4EF9 0000146A            433          JMP     LSLS
+00001450                           434  
+00001450  4EF9 0000195C            435  JROX:   JMP     ERRCOM
+00001456                           436  
+00001456  0803 0008                437  ASAS:   BTST    #8,D3
+0000145A  6600 0008                438          BNE     JASL
+0000145E  4EF9 00001834            439          JMP     ASR
+00001464  4EF9 0000180E            440  JASL:   JMP     ASL
+0000146A                           441  
+0000146A  0803 0008                442  LSLS:   BTST    #8,D3
+0000146E  6600 0008                443          BNE     JLSL
+00001472  4EF9 00001880            444          JMP     LSR
+00001478  4EF9 0000185A            445  JLSL:   JMP     LSL
+0000147E                           446          
+0000147E                           447  *----------------------------------------------------------
+0000147E                           448  *Command Section
+0000147E                           449  *----------------------------------------------------------
+0000147E                           450  
+0000147E                           451  *--------------
+0000147E                           452  ORI:
+0000147E  18FC 004F                453          MOVE.B  #'O',(A4)+
+00001482  18FC 0052                454          MOVE.B  #'R',(A4)+
+00001486  18FC 0049                455          MOVE.B  #'I',(A4)+
+0000148A  4EB9 000018A6            456          JSR     BWL7
+00001490  18FC 0009                457          MOVE.B  #$9,(A4)+
+00001494  48A6 3038                458          MOVEM   D2-D3/A2-A4,-(A6)
+00001498  4EB9 0000192E            459          JSR     EA5
+0000149E  4C9E 1C0C                460          MOVEM   (A6)+,A2-A4/D2-D3
+000014A2  4E75                     461          RTS
+000014A4                           462  
+000014A4                           463  *--------------
+000014A4                           464  ANDI:
+000014A4  18FC 0041                465          MOVE.B  #'A',(A4)+
+000014A8  18FC 004E                466          MOVE.B  #'N',(A4)+
+000014AC  18FC 0044                467          MOVE.B  #'D',(A4)+
+000014B0  18FC 0049                468          MOVE.B  #'I',(A4)+
+000014B4  4EB9 000018A6            469          JSR     BWL7
+000014BA  18FC 0009                470          MOVE.B  #$9,(A4)+
+000014BE  48A6 3038                471          MOVEM   D2-D3/A2-A4,-(A6)
+000014C2  4EB9 0000192E            472          JSR     EA5
+000014C8  4C9E 1C0C                473          MOVEM   (A6)+,A2-A4/D2-D3
+000014CC  4E75                     474          RTS
+000014CE                           475  
+000014CE                           476  *--------------
+000014CE                           477  ADDI:
+000014CE  18FC 0041                478          MOVE.B  #'A',(A4)+
+000014D2  18FC 0044                479          MOVE.B  #'D',(A4)+
+000014D6  18FC 0044                480          MOVE.B  #'D',(A4)+
+000014DA  18FC 0049                481          MOVE.B  #'I',(A4)+
+000014DE  4EB9 000018A6            482          JSR     BWL7
+000014E4  18FC 0009                483          MOVE.B  #$9,(A4)+
+000014E8  48A6 3038                484          MOVEM   D2-D3/A2-A4,-(A6)
+000014EC  4EB9 0000192E            485          JSR     EA5
+000014F2  4C9E 1C0C                486          MOVEM   (A6)+,A2-A4/D2-D3
+000014F6  4E75                     487          RTS
+000014F8                           488  
+000014F8                           489  *--------------
+000014F8                           490  EORI:
+000014F8  18FC 0045                491          MOVE.B  #'E',(A4)+
+000014FC  18FC 004F                492          MOVE.B  #'O',(A4)+
+00001500  18FC 0052                493          MOVE.B  #'R',(A4)+
+00001504  18FC 0049                494          MOVE.B  #'I',(A4)+
+00001508  4EB9 000018A6            495          JSR     BWL7
+0000150E  18FC 0009                496          MOVE.B  #$9,(A4)+
+00001512  48A6 3038                497          MOVEM   D2-D3/A2-A4,-(A6)
+00001516  4EB9 0000192E            498          JSR     EA5
+0000151C  4C9E 1C0C                499          MOVEM   (A6)+,A2-A4/D2-D3
+00001520  4E75                     500          RTS
+00001522                           501  
+00001522                           502  *--------------
+00001522                           503  CMPI:
+00001522  18FC 0043                504          MOVE.B  #'C',(A4)+
+00001526  18FC 004D                505          MOVE.B  #'M',(A4)+
+0000152A  18FC 0050                506          MOVE.B  #'P',(A4)+
+0000152E  18FC 0049                507          MOVE.B  #'I',(A4)+
+00001532  4EB9 000018A6            508          JSR     BWL7
+00001538  18FC 0009                509          MOVE.B  #$9,(A4)+
+0000153C  48A6 3038                510          MOVEM   D2-D3/A2-A4,-(A6)
+00001540  4EB9 0000192E            511          JSR     EA5
+00001546  4C9E 1C0C                512          MOVEM   (A6)+,A2-A4/D2-D3
+0000154A  4E75                     513          RTS
+0000154C                           514  
+0000154C                           515  *--------------
+0000154C                           516  MOVE:
+0000154C  18FC 004D                517          MOVE.B  #'M',(A4)+
+00001550  18FC 004F                518          MOVE.B  #'O',(A4)+
+00001554  18FC 0056                519          MOVE.B  #'V',(A4)+
+00001558  18FC 0045                520          MOVE.B  #'E',(A4)+
+0000155C  4EB9 000018D6            521          JSR     BLW13
+00001562  18FC 0009                522          MOVE.B  #$9,(A4)+
+00001566  48A6 3038                523          MOVEM   D2-D3/A2-A4,-(A6)
+0000156A  4EB9 00001930            524          JSR     D11S5
+00001570  4C9E 1C0C                525          MOVEM   (A6)+,A2-A4/D2-D3
+00001574  4E75                     526          RTS
+00001576                           527  
+00001576                           528  *--------------
+00001576                           529  MOVEA:
+00001576  18FC 004D                530          MOVE.B  #'M',(A4)+
+0000157A  18FC 004F                531          MOVE.B  #'O',(A4)+
+0000157E  18FC 0056                532          MOVE.B  #'V',(A4)+
+00001582  18FC 0045                533          MOVE.B  #'E',(A4)+
+00001586  18FC 0041                534          MOVE.B  #'A',(A4)+
+0000158A  4EB9 000018C8            535          JSR     LW13
+00001590  18FC 0009                536          MOVE.B  #$9,(A4)+
+00001594  48A6 3038                537          MOVEM   D2-D3/A2-A4,-(A6)
+00001598  4EB9 00001930            538          JSR     D11S5
+0000159E  4C9E 1C0C                539          MOVEM   (A6)+,A2-A4/D2-D3
+000015A2  4E75                     540          RTS
+000015A4                           541  
+000015A4                           542  *--------------
+000015A4                           543  NOP:
+000015A4  18FC 004E                544          MOVE.B  #'N',(A4)+
+000015A8  18FC 004F                545          MOVE.B  #'O',(A4)+
+000015AC  18FC 0050                546          MOVE.B  #'P',(A4)+
+000015B0  4E75                     547          RTS
+000015B2                           548  
+000015B2                           549  *--------------
+000015B2                           550  MOVEM:
+000015B2  18FC 004D                551          MOVE.B  #'M',(A4)+
+000015B6  18FC 004F                552          MOVE.B  #'O',(A4)+
+000015BA  18FC 0056                553          MOVE.B  #'V',(A4)+
+000015BE  18FC 0045                554          MOVE.B  #'E',(A4)+
+000015C2  18FC 004D                555          MOVE.B  #'M',(A4)+
+000015C6  4EB9 000018F8            556          JSR     WL6
+000015CC  18FC 0009                557          MOVE.B  #$9,(A4)+
+000015D0  48A6 3038                558          MOVEM   D2-D3/A2-A4,-(A6)
+000015D4  4EB9 0000192E            559          JSR     EA5
+000015DA  4C9E 1C0C                560          MOVEM   (A6)+,A2-A4/D2-D3
+000015DE  4E75                     561          RTS
+000015E0                           562  
+000015E0                           563  *--------------
+000015E0                           564  LEA:
+000015E0  18FC 004C                565          MOVE.B  #'L',(A4)+
+000015E4  18FC 0045                566          MOVE.B  #'E',(A4)+
+000015E8  18FC 0041                567          MOVE.B  #'A',(A4)+
+000015EC  18FC 0009                568          MOVE.B  #$9,(A4)+
+000015F0  48A6 3038                569          MOVEM   D2-D3/A2-A4,-(A6)
+000015F4  4EB9 00001932            570          JSR     R11EA5
+000015FA  4C9E 1C0C                571          MOVEM   (A6)+,A2-A4/D2-D3
+000015FE  4E75                     572          RTS
+00001600                           573  
+00001600                           574  *--------------
+00001600                           575  SUBQ:
+00001600  18FC 0053                576          MOVE.B  #'S',(A4)+
+00001604  18FC 0055                577          MOVE.B  #'U',(A4)+
+00001608  18FC 0042                578          MOVE.B  #'B',(A4)+
+0000160C  18FC 0051                579          MOVE.B  #'Q',(A4)+
+00001610  4EB9 000018A6            580          JSR     BWL7
+00001616  18FC 0009                581          MOVE.B  #$9,(A4)+
+0000161A  48A6 3038                582          MOVEM   D2-D3/A2-A4,-(A6)
+0000161E  4EB9 00001934            583          JSR     D11EA5
+00001624  4C9E 1C0C                584          MOVEM   (A6)+,A2-A4/D2-D3
+00001628  4E75                     585          RTS
+0000162A                           586  
+0000162A                           587  *--------------
+0000162A                           588  ADDQ:
+0000162A  18FC 0041                589          MOVE.B  #'A',(A4)+
+0000162E  18FC 0044                590          MOVE.B  #'D',(A4)+
+00001632  18FC 0044                591          MOVE.B  #'D',(A4)+
+00001636  18FC 0051                592          MOVE.B  #'Q',(A4)+
+0000163A  4EB9 000018A6            593          JSR     BWL7
+00001640  18FC 0009                594          MOVE.B  #$9,(A4)+
+00001644  48A6 3038                595          MOVEM   D2-D3/A2-A4,-(A6)
+00001648  4EB9 00001934            596          JSR     D11EA5
+0000164E  4C9E 1C0C                597          MOVEM   (A6)+,A2-A4/D2-D3
+00001652  4E75                     598          RTS
+00001654                           599  
+00001654                           600  *--------------
+00001654                           601  BRA:
+00001654  18FC 0042                602          MOVE.B  #'B',(A4)+
+00001658  18FC 0052                603          MOVE.B  #'R',(A4)+
+0000165C  18FC 0041                604          MOVE.B  #'A',(A4)+
+00001660  18FC 0009                605          MOVE.B  #$9,(A4)+
+00001664  48A6 3038                606          MOVEM   D2-D3/A2-A4,-(A6)
+00001668  4EB9 00001936            607          JSR     DP7
+0000166E  4C9E 1C0C                608          MOVEM   (A6)+,A2-A4/D2-D3
+00001672  4E75                     609          RTS
+00001674                           610  
+00001674                           611  *--------------
+00001674                           612  BSR:
+00001674  18FC 0042                613          MOVE.B  #'B',(A4)+
+00001678  18FC 0053                614          MOVE.B  #'S',(A4)+
+0000167C  18FC 0052                615          MOVE.B  #'R',(A4)+
+00001680  18FC 0009                616          MOVE.B  #$9,(A4)+
+00001684  48A6 3038                617          MOVEM   D2-D3/A2-A4,-(A6)
+00001688  4EB9 00001936            618          JSR     DP7
+0000168E  4C9E 1C0C                619          MOVEM   (A6)+,A2-A4/D2-D3
+00001692  4E75                     620          RTS
+00001694                           621  
+00001694                           622  *--------------
+00001694                           623  MOVEQ:
+00001694  18FC 004D                624          MOVE.B  #'M',(A4)+
+00001698  18FC 004F                625          MOVE.B  #'O',(A4)+
+0000169C  18FC 0056                626          MOVE.B  #'V',(A4)+
+000016A0  18FC 0045                627          MOVE.B  #'E',(A4)+
+000016A4  18FC 0051                628          MOVE.B  #'Q',(A4)+
+000016A8  18FC 0009                629          MOVE.B  #$9,(A4)+
+000016AC  48A6 3038                630          MOVEM   D2-D3/A2-A4,-(A6)
+000016B0  4EB9 00001938            631          JSR     R11D7
+000016B6  4C9E 1C0C                632          MOVEM   (A6)+,A2-A4/D2-D3
+000016BA  4E75                     633          RTS
+000016BC                           634  
+000016BC                           635  *--------------
+000016BC                           636  DIVU:
+000016BC  18FC 0044                637          MOVE.B  #'D',(A4)+
+000016C0  18FC 0049                638          MOVE.B  #'I',(A4)+
+000016C4  18FC 0056                639          MOVE.B  #'V',(A4)+
+000016C8  18FC 0055                640          MOVE.B  #'U',(A4)+
+000016CC  18FC 0009                641          MOVE.B  #$9,(A4)+
+000016D0  48A6 3038                642          MOVEM   D2-D3/A2-A4,-(A6)
+000016D4  4EB9 00001932            643          JSR     R11EA5
+000016DA  4C9E 1C0C                644          MOVEM   (A6)+,A2-A4/D2-D3
+000016DE  4E75                     645          RTS
+000016E0                           646  
+000016E0                           647  *--------------
+000016E0                           648  DIVS:
+000016E0  18FC 0044                649          MOVE.B  #'D',(A4)+
+000016E4  18FC 0049                650          MOVE.B  #'I',(A4)+
+000016E8  18FC 0056                651          MOVE.B  #'V',(A4)+
+000016EC  18FC 0053                652          MOVE.B  #'S',(A4)+
+000016F0  18FC 0009                653          MOVE.B  #$9,(A4)+
+000016F4  48A6 3038                654          MOVEM   D2-D3/A2-A4,-(A6)
+000016F8  4EB9 00001932            655          JSR     R11EA5
+000016FE  4C9E 1C0C                656          MOVEM   (A6)+,A2-A4/D2-D3
+00001702  4E75                     657          RTS
+00001704                           658  
+00001704                           659  *--------------
+00001704                           660  SUB:
+00001704  18FC 0053                661          MOVE.B  #'S',(A4)+
+00001708  18FC 0055                662          MOVE.B  #'U',(A4)+
+0000170C  18FC 0042                663          MOVE.B  #'B',(A4)+
+00001710  4EB9 000018A6            664          JSR     BWL7
+00001716  18FC 0009                665          MOVE.B  #$9,(A4)+
+0000171A  48A6 3038                666          MOVEM   D2-D3/A2-A4,-(A6)
+0000171E  4EB9 00001932            667          JSR     R11EA5
+00001724  4C9E 1C0C                668          MOVEM   (A6)+,A2-A4/D2-D3
+00001728  4E75                     669          RTS
+0000172A                           670  
+0000172A                           671  *--------------
+0000172A                           672  CMP:
+0000172A  18FC 0043                673          MOVE.B  #'C',(A4)+
+0000172E  18FC 004D                674          MOVE.B  #'M',(A4)+
+00001732  18FC 0050                675          MOVE.B  #'P',(A4)+
+00001736  4EB9 000018A6            676          JSR     BWL7
+0000173C  18FC 0009                677          MOVE.B  #$9,(A4)+
+00001740  48A6 3038                678          MOVEM   D2-D3/A2-A4,-(A6)
+00001744  4EB9 00001932            679          JSR     R11EA5
+0000174A  4C9E 1C0C                680          MOVEM   (A6)+,A2-A4/D2-D3
+0000174E  4E75                     681          RTS
+00001750                           682  
+00001750                           683  *--------------
+00001750                           684  EOR:
+00001750  18FC 0045                685          MOVE.B  #'E',(A4)+
+00001754  18FC 004F                686          MOVE.B  #'O',(A4)+
+00001758  18FC 0052                687          MOVE.B  #'R',(A4)+
+0000175C  4EB9 000018A6            688          JSR     BWL7
+00001762  18FC 0009                689          MOVE.B  #$9,(A4)+
+00001766  48A6 3038                690          MOVEM   D2-D3/A2-A4,-(A6)
+0000176A  4EB9 00001932            691          JSR     R11EA5
+00001770  4C9E 1C0C                692          MOVEM   (A6)+,A2-A4/D2-D3
+00001774  4E75                     693          RTS
+00001776                           694  
+00001776                           695  *--------------
+00001776                           696  MULU:
+00001776  18FC 004D                697          MOVE.B  #'M',(A4)+
+0000177A  18FC 0055                698          MOVE.B  #'U',(A4)+
+0000177E  18FC 004C                699          MOVE.B  #'L',(A4)+
+00001782  18FC 0055                700          MOVE.B  #'U',(A4)+
+00001786  18FC 0009                701          MOVE.B  #$9,(A4)+
+0000178A  48A6 3038                702          MOVEM   D2-D3/A2-A4,-(A6)
+0000178E  4EB9 00001932            703          JSR     R11EA5
+00001794  4C9E 1C0C                704          MOVEM   (A6)+,A2-A4/D2-D3
+00001798  4E75                     705          RTS
+0000179A                           706  
+0000179A                           707  *--------------
+0000179A                           708  MULS:
+0000179A  18FC 004D                709          MOVE.B  #'M',(A4)+
+0000179E  18FC 0055                710          MOVE.B  #'U',(A4)+
+000017A2  18FC 004C                711          MOVE.B  #'L',(A4)+
+000017A6  18FC 0053                712          MOVE.B  #'S',(A4)+
+000017AA  18FC 0009                713          MOVE.B  #$9,(A4)+
+000017AE  48A6 3038                714          MOVEM   D2-D3/A2-A4,-(A6)
+000017B2  4EB9 00001932            715          JSR     R11EA5
+000017B8  4C9E 1C0C                716          MOVEM   (A6)+,A2-A4/D2-D3
+000017BC  4E75                     717          RTS
+000017BE                           718  
+000017BE                           719  *--------------
+000017BE                           720  ADDA:
+000017BE  18FC 0041                721          MOVE.B  #'A',(A4)+
+000017C2  18FC 0044                722          MOVE.B  #'D',(A4)+
+000017C6  18FC 0044                723          MOVE.B  #'D',(A4)+
+000017CA  18FC 0041                724          MOVE.B  #'A',(A4)+
+000017CE  4EB9 00001904            725          JSR     WL8
+000017D4  18FC 0009                726          MOVE.B  #$9,(A4)+
+000017D8  48A6 3038                727          MOVEM   D2-D3/A2-A4,-(A6)
+000017DC  4EB9 00001932            728          JSR     R11EA5
+000017E2  4C9E 1C0C                729          MOVEM   (A6)+,A2-A4/D2-D3
+000017E6  4E75                     730          RTS
+000017E8                           731  
+000017E8                           732  *--------------
+000017E8                           733  ADD:
+000017E8  18FC 0041                734          MOVE.B  #'A',(A4)+
+000017EC  18FC 0044                735          MOVE.B  #'D',(A4)+
+000017F0  18FC 0044                736          MOVE.B  #'D',(A4)+
+000017F4  4EB9 000018A6            737          JSR     BWL7
+000017FA  18FC 0009                738          MOVE.B  #$9,(A4)+
+000017FE  48A6 3038                739          MOVEM   D2-D3/A2-A4,-(A6)
+00001802  4EB9 00001932            740          JSR     R11EA5
+00001808  4C9E 1C0C                741          MOVEM   (A6)+,A2-A4/D2-D3
+0000180C  4E75                     742          RTS
+0000180E                           743  
+0000180E                           744  *--------------
+0000180E                           745  ASL:
+0000180E  18FC 0041                746          MOVE.B  #'A',(A4)+
+00001812  18FC 0053                747          MOVE.B  #'S',(A4)+
+00001816  18FC 004C                748          MOVE.B  #'L',(A4)+
+0000181A  4EB9 000018A6            749          JSR     BWL7
+00001820  18FC 0009                750          MOVE.B  #$9,(A4)+
+00001824  48A6 3038                751          MOVEM   D2-D3/A2-A4,-(A6)
+00001828  4EB9 0000193A            752          JSR     SHIFTS
+0000182E  4C9E 1C0C                753          MOVEM   (A6)+,A2-A4/D2-D3
+00001832  4E75                     754          RTS
+00001834                           755  
+00001834                           756  *--------------
+00001834                           757  ASR:
+00001834  18FC 0041                758          MOVE.B  #'A',(A4)+
+00001838  18FC 0053                759          MOVE.B  #'S',(A4)+
+0000183C  18FC 0052                760          MOVE.B  #'R',(A4)+
+00001840  4EB9 000018A6            761          JSR     BWL7
+00001846  18FC 0009                762          MOVE.B  #$9,(A4)+
+0000184A  48A6 3038                763          MOVEM   D2-D3/A2-A4,-(A6)
+0000184E  4EB9 0000193A            764          JSR     SHIFTS
+00001854  4C9E 1C0C                765          MOVEM   (A6)+,A2-A4/D2-D3
+00001858  4E75                     766          RTS
+0000185A                           767  
+0000185A                           768  *--------------
+0000185A                           769  LSL:
+0000185A  18FC 004C                770          MOVE.B  #'L',(A4)+
+0000185E  18FC 0053                771          MOVE.B  #'S',(A4)+
+00001862  18FC 004C                772          MOVE.B  #'L',(A4)+
+00001866  4EB9 000018A6            773          JSR     BWL7
+0000186C  18FC 0009                774          MOVE.B  #$9,(A4)+
+00001870  48A6 3038                775          MOVEM   D2-D3/A2-A4,-(A6)
+00001874  4EB9 0000193A            776          JSR     SHIFTS
+0000187A  4C9E 1C0C                777          MOVEM   (A6)+,A2-A4/D2-D3
+0000187E  4E75                     778          RTS
+00001880                           779  
+00001880                           780  *--------------
+00001880                           781  LSR:
+00001880  18FC 004C                782          MOVE.B  #'L',(A4)+
+00001884  18FC 0053                783          MOVE.B  #'S',(A4)+
+00001888  18FC 0052                784          MOVE.B  #'R',(A4)+
+0000188C  4EB9 000018A6            785          JSR     BWL7
+00001892  18FC 0009                786          MOVE.B  #$9,(A4)+
+00001896  48A6 3038                787          MOVEM   D2-D3/A2-A4,-(A6)
+0000189A  4EB9 0000193A            788          JSR     SHIFTS
+000018A0  4C9E 1C0C                789          MOVEM   (A6)+,A2-A4/D2-D3
+000018A4  4E75                     790          RTS
+000018A6                           791  
+000018A6                           792  *----------------------------------------------------------
+000018A6                           793  *Size Section
+000018A6                           794  *----------------------------------------------------------
+000018A6                           795  
+000018A6                           796  BWL7:
+000018A6  0803 0007                797          BTST    #7,D3
+000018AA  6600 000E                798          BNE     TSTLONG
+000018AE  0803 0006                799          BTST    #6,D3
+000018B2  6700 005C                800          BEQ     BYTE
+000018B6  6000 0062                801          BRA     WORD
+000018BA                           802  TSTLONG:
+000018BA  0803 0006                803          BTST    #6,D3
+000018BE  6700 0064                804          BEQ     LONG
+000018C2  4EF9 0000196A            805          JMP     ERRSIZE
+000018C8                           806  
+000018C8                           807  LW13:
+000018C8  0803 000D                808          BTST    #13,D3
+000018CC  6600 0008                809          BNE     BLW13
+000018D0  4EF9 0000196A            810          JMP     ERRSIZE
+000018D6                           811  BLW13:
+000018D6  0803 000D                812          BTST    #13,D3
+000018DA  6700 000E                813          BEQ     TSTBYTE
+000018DE  0803 000C                814          BTST    #12,D3
+000018E2  6700 0040                815          BEQ     LONG
+000018E6  6000 0032                816          BRA     WORD
+000018EA                           817  TSTBYTE:
+000018EA  0803 000C                818          BTST    #12,D3
+000018EE  6600 0020                819          BNE     BYTE
+000018F2  4EF9 0000196A            820          JMP     ERRSIZE
+000018F8                           821  
+000018F8                           822  WL6:
+000018F8  0803 0006                823          BTST    #6,D3
+000018FC  6700 001C                824          BEQ     WORD
+00001900  6000 0022                825          BRA     LONG
+00001904                           826          
+00001904                           827  WL8:
+00001904  0803 0008                828          BTST    #8,D3
+00001908  6700 0010                829          BEQ     WORD
+0000190C  6000 0016                830          BRA     LONG
+00001910                           831          
+00001910                           832  BYTE:
+00001910  18FC 002E                833          MOVE.B  #'.',(A4)+
+00001914  18FC 0042                834          MOVE.B  #'B',(A4)+
+00001918  4E75                     835          RTS
+0000191A                           836  WORD:
+0000191A  18FC 002E                837          MOVE.B  #'.',(A4)+
+0000191E  18FC 0057                838          MOVE.B  #'W',(A4)+
+00001922  4E75                     839          RTS
+00001924                           840  LONG:
+00001924  18FC 002E                841          MOVE.B  #'.',(A4)+
+00001928  18FC 004C                842          MOVE.B  #'L',(A4)+
+0000192C  4E75                     843          RTS
+0000192E                           844  
+0000192E                           845  *----------------------------------------------------------
+0000192E                           846  *EA Section
+0000192E                           847  *----------------------------------------------------------
+0000192E                           848  
+0000192E                           849  EA5:
+0000192E  4E75                     850          RTS
+00001930                           851  
+00001930                           852  D11S5:
+00001930  4E75                     853          RTS
+00001932                           854  
+00001932                           855  R11EA5:
+00001932  4E75                     856          RTS
+00001934                           857  
+00001934                           858  D11EA5:
+00001934  4E75                     859          RTS
+00001936                           860  
+00001936                           861  DP7:
+00001936  4E75                     862          RTS
+00001938                           863  
+00001938                           864  R11D7:
+00001938  4E75                     865          RTS
+0000193A                           866  
+0000193A                           867  SHIFTS:
+0000193A  4E75                     868          RTS
+0000193C                           869  
+0000193C                           870  *----------------------------------------------------------
+0000193C                           871  *Error Catching Section
+0000193C                           872  *----------------------------------------------------------
+0000193C                           873  
+0000193C                           874  ERRIN:
+0000193C  43F9 000033C1            875          LEA     ERRINMSG,A1
+00001942  103C 000D                876          MOVE.B  #13,D0
+00001946  4E4F                     877          TRAP    #15
+00001948  4EF8 1008                878          JMP     STARTADDR
+0000194C                           879  ERROP:
+0000194C                           880          ;ADDI.W  #1,D2
+0000194C  43F9 000033F0            881          LEA     ERROPMSG,A1
+00001952  103C 000D                882          MOVE.B  #13,D0
+00001956  4E4F                     883          TRAP    #15
+00001958  4EF8 1078                884          JMP     LOOP
+0000195C                           885  ERRCOM:
+0000195C                           886          ;ADDI.W  #1,D2
+0000195C  43F9 00003405            887          LEA     ERRCOMMSG,A1
+00001962  700D                     888          MOVE.L  #13,D0
+00001964  4E4F                     889          TRAP    #15
+00001966  4EF8 1078                890          JMP     LOOP
+0000196A                           891  ERRSIZE:
+0000196A                           892          ;ADDI.W  #1,D2
+0000196A  43F9 00003423            893          LEA     ERRSIZEMSG,A1
+00001970  103C 000D                894          MOVE.B  #13,D0
+00001974  4E4F                     895          TRAP    #15
+00001976  4E75                     896          RTS
+00001978                           897  ERREA:
+00001978  43F9 00003436            898          LEA     ERREAMSG,A1
+0000197E  103C 000D                899          MOVE.B  #13,D0
+00001982  4E4F                     900          TRAP    #15
+00001984  4EF8 1078                901          JMP     LOOP
+00001988                           902  
+00001988                           903  *----------------------------------------------------------
+00001988                           904  *Variable Section (And End Simulation)
+00001988                           905  *----------------------------------------------------------
+00001988                           906  
+00001988  FFFF FFFF                907  END:    SIMHALT
+0000198C                           908  
+0000198C= 40                       909  BUFSIZE DC.B    $40
+0000198D                           910  BUFFER: DS.B    BUFSIZE
+00003319                           911  
+00003319                           912  INPADDR     DS.B    9
+00003322  =00009000                913  MOVEMADDR   EQU     $9000        
+00003322                           914  
+00003322  =0000000D                915  CR:     EQU     $0D
+00003322  =0000000A                916  LF:     EQU     $0A
+00003322                           917  
+00003322= 30 31 32 33 34 35 ...    918  ITOA:   DC.B    '0123456789ABCDEF'
+00003332                           919  
+00003332                           920  STARTMSG:
+00003332= 0D 0A 49 6E 70 75 ...    921          DC.B    CR,LF,'Input the starting address for the decoder: ',0
+00003361                           922  ENDMSG:
+00003361= 0D 0A 49 6E 70 75 ...    923          DC.B    CR,LF,'Input the ending address for the decoder: ',0
+0000338E                           924  REPORFINMSG:
+0000338E= 0D 0A 57 6F 75 6C ...    925          DC.B    CR,LF,'Would you like to run the program again? (Y/N): ',0
+000033C1                           926  ERRINMSG:
+000033C1= 0D 0A 50 6C 65 61 ...    927          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
+000033F0                           928  ERROPMSG:
+000033F0= 46 6F 75 6E 64 20 ...    929          DC.B    'Found Invalid Opcode',0
+00003405                           930  ERRCOMMSG:
+00003405= 46 6F 75 6E 64 20 ...    931          DC.B    'Found Not Implemented Command',0
+00003423                           932  ERRSIZEMSG:
+00003423= 46 6F 75 6E 64 20 ...    933          DC.B    'Found Invalid Size',0
+00003436                           934  ERREAMSG:
+00003436= 46 6F 75 6E 64 20 ...    935          DC.B    'Found Invalid EA Mode',0
+0000344C                           936  
+0000344C                           937          END     START
 
 No errors detected
 No warnings generated
@@ -946,153 +947,153 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
-ADD                 17E6
-ADDA                17BC
-ADDI                14CC
-ADDQ                1628
-ANDI                14A2
-ASAS                1454
-ASL                 180C
-ASR                 1832
-BLW13               18D4
-BRA                 1652
-BSR                 1672
-BUFFER              1991
-BUFSIZE             1990
-BWL7                18A4
-BYTE                190E
+ADD                 17E8
+ADDA                17BE
+ADDI                14CE
+ADDQ                162A
+ANDI                14A4
+ASAS                1456
+ASL                 180E
+ASR                 1834
+BLW13               18D6
+BRA                 1654
+BSR                 1674
+BUFFER              198D
+BUFSIZE             198C
+BWL7                18A6
+BYTE                1910
 CLRBUF              10A0
 CLRBUFLOOP          10AC
-CMP                 1728
-CMPI                1520
+CMP                 172A
+CMPI                1522
 CR                  D
-D11EA5              1932
-D11S5               192E
-DIVS                16DE
-DIVU                16BA
-DP7                 1934
-EA5                 192C
-END                 198C
+D11EA5              1934
+D11S5               1930
+DIVS                16E0
+DIVU                16BC
+DP7                 1936
+EA5                 192E
+END                 1988
 ENDADDR             1022
-ENDMSG              3369
-EOR                 174E
-EORI                14F6
+ENDMSG              3361
+EOR                 1750
+EORI                14F8
 ERRCOM              195C
-ERRCOMMSG           340D
-ERREA               197C
-ERREAMSG            343E
-ERRIN               193A
-ERRINMSG            33C9
-ERROP               194A
-ERROPMSG            33F8
-ERRSIZE             196C
-ERRSIZEMSG          342B
-H2BCHAR             111E
-H2BLONG             1100
-H2BLOOP             110E
-H2BWORD             1108
-HEX16B              1172
-HEX3B               1194
-HEX4B               118E
-HEX8B               117E
-HEXTOBIN            10E4
-INPADDR             3321
-ITOA                332A
-J0000               1228
-J0010               123C
-J0100               1250
-J0110               1264
-J1000               1278
-J1010               128C
-J1100               12A0
-J1110               12B4
-JADD                1432
-JADDI               12F0
-JANDI               12F6
-JASL                1462
-JBRA                139C
-JBSR                13A2
-JCMP                13EC
-JCMPI               1302
-JDIVS               13D2
-JDIVU               13CC
-JEORI               1308
-JERRIN              1168
+ERRCOMMSG           3405
+ERREA               1978
+ERREAMSG            3436
+ERRIN               193C
+ERRINMSG            33C1
+ERROP               194C
+ERROPMSG            33F0
+ERRSIZE             196A
+ERRSIZEMSG          3423
+H2BCHAR             111C
+H2BLONG             10FE
+H2BLOOP             110C
+H2BWORD             1106
+HEX16B              1170
+HEX3B               1196
+HEX4B               1190
+HEX8B               1180
+HEXTOBIN            10E2
+INPADDR             3319
+ITOA                3322
+J0000               122A
+J0010               123E
+J0100               1252
+J0110               1266
+J1000               127A
+J1010               128E
+J1100               12A2
+J1110               12B6
+JADD                1434
+JADDI               12F2
+JANDI               12F8
+JASL                1464
+JBRA                139E
+JBSR                13A4
+JCMP                13EE
+JCMPI               1304
+JDIVS               13D4
+JDIVU               13CE
+JEORI               130A
+JERRIN              1166
 JERRINS             1042
-JLEA                1358
-JLSL                1476
-JMOVE               1324
-JMOVEM              135E
-JMULS               1416
-JMULU               1410
-JNOP                1364
-JORI                12FC
-JROX                144E
-JSUBQ               1378
-LEA                 15DE
-LETTER              114A
+JLEA                135A
+JLSL                1478
+JMOVE               1326
+JMOVEM              1360
+JMULS               1418
+JMULU               1412
+JNOP                1366
+JORI                12FE
+JROX                1450
+JSUBQ               137A
+LEA                 15E0
+LETTER              1148
 LF                  A
-LONG                1922
+LONG                1924
 LOOP                1078
-LSL                 1858
-LSLS                1468
-LSR                 187E
-LW13                18C6
+LSL                 185A
+LSLS                146A
+LSR                 1880
+LW13                18C8
 MEMPRINT            10BC
-MOVE                154A
-MOVEA               1574
-MOVEM               15B0
+MOVE                154C
+MOVEA               1576
+MOVEM               15B2
 MOVEMADDR           9000
-MOVEQ               1692
-MULS                1798
-MULU                1774
-NOP                 15A2
-NUM                 1140
-OP0000              12BA
-OP0001              130E
-OP000X              121A
-OP0010              130E
-OP0011              130E
-OP001X              122E
-OP00XX              11E2
-OP0100              132A
-OP0101              136A
-OP010X              1242
-OP0110              137E
-OP0111              13A8
-OP011X              1256
-OP01XX              11F0
-OP0XXX              11C6
-OP1000              13AE
-OP1001              13D8
-OP100X              126A
-OP1011              13DE
-OP101X              127E
-OP10XX              11FE
-OP1100              13F2
-OP1101              141C
-OP110X              1292
-OP1110              1438
-OP111X              12A6
-OP11XX              120C
-OP1XXX              11D4
-OPXXXX              11B8
-ORI                 147C
-PRNTBUF             10D6
-PRNTHEX             11A4
-R11D7               1936
-R11EA5              1930
+MOVEQ               1694
+MULS                179A
+MULU                1776
+NOP                 15A4
+NUM                 113E
+OP0000              12BC
+OP0001              1310
+OP000X              121C
+OP0010              1310
+OP0011              1310
+OP001X              1230
+OP00XX              11E4
+OP0100              132C
+OP0101              136C
+OP010X              1244
+OP0110              1380
+OP0111              13AA
+OP011X              1258
+OP01XX              11F2
+OP0XXX              11C8
+OP1000              13B0
+OP1001              13DA
+OP100X              126C
+OP1011              13E0
+OP101X              1280
+OP10XX              1200
+OP1100              13F4
+OP1101              141E
+OP110X              1294
+OP1110              143A
+OP111X              12A8
+OP11XX              120E
+OP1XXX              11D6
+OPXXXX              11BA
+ORI                 147E
+PRNTBUF             10D4
+PRNTHEX             11A6
+R11D7               1938
+R11EA5              1932
 REPORFIN            1054
-REPORFINMSG         3396
-SHIFTS              1938
+REPORFINMSG         338E
+SHIFTS              193A
 START               1000
 STARTADDR           1008
-STARTMSG            333A
-SUB                 1702
-SUBQ                15FE
-TSTBYTE             18E8
-TSTLONG             18B8
+STARTMSG            3332
+SUB                 1704
+SUBQ                1600
+TSTBYTE             18EA
+TSTLONG             18BA
 WAITUSER            1048
-WL6                 18F6
-WL8                 1902
-WORD                1918
+WL6                 18F8
+WL8                 1904
+WORD                191A

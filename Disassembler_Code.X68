@@ -71,8 +71,8 @@ REPORFIN:
 
 LOOP:
         ADDI.W  #1,D2
-        CMPI.W  #32,D2
-        BGE     WAITUSER    ;If 32 lines are on the screen, pause
+        CMPI.W  #30,D2
+        BGE     WAITUSER    ;If 30 lines are on the screen, pause
 
         JSR     CLRBUF      ;Clear printing buffer
         JSR     MEMPRINT    ;Add the memory address
@@ -104,11 +104,10 @@ CLRBUFLOOP:
         
 MEMPRINT:
         MOVE.L  A2,D6
-        LSR.L   #8,D6
-        LSR.L   #8,D6
+        SWAP    D6
         JSR     HEX16B
         
-        MOVE.W  A2,D6
+        SWAP    D6
         JSR     HEX16B
         
         MOVE.B  #$9,(A4)+
@@ -182,7 +181,9 @@ JERRIN  JSR     ERRIN
 *----------------------------------------------------------
 
 HEX16B: ;Uses Bits 16-0 of D6 to print out 4 Hex Chars
+        ROL.W   #8,D6
         JSR     HEX8B
+        ROL.W   #8,D6
         JMP     HEX8B
 HEX8B:  ;Uses Bits 7-0 of D6 to print out 2 Hex Chars
         ROL.B   #4,D6
@@ -876,19 +877,19 @@ ERRIN:
         TRAP    #15
         JMP     STARTADDR
 ERROP:
-        ADDI.W  #1,D2
+        ;ADDI.W  #1,D2
         LEA     ERROPMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
         JMP     LOOP
 ERRCOM:
-        ADDI.W  #1,D2
+        ;ADDI.W  #1,D2
         LEA     ERRCOMMSG,A1
         MOVE.L  #13,D0
         TRAP    #15
         JMP     LOOP
 ERRSIZE:
-        ADDI.W  #1,D2
+        ;ADDI.W  #1,D2
         LEA     ERRSIZEMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
