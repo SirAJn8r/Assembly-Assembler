@@ -887,6 +887,21 @@ R11D7:
         RTS
 
 SHIFTS:
+        BTST    #5,D3
+        BNE     SHIFTREG
+        MOVE.B  #'#',(A4)+
+        BRA     FINSHIFT
+SHIFTREG:
+        MOVE.B  #'D',(A4)+
+FINSHIFT:
+        MOVE.W  D3,D6
+        ROL.W   #7,D6
+        JSR     HEX3B
+        
+        MOVE.B  #',',(A4)+
+        MOVE.B  #'D',(A4)+
+        ROR.W   #7,D6
+        JSR     HEX3B
         RTS
         
 *----------------------------------------------------------
