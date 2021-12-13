@@ -877,19 +877,16 @@ ERRIN:
         TRAP    #15
         JMP     STARTADDR
 ERROP:
-        ;ADDI.W  #1,D2
         LEA     ERROPMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
         JMP     LOOP
 ERRCOM:
-        ;ADDI.W  #1,D2
         LEA     ERRCOMMSG,A1
         MOVE.L  #13,D0
         TRAP    #15
         JMP     LOOP
 ERRSIZE:
-        ;ADDI.W  #1,D2
         LEA     ERRSIZEMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
@@ -935,10 +932,6 @@ ERREAMSG:
         DC.B    'Found Invalid EA Mode',0
 
         END     START
-
-
-
-
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
