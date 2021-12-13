@@ -179,6 +179,7 @@ JERRIN  JSR     ERRIN
 *----------------------------------------------------------
 *Print in Hex Section (ATOI)
 *----------------------------------------------------------
+* Put input into D6
 
 HEX16B: ;Uses Bits 16-0 of D6 to print out 4 Hex Chars
         ROL.W   #8,D6
@@ -580,7 +581,7 @@ SUBQ:
         JSR     BWL7
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
-        JSR     D11EA5
+        JSR     DT11EA5
         MOVEM   (A6)+,A2-A4/D2-D3
         RTS
 
@@ -593,7 +594,7 @@ ADDQ:
         JSR     BWL7
         MOVE.B  #$9,(A4)+
         MOVEM   D2-D3/A2-A4,-(A6)
-        JSR     D11EA5
+        JSR     DT11EA5
         MOVEM   (A6)+,A2-A4/D2-D3
         RTS
 
@@ -855,10 +856,24 @@ D11S5:
 R11EA5:
         RTS
 
-D11EA5:
+DT11EA5:
         RTS
 
 DP7:
+        MOVE.L  A2,D4
+        CLR.L   D6
+        MOVE.B  D3,D6
+        TST.B   D6
+        BEQ     DP2WORD
+        
+        ADD.L   D4,D6
+        MOVE.L  D5,D6
+        JSR     HEX16B
+        RTS
+DP2WORD:
+        MOVE.W  (A2)+,D6
+        ADD.L   D4,D6
+        JSR     HEX16B
         RTS
 
 R11D7:
@@ -867,6 +882,10 @@ R11D7:
 SHIFTS:
         RTS
         
+*----------------------------------------------------------
+*EA Section Part 2
+*----------------------------------------------------------
+
 EACompare:      
         CMPI.B  #%000,D3
         BEQ     GetW            ;what is this exactly
