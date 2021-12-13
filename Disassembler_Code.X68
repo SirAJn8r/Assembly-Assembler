@@ -30,27 +30,17 @@ STARTADDR:
         LEA     STARTMSG,A1
         MOVE.B  #13,D0
         TRAP    #15         ;Print out start address message
-        MOVE.B  #2,D0
         LEA     INPADDR,A1
-        TRAP    #15         ;Store input into A1
-        CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
-        BNE     JERRINS
-        CLR.L   D1
-        JSR     HEXTOBIN    ;Convert input into an address in D5
-        MOVEA.W D5,A2       ;Move address into A2
+        JSR     HEXTOBIN    ;Read input into Hex into D5
+        MOVEA.L D5,A2       ;Move address into A2
 
 ENDADDR:
         LEA     ENDMSG,A1
         MOVE.B  #13,D0
         TRAP    #15         ;Print out end address message
-        MOVE.B  #2,D0
         LEA     INPADDR,A1
-        TRAP    #15         ;Store input into A1
-        CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
-        BNE     JERRINS
-        CLR.L   D1
-        JSR     HEXTOBIN    ;Convert input into an address in D5
-        MOVEA.W D5,A3       ;Move address into A3
+        JSR     HEXTOBIN    ;Read input into Hex into D5
+        MOVEA.L D5,A3       ;Move address into A3
         
         CLR.W   D2
         BRA     LOOP
@@ -81,8 +71,8 @@ REPORFIN:
 
 LOOP:
         ADDI.W  #1,D2
-        CMPI.W  #30,D2
-        BGE     WAITUSER    ;If 30 lines are on the screen, pause
+        CMPI.W  #32,D2
+        BGE     WAITUSER    ;If 32 lines are on the screen, pause
 
         JSR     CLRBUF      ;Clear printing buffer
         JSR     MEMPRINT    ;Add the memory address
@@ -135,18 +125,28 @@ PRNTBUF:
 *----------------------------------------------------------
 
 HEXTOBIN:
-        CLR.W   D5          ;Clear the output
+        CLR.L   D5          ;Clear output
+        MOVE.B  #2,D0
+        TRAP    #15         ;Read input into A1
+        CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
+        BEQ     H2BWORD
+        CMPI.W  #8,D1
+        BEQ     H2BLONG
+        BRA     JERRINS
+
+H2BLONG:                    ;Reads 8 chars as a long of binary
+        MOVE.B  #8,D4
+        BRA     H2BLOOP
+H2BWORD:                   ;Reads 4 chars as a word of binary 
+        MOVE.B  #4,D4
+        CLR.W   D5          ;Clear output
+
+H2BLOOP:
         MOVE.B  (A1)+,D1    ;Get next char
-        JSR     H2BCHAR     ;Read the char into D5
-        MOVE.B  (A1)+,D1
         ROL.L   #4,D5       ;Make room for the next output
-        JSR     H2BCHAR
-        MOVE.B  (A1)+,D1
-        ROL.L   #4,D5
-        JSR     H2BCHAR
-        MOVE.B  (A1)+,D1
-        ROL.L   #4,D5
-        JSR     H2BCHAR
+        JSR     H2BCHAR     ;Read the char into D5
+        SUBI.B  #1,D4
+        BNE     H2BLOOP
         RTS
 H2BCHAR:
         MOVE.B  D1,D7
@@ -182,14 +182,8 @@ JERRIN  JSR     ERRIN
 *----------------------------------------------------------
 
 HEX16B: ;Uses Bits 16-0 of D6 to print out 4 Hex Chars
-        ROL.W   #4,D6
-        JSR     PRNTHEX
-        ROL.W   #4,D6
-        JSR     PRNTHEX
-        ROL.W   #4,D6
-        JSR     PRNTHEX
-        ROL.W   #4,D6
-        JMP     PRNTHEX
+        JSR     HEX8B
+        JMP     HEX8B
 HEX8B:  ;Uses Bits 7-0 of D6 to print out 2 Hex Chars
         ROL.B   #4,D6
         JSR     PRNTHEX
@@ -880,7 +874,7 @@ ERRIN:
         LEA     ERRINMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
-        RTS
+        JMP     STARTADDR
 ERROP:
         ADDI.W  #1,D2
         LEA     ERROPMSG,A1
@@ -911,10 +905,10 @@ ERREA:
 
 END:    SIMHALT
 
-BUFSIZE DC.B    64
+BUFSIZE DC.B    $40
 BUFFER: DS.B    BUFSIZE
 
-INPADDR     DS.B    8
+INPADDR     DS.B    9
 MOVEMADDR   EQU     $9000        
 
 CR:     EQU     $0D
@@ -940,6 +934,7 @@ ERREAMSG:
         DC.B    'Found Invalid EA Mode',0
 
         END     START
+
 
 
 
