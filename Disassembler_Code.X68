@@ -181,6 +181,11 @@ JERRIN  JSR     ERRIN
 *----------------------------------------------------------
 * Put input into D6
 
+HEX32B: ;Uses Bits 32-0 of D6 to print out 8 Hex Chars
+        SWAP    D6
+        JSR     HEX16B
+        SWAP    D6
+        JMP     HEX16B
 HEX16B: ;Uses Bits 16-0 of D6 to print out 4 Hex Chars
         ROL.W   #8,D6
         JSR     HEX8B
@@ -456,9 +461,13 @@ ORI:
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        
+        JSR     READIMM
+        MOVE.B  #',',(A4)+
+        
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -469,9 +478,13 @@ ANDI:
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        
+        JSR     READIMM
+        MOVE.B  #',',(A4)+
+        
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -481,10 +494,14 @@ ADDI:
         MOVE.B  #'D',(A4)+
         MOVE.B  #'I',(A4)+
         JSR     BWL7
-        MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVE.B  #$9,(A4)+ 
+        
+        JSR     READIMM
+        MOVE.B  #',',(A4)+
+        
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -495,9 +512,13 @@ EORI:
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+         
+        JSR     READIMM
+        MOVE.B  #',',(A4)+
+        
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -508,9 +529,13 @@ CMPI:
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+         
+        JSR     READIMM
+        MOVE.B  #',',(A4)+
+        
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -521,9 +546,9 @@ MOVE:
         MOVE.B  #'E',(A4)+
         JSR     BLW13
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     D11S5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -535,9 +560,9 @@ MOVEA:
         MOVE.B  #'A',(A4)+
         JSR     LW13
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     D11S5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -556,9 +581,13 @@ MOVEM:
         MOVE.B  #'M',(A4)+
         JSR     WL6
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        
+        JSR     READWORD
+        MOVE.B  #',',(A4)+
+        
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -567,9 +596,9 @@ LEA:
         MOVE.B  #'E',(A4)+
         MOVE.B  #'A',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
-        JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   D2-D3/A3-A4,-(A6)
+        JSR     AR11EA5
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -580,9 +609,9 @@ SUBQ:
         MOVE.B  #'Q',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     DT11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -593,9 +622,9 @@ ADDQ:
         MOVE.B  #'Q',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     DT11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -604,9 +633,9 @@ BRA:
         MOVE.B  #'R',(A4)+
         MOVE.B  #'A',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     DP7
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -615,9 +644,9 @@ BSR:
         MOVE.B  #'S',(A4)+
         MOVE.B  #'R',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     DP7
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -628,9 +657,9 @@ MOVEQ:
         MOVE.B  #'E',(A4)+
         MOVE.B  #'Q',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11D7
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -640,9 +669,9 @@ DIVU:
         MOVE.B  #'V',(A4)+
         MOVE.B  #'U',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -652,9 +681,9 @@ DIVS:
         MOVE.B  #'V',(A4)+
         MOVE.B  #'S',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -664,9 +693,9 @@ SUB:
         MOVE.B  #'B',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -676,9 +705,9 @@ CMP:
         MOVE.B  #'P',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -688,9 +717,9 @@ EOR:
         MOVE.B  #'R',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -700,9 +729,9 @@ MULU:
         MOVE.B  #'L',(A4)+
         MOVE.B  #'U',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -712,9 +741,9 @@ MULS:
         MOVE.B  #'L',(A4)+
         MOVE.B  #'S',(A4)+
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -725,9 +754,9 @@ ADDA:
         MOVE.B  #'A',(A4)+
         JSR     WL8
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
-        JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   D2-D3/A3-A4,-(A6)
+        JSR     AR11EA5
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -737,9 +766,9 @@ ADD:
         MOVE.B  #'D',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     R11EA5
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -749,9 +778,9 @@ ASL:
         MOVE.B  #'L',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     SHIFTS
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -761,9 +790,9 @@ ASR:
         MOVE.B  #'R',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     SHIFTS
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -773,9 +802,9 @@ LSL:
         MOVE.B  #'L',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     SHIFTS
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *--------------
@@ -785,9 +814,9 @@ LSR:
         MOVE.B  #'R',(A4)+
         JSR     BWL7
         MOVE.B  #$9,(A4)+
-        MOVEM   D2-D3/A2-A4,-(A6)
+        MOVEM   D2-D3/A3-A4,-(A6)
         JSR     SHIFTS
-        MOVEM   (A6)+,A2-A4/D2-D3
+        MOVEM   (A6)+,A3-A4/D2-D3
         RTS
 
 *----------------------------------------------------------
@@ -848,17 +877,52 @@ LONG:
 *----------------------------------------------------------
 
 EA5:
-        RTS
+        MOVE.B  D3,D5
+        JMP     GETEA5
 
 D11S5:
-        RTS
+        JSR     EA5
+        
+        MOVE.W  D3,D4
+        ROL.W   #7,D4
+        ANDI.W  #$7,D4      ;Isolate dest reg
+        
+        MOVE.W  D3,D5
+        ROR.W   #3,D5
+        ANDI.W  #$38,D5     ;Isolate dest mode
+        
+        OR.W    D4,D5       ;Combine where source mode/reg would be
+        MOVE.B  #',',(A4)+
+        JMP     GETEA5
 
 R11EA5:
-        RTS
+        JSR     EA5
+        
+        MOVE.B  #',',(A4)+
+        MOVE.B  #'D',(A4)+
+        MOVE.W  D3,D6
+        ROL.W   #7,D6
+        JMP     HEX3B
+        
+AR11EA5:
+        JSR     EA5
+        
+        MOVE.B  #',',(A4)+
+        MOVE.B  #'A',(A4)+
+        MOVE.W  D3,D6
+        ROL.W   #7,D6
+        JMP     HEX3B
 
 DT11EA5:
-        RTS
-
+        MOVE.B  #'#',(A4)+
+        MOVE.B  #'$',(A4)+
+        MOVE.W  D3,D6
+        ROL.W   #7,D6
+        JSR     HEX3B
+        
+        MOVE.B  #',',(A4)+
+        JMP     EA5
+        
 DP7:
         MOVE.L  A2,D4
         CLR.L   D6
@@ -868,28 +932,29 @@ DP7:
 
         EXT.W   D6
         ADD.W   D4,D6
-        JSR     HEX16B
-        RTS
+        JMP     HEX16B
+        
 DP2WORD:
         MOVE.W  (A2)+,D6
         ADD.L   D4,D6
-        JSR     HEX16B
-        RTS
+        JMP     HEX16B
 
 R11D7:
+        MOVE.B  #'#',(A4)+
+        MOVE.B  #'$',(A4)+
         MOVE.B  D3,D6
         JSR     HEX8B
         MOVE.B  #',',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.W  D3,D6
         ROL.W   #7,D6
-        JSR     HEX3B
-        RTS
+        JMP     HEX3B
 
 SHIFTS:
         BTST    #5,D3
         BNE     SHIFTREG
         MOVE.B  #'#',(A4)+
+        MOVE.B  #'$',(A4)+
         BRA     FINSHIFT
 SHIFTREG:
         MOVE.B  #'D',(A4)+
@@ -901,8 +966,42 @@ FINSHIFT:
         MOVE.B  #',',(A4)+
         MOVE.B  #'D',(A4)+
         ROR.W   #7,D6
-        JSR     HEX3B
+        JMP     HEX3B
+        
+*--------------
+*Place input into D5
+*--------------
+GETEA5:
+        MOVE.B  #'X',(A4)+
+        MOVE.B  #'X',(A4)+
+        MOVE.B  #'X',(A4)+
         RTS
+
+*--------------
+*Read Words After Opcode
+*--------------
+READIMM:
+        MOVEA.L A4,A5
+        SUBA.L  #$2,A5
+        MOVE.B  (A5),D1
+        MOVE.B  #'#',(A4)+
+        MOVE.B  #'$',(A4)+
+        CMPI.B  #'B',D1
+        BEQ     READBYTE
+        CMPI.B  #'W',D1
+        BEQ     READWORD
+        CMPI.B  #'L',D1
+        BEQ     READLONG
+        RTS
+READBYTE:
+        MOVE.W  (A2)+,D6
+        JMP     HEX8B
+READWORD:
+        MOVE.W  (A2)+,D6
+        JMP     HEX16B
+READLONG:
+        MOVE.L  (A2)+,D6
+        JMP     HEX32B
         
 *----------------------------------------------------------
 *EA Section Part 2
@@ -1184,6 +1283,7 @@ ERREAMSG:
         DC.B    'Found Invalid EA Mode',0
 
         END     START
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
