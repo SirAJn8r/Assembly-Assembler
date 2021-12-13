@@ -866,6 +866,203 @@ R11D7:
 
 SHIFTS:
         RTS
+        
+EACompare:      
+        CMPI.B  #%000,D3
+        BEQ     GetW            ;what is this exactly
+        BNE     EACompareLong
+                
+EACompareLong:
+        CMPI.B  #%001,D3
+        BEQ     GetL
+        BNE     EACompareData
+                
+EACompareData:
+        CMPI.B  #%100,D3
+        BEQ     findImmediate
+        BNE     dataError
+
+dataError:
+        LEA     ERR,A1
+        MOVE.B  #14,D0
+        TRAP    #15
+        RTS 
+*--------------------------------
+findImmediate:
+        MOVE.B  #$23,(A4)+
+        CMPI.B  #4,opCodeB
+        BLT     moveData
+        CMPI.B  #1,bitsSize     ;number of bits
+        BEQ     immediateType
+        CMPI.B  #2,bitsOfSize
+        BEQ     dataTypeOther
+        BRA     dataError
+
+moveData:
+        MOVE.W  opCodeSize, D5
+        CMPI.B  #%01,D5
+        BEQ     GetByte
+        CMPI.B  #%11,D5
+        BEQ     GetW
+        CMPI.B  #%10,D5
+        BEQ     GetL
+        BRA     dataError
+
+immediateType:
+        MOVE.W  opCodeSize,D5
+        CMPI.B  #%0,D5
+        BEQ     GetW
+        CMPI.B  #%1,D5
+        BEQ     GetL
+        BRA     dataError
+
+dataTypeOther:
+        MOVE.W  opCodeSize,D5
+        CMPI.B  #%00,D5
+        BEQ     GetByte
+        CMPI.B  #%10,D5
+        BEQ     GetW
+        CMPI.B  #%11,D5
+        BEQ     GetL
+        BRA     dataError                
+               
+*---------------------------------------
+GetByte:
+        MOVE.B  #$24,(A4)+
+        MOVE.W  (A2)+,D4
+        MOVE.B  #2,hexLength   
+        CLR.B   counter         ;zero conter
+        MOVE.B  #24,D2
+        LSL.L   D2,D4
+        JSR     comparison
+        RTS
+
+GetW:
+        MOVE.B  #$24, (A4)+
+        MOVE.W  (A2)+,  D4
+        MOVE.B  #4, hexLength
+        CLR.B   counter
+        MOVE.B  #16, D2
+        LSL.L   D2, D4
+        JSR     comparison
+        RTS
+
+GetL:   
+        MOVE.B  #$24, (A4)+
+        MOVE.L  (A2)+,D4
+        MOVE.B  #8, hexLength
+        CLR.B   counter
+        JSR     comparison
+        RTS
+
+SaveByte:
+        MOVE.W  (A2)+,D4
+        MOVE.B  #24,D2
+        LSL.L   D2,D4
+        MOVE.L  D4,saveAddress
+        RTS
+
+SaveWord:
+        MOVE.W  (A2)+,D4
+        MOVE.B  #16,D2
+        LSL.L   D2,D4
+        MOVE.L  D4,saveAddress
+        RTS
+                
+SaveLong:
+        MOVE.L  (A2)+,D4
+        MOVE.L  D4,saveAddress 
+        RTS
+
+*----------------------HEX TO ASCII -----------------------
+hexCalc:
+        ADDI.B  #1,counter 
+        ROL.L   #4,D4  
+        MOVE.B  D4,D3
+        LSL.B   #4,D3
+        LSR.B   #4,D3
+        JSR     comparison
+        MOVE.B  hexLength,D0 //what is hex length same as counter
+        CMP.B   counter,D0
+        BNE     hexCalc
+        
+        RTS
+
+comparison: 
+        CMPI.B  #%1010,D3
+        BGE     saveHexLetter
+        BLT     saveHexNumber
+
+saveHexNumber:
+        ADDI.B  #$30,D3
+        MOVE.B  D3,(A4)+
+        
+        RTS
+
+saveHexLetter:
+        ADDI.B  #$37,D3
+        MOVE.B  D3,(A4)+
+        
+        RTS
+
+*------------Data Register Direct --
+        MOVE.W  D6,D0                   
+        ANDI.W  #$7,D0                  
+        MOVE.B  #$44,(A2)+
+        JSR     comparison
+        CLR.L   D6
+            
+        RTS
+*------------Address Register Direct --
+        MOVE.B  #$41, (A4)+
+        JSR     comparison
+        CLR.L   D6
+            
+        RTS
+*-------Indirect Address Register----------------
+        MOVE.B  #$28,(A4)+
+        MOVE.B  #$41,(A4)+
+        JSR     comparison
+
+        CLR.L   D6
+        MOVE.B  #$29,(A4)+
+
+        RTS
+*----Indirect Address Register Post Increment----
+        MOVE.B  #$28,(A4)+
+        MOVE.B  #$41,(A4)+
+        JSR     comparison
+
+        CLR.L   D6
+
+        MOVE.B  #$29,(A4)+
+        MOVE.B  #$2B,(A4)+
+
+        RTS
+*----Indirect Address Register Pre Decrement-----------
+        MOVE.B  #$2D,(A4)+
+        MOVE.B  #$28,(A4)+
+        MOVE.B  #$41,(A4)+
+        JSR     comparison
+
+        CLR.L   D6
+
+        MOVE.B  #$29,(A4)+
+        CLR.L   D6
+            
+        RTS
+*----EA Address Long-----------
+        MOVE.B  #$24,(A4)+
+        RTS
+
+*------------Immediate Data-----------------------
+        MOVE.B  #$24,(A4)+
+        MOVE.B  #$23,(A4)+
+        MOVE.L  ImmData,D4      ;this is the temp copy for the Hex decode
+        MOVE.B  ImmDataSize,HexLength
+        CLR.B   counter         ;reset Counter before every Hex Decode
+        JSR     hexCalc
+        RTS
 
 *----------------------------------------------------------
 *Error Catching Section
@@ -902,6 +1099,20 @@ ERREA:
 *----------------------------------------------------------
 
 END:    SIMHALT
+
+*--
+ERR         DC.B    'error',0
+counter     DS.B    1
+hexlength   DS.B    1
+OpCodeSize  DS.W    1
+OpCodeB     DS.W    1
+bitsSize    DS.B    1
+saveAddress DS.L    1
+
+bitsOfSize  DS.B    1
+ImmDataSize DC.B    $10
+ImmData    DS.B     ImmDataSize
+*--
 
 BUFSIZE DC.B    $40
 BUFFER: DS.B    BUFSIZE
