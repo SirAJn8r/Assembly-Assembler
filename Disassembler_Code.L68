@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/13/2021 10:06:22 PM
+Created On: 12/13/2021 10:13:23 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Assembly Disassembler
@@ -27,7 +27,7 @@ Created On: 12/13/2021 10:06:22 PM
 00001002                            23  *----------------------------------------------------------
 00001002                            24  
 00001002                            25  STARTADDR:
-00001002  43F9 000039E2             26          LEA     STARTMSG,A1
+00001002  43F9 000039C2             26          LEA     STARTMSG,A1
 00001008  103C 000D                 27          MOVE.B  #13,D0
 0000100C  4E4F                      28          TRAP    #15         ;Print out start address message
 0000100E  43F9 00003989             29          LEA     INPADDR,A1
@@ -35,7 +35,7 @@ Created On: 12/13/2021 10:06:22 PM
 0000101A  2445                      31          MOVEA.L D5,A2       ;Move address into A2
 0000101C                            32  
 0000101C                            33  ENDADDR:
-0000101C  43F9 00003A10             34          LEA     ENDMSG,A1
+0000101C  43F9 000039F0             34          LEA     ENDMSG,A1
 00001022  103C 000D                 35          MOVE.B  #13,D0
 00001026  4E4F                      36          TRAP    #15         ;Print out end address message
 00001028  43F9 00003989             37          LEA     INPADDR,A1
@@ -54,7 +54,7 @@ Created On: 12/13/2021 10:06:22 PM
 0000104A  6000 0026                 50          BRA     LOOP
 0000104E                            51  
 0000104E                            52  REPORFIN:
-0000104E  43F9 00003A3C             53          LEA     REPORFINMSG,A1
+0000104E  43F9 00003A1C             53          LEA     REPORFINMSG,A1
 00001054  103C 000D                 54          MOVE.B  #13,D0
 00001058  4E4F                      55          TRAP    #15         ;Print out repeat or finish message
 0000105A  103C 0005                 56          MOVE.B  #5,D0
@@ -1132,7 +1132,7 @@ Created On: 12/13/2021 10:06:22 PM
 00001BBC  4201                    1128          CLR.B   D1          ;B2 = exactly second in series (so add -)
 00001BBE                          1129                              ;B1 = has there been a reg already (so add comma)
 00001BBE                          1130                              ;B0 = was one immediately before (so remove previous to add new reg)    
-00001BBE  4BF9 000039D2           1131          LEA     MOVMA07,A5  ;Load printing values
+00001BBE  4BF9 000039B2           1131          LEA     MOVMA07,A5  ;Load printing values
 00001BC4  4EB9 00001C16           1132          JSR     MOVEMLOOP
 00001BCA                          1133          
 00001BCA  4EB9 00001BEA           1134          JSR     CHECKADDSLASH
@@ -1140,7 +1140,7 @@ Created On: 12/13/2021 10:06:22 PM
 00001BD2                          1136          
 00001BD2  7A07                    1137          MOVEQ   #7,D5       ;Set up again
 00001BD4  4201                    1138          CLR.B   D1
-00001BD6  4BF9 000039C2           1139          LEA     MOVMD07,A5
+00001BD6  4BF9 000039A2           1139          LEA     MOVMD07,A5
 00001BDC  4EB9 00001C16           1140          JSR     MOVEMLOOP
 00001BE2                          1141          
 00001BE2  4EB9 00001BFE           1142          JSR     CHECKREMSLASH
@@ -1219,27 +1219,27 @@ Created On: 12/13/2021 10:06:22 PM
 00001C74                          1215  *----------------------------------------------------------
 00001C74                          1216  
 00001C74                          1217  ERRIN:
-00001C74  43F9 00003A6E           1218          LEA     ERRINMSG,A1
+00001C74  43F9 00003A4E           1218          LEA     ERRINMSG,A1
 00001C7A  103C 000D               1219          MOVE.B  #13,D0
 00001C7E  4E4F                    1220          TRAP    #15
 00001C80  4EF8 1002               1221          JMP     STARTADDR
 00001C84                          1222  ERROP:
-00001C84  43F9 00003A9D           1223          LEA     ERROPMSG,A1
+00001C84  43F9 00003A7D           1223          LEA     ERROPMSG,A1
 00001C8A  103C 000D               1224          MOVE.B  #13,D0
 00001C8E  4E4F                    1225          TRAP    #15
 00001C90  4EF8 1072               1226          JMP     LOOP
 00001C94                          1227  ERRCOM:
-00001C94  43F9 00003AB2           1228          LEA     ERRCOMMSG,A1
+00001C94  43F9 00003A92           1228          LEA     ERRCOMMSG,A1
 00001C9A  700D                    1229          MOVE.L  #13,D0
 00001C9C  4E4F                    1230          TRAP    #15
 00001C9E  4EF8 1072               1231          JMP     LOOP
 00001CA2                          1232  ERRSIZE:
-00001CA2  43F9 00003AD0           1233          LEA     ERRSIZEMSG,A1
+00001CA2  43F9 00003AB0           1233          LEA     ERRSIZEMSG,A1
 00001CA8  103C 000D               1234          MOVE.B  #13,D0
 00001CAC  4E4F                    1235          TRAP    #15
 00001CAE  4E75                    1236          RTS
 00001CB0                          1237  ERREA:
-00001CB0  43F9 00003AE3           1238          LEA     ERREAMSG,A1
+00001CB0  43F9 00003AC3           1238          LEA     ERREAMSG,A1
 00001CB6  103C 000D               1239          MOVE.B  #13,D0
 00001CBA  4E4F                    1240          TRAP    #15
 00001CBC  4EF8 1072               1241          JMP     LOOP
@@ -1259,29 +1259,27 @@ Created On: 12/13/2021 10:06:22 PM
 00003992  =0000000A               1255  LF:     EQU     $0A
 00003992                          1256  
 00003992= 30 31 32 33 34 35 ...   1257  ITOA:   DC.B    '0123456789ABCDEF'
-000039A2= 41 37 41 36 41 35 ...   1258  MOVMA70 DC.B    'A7','A6','A5','A4','A3','A2','A1','A0'
-000039B2= 44 37 44 36 44 35 ...   1259  MOVMD70 DC.B    'D7','D6','D5','D4','D3','D2','D1','D0'
-000039C2= 41 30 41 31 41 32 ...   1260  MOVMD07 DC.B    'A0','A1','A2','A3','A4','A5','A6','A7'
-000039D2= 44 30 44 31 44 32 ...   1261  MOVMA07 DC.B    'D0','D1','D2','D3','D4','D5','D6','D7'
-000039E2                          1262  
-000039E2                          1263  STARTMSG:
-000039E2= 0D 0A 49 6E 70 75 ...   1264          DC.B    CR,LF,'Input the starting address for the decoder:',0
-00003A10                          1265  ENDMSG:
-00003A10= 0D 0A 49 6E 70 75 ...   1266          DC.B    CR,LF,'Input the ending address for the decoder:',0
-00003A3C                          1267  REPORFINMSG:
-00003A3C= 0D 0A 57 6F 75 6C ...   1268          DC.B    CR,LF,'Would you like to run the program again? (Y/N):',0
-00003A6E                          1269  ERRINMSG:
-00003A6E= 0D 0A 50 6C 65 61 ...   1270          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
-00003A9D                          1271  ERROPMSG:
-00003A9D= 46 6F 75 6E 64 20 ...   1272          DC.B    'Found Invalid Opcode',0
-00003AB2                          1273  ERRCOMMSG:
-00003AB2= 46 6F 75 6E 64 20 ...   1274          DC.B    'Found Not Implemented Command',0
-00003AD0                          1275  ERRSIZEMSG:
-00003AD0= 46 6F 75 6E 64 20 ...   1276          DC.B    'Found Invalid Size',0
-00003AE3                          1277  ERREAMSG:
-00003AE3= 46 6F 75 6E 64 20 ...   1278          DC.B    'Found Invalid EA Mode',0
-00003AF9                          1279  
-00003AF9                          1280          END     START
+000039A2= 41 30 41 31 41 32 ...   1258  MOVMD07 DC.B    'A0','A1','A2','A3','A4','A5','A6','A7'
+000039B2= 44 30 44 31 44 32 ...   1259  MOVMA07 DC.B    'D0','D1','D2','D3','D4','D5','D6','D7'
+000039C2                          1260  
+000039C2                          1261  STARTMSG:
+000039C2= 0D 0A 49 6E 70 75 ...   1262          DC.B    CR,LF,'Input the starting address for the decoder:',0
+000039F0                          1263  ENDMSG:
+000039F0= 0D 0A 49 6E 70 75 ...   1264          DC.B    CR,LF,'Input the ending address for the decoder:',0
+00003A1C                          1265  REPORFINMSG:
+00003A1C= 0D 0A 57 6F 75 6C ...   1266          DC.B    CR,LF,'Would you like to run the program again? (Y/N):',0
+00003A4E                          1267  ERRINMSG:
+00003A4E= 0D 0A 50 6C 65 61 ...   1268          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
+00003A7D                          1269  ERROPMSG:
+00003A7D= 46 6F 75 6E 64 20 ...   1270          DC.B    'Found Invalid Opcode',0
+00003A92                          1271  ERRCOMMSG:
+00003A92= 46 6F 75 6E 64 20 ...   1272          DC.B    'Found Not Implemented Command',0
+00003AB0                          1273  ERRSIZEMSG:
+00003AB0= 46 6F 75 6E 64 20 ...   1274          DC.B    'Found Invalid Size',0
+00003AC3                          1275  ERREAMSG:
+00003AC3= 46 6F 75 6E 64 20 ...   1276          DC.B    'Found Invalid EA Mode',0
+00003AD9                          1277  
+00003AD9                          1278          END     START
 
 No errors detected
 No warnings generated
@@ -1333,19 +1331,19 @@ DT11EA5             1A02
 EA5                 1986
 END                 1CC0
 ENDADDR             101C
-ENDMSG              3A10
+ENDMSG              39F0
 EOR                 1798
 EORI                1528
 ERRCOM              1C94
-ERRCOMMSG           3AB2
+ERRCOMMSG           3A92
 ERREA               1CB0
-ERREAMSG            3AE3
+ERREAMSG            3AC3
 ERRIN               1C74
-ERRINMSG            3A6E
+ERRINMSG            3A4E
 ERROP               1C84
-ERROPMSG            3A9D
+ERROPMSG            3A7D
 ERRSIZE             1CA2
-ERRSIZEMSG          3AD0
+ERRSIZEMSG          3AB0
 FINSHIFT            1A74
 FORORDER            1B94
 GETEA5              1AC2
@@ -1411,10 +1409,8 @@ MOVEMEA             1B8C
 MOVEMLIST           1BB8
 MOVEMLOOP           1C16
 MOVEQ               16D4
-MOVMA07             39D2
-MOVMA70             39A2
-MOVMD07             39C2
-MOVMD70             39B2
+MOVMA07             39B2
+MOVMD07             39A2
 MULS                17E6
 MULU                17BE
 NOP                 15DC
@@ -1461,14 +1457,14 @@ READLONG            1ABC
 READWORD            1AB6
 REMSLASH            1C0C
 REPORFIN            104E
-REPORFINMSG         3A3C
+REPORFINMSG         3A1C
 REVORDER            1BA6
 SERIES              1C34
 SHIFTREG            1A70
 SHIFTS              1A5C
 START               1000
 STARTADDR           1002
-STARTMSG            39E2
+STARTMSG            39C2
 STARTRANGE          1C44
 SUB                 174C
 SUBQ                1638

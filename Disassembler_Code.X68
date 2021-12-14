@@ -1255,8 +1255,6 @@ CR:     EQU     $0D
 LF:     EQU     $0A
 
 ITOA:   DC.B    '0123456789ABCDEF'
-MOVMA70 DC.B    'A7','A6','A5','A4','A3','A2','A1','A0'
-MOVMD70 DC.B    'D7','D6','D5','D4','D3','D2','D1','D0'
 MOVMD07 DC.B    'A0','A1','A2','A3','A4','A5','A6','A7'
 MOVMA07 DC.B    'D0','D1','D2','D3','D4','D5','D6','D7'
 
