@@ -567,7 +567,7 @@ MOVEQ:  MOVE.B  #'M',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        JMP     R11D7
+        JMP     R11DT7
 
 DIVU:   MOVE.B  #'D',(A4)+
         MOVE.B  #'I',(A4)+
@@ -605,7 +605,7 @@ CMP:    MOVE.B  #'C',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        JMP     R11EA5
+        JMP     R11EA5
 
 EOR:    MOVE.B  #'E',(A4)+
         MOVE.B  #'O',(A4)+
@@ -742,67 +742,61 @@ LONG:   MOVE.B  #'.',(A4)+
 *----------------------------------------------------------
 *EA Section
 *----------------------------------------------------------
+* 
+*----------------------------------------------------------
 
-EA5:
+PRNTDT11:
+        MOVE.W  D3,D6
+        ROL.W   #7,D6
+        JMP     HEX3B
+
+EA5:    
         MOVE.B  D3,D5
         JMP     GETEA5
 
-D11S5:
+D11S5:  
         JSR     EA5
         
         MOVE.W  D3,D4
         ROL.W   #7,D4
         ANDI.W  #$7,D4      ;Isolate dest reg
-        
         MOVE.W  D3,D5
         ROR.W   #3,D5
         ANDI.W  #$38,D5     ;Isolate dest mode
-        
-        OR.W    D4,D5       ;Combine where source mode/reg would be
+        OR.W    D4,D5       ;Combine in EA5-format
+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     GETEA5
 
 R11DEA5:
-        BTST    #8,D3
+        BTST    #8,D3       ;If B8 is on, reverse the order
         BEQ     R11EA5
         
         MOVE.B  #'D',(A4)+
-        MOVE.W  D3,D6
-        ROL.W   #7,D6
-        JSR     HEX3B
-
+        JMP     PRNTDT11
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
 
-R11EA5:
+R11EA5: 
         JSR     EA5
-        
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #'D',(A4)+
-        MOVE.W  D3,D6
-        ROL.W   #7,D6
-        JMP     HEX3B
+        JMP     PRNTDT11
         
 AR11EA5:
         JSR     EA5
-        
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #'A',(A4)+
-        MOVE.W  D3,D6
-        ROL.W   #7,D6
-        JMP     HEX3B
+        JMP     PRNTDT11
 
 DT11EA5:
         MOVE.B  #'#',(A4)+
         MOVE.B  #'$',(A4)+
-        MOVE.W  D3,D6
-        ROL.W   #7,D6
-        JSR     HEX3B
-        
+        JSR     PRNTDT11
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
@@ -813,17 +807,15 @@ DP7:
         MOVE.B  D3,D6
         TST.B   D6
         BEQ     DP2WORD
-
         EXT.W   D6
-        ADD.W   D4,D6
+        ADD.L   D4,D6
         JMP     HEX16B
-        
 DP2WORD:
         MOVE.W  (A2)+,D6
         ADD.L   D4,D6
         JMP     HEX16B
 
-R11D7:
+R11DT7:
         MOVE.B  #'#',(A4)+
         MOVE.B  #'$',(A4)+
         MOVE.B  D3,D6
@@ -831,98 +823,73 @@ R11D7:
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #'D',(A4)+
-        MOVE.W  D3,D6
-        ROL.W   #7,D6
-        JMP     HEX3B
+        JMP     PRNTDT11
 
 SHIFTS:
         BTST    #5,D3
-        BNE     SHIFTREG
+        BNE     SHIFTREG    ;Print either Dn or #$n
         MOVE.B  #'#',(A4)+
         MOVE.B  #'$',(A4)+
         BRA     FINSHIFT
 SHIFTREG:
         MOVE.B  #'D',(A4)+
 FINSHIFT:
-        MOVE.W  D3,D6
-        ROL.W   #7,D6
-        JSR     HEX3B
-        
+        JSR     PRNTDT11
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #'D',(A4)+
-        ROR.W   #7,D6
+        MOVE.W  D3,D6
         JMP     HEX3B
 
-*--------------
-*Read Words After Opcode
-*--------------
-READIMM:
-        MOVE.B  #'#',(A4)+
-        MOVE.B  #'$',(A4)+
-        CMPI.B  #0,D7
-        BEQ     READBYTE
-        CMPI.B  #1,D7
-        BEQ     READWORD
-        CMPI.B  #2,D7
-        BEQ     READLONG
-        RTS
-READBYTE:
-        MOVE.W  (A2)+,D6
-        JMP     HEX8B
-READWORD:
-        MOVE.W  (A2)+,D6
-        JMP     HEX16B
-READLONG:
-        MOVE.L  (A2)+,D6
-        JMP     HEX32B
+*----------------------------------------------------------
+*GETEA5 Section
+*----------------------------------------------------------
+* Take input as EA5-formatting within D5
+* Temp uses D1 to parse D5
+* Temp uses D6 to use HEX3B
+*----------------------------------------------------------
 
-*------------------
-*Place input into D5 before using GETEA5
-*------------------
-GETEA5:
-        MOVE.B  D5,D1
+GETEA5: MOVE.B  D5,D1
         LSR.B   #3,D1
         ANDI.B  #$7,D1
         CMPI.B  #$00,D1
-        BEQ     DDIR
+        BEQ     MODE0
         CMPI.B  #$01,D1
-        BEQ     ADIR
+        BEQ     MODE1
         CMPI.B  #$02,D1
-        BEQ     AINDIR
+        BEQ     MODE2
         CMPI.B  #$03,D1
-        BEQ     AINDIRPOST
+        BEQ     MODE3
         CMPI.B  #$04,D1
-        BEQ     AINDIRPRE
+        BEQ     MODE4
         CMPI.B  #$07,D1
         BEQ     MODE7
-        BRA     ERREA
+        BRA    ERREA
 
-DDIR:
-        MOVE.B  #'D',(A4)+
+MODE0:  MOVE.B  #'D',(A4)+
         MOVE.B  D5,D6
         JMP     HEX3B
-ADIR:
-        MOVE.B  #'A',(A4)+
+
+MODE1:  MOVE.B  #'A',(A4)+
         MOVE.B  D5,D6
         JMP     HEX3B
-AINDIR:
-        MOVE.B  #'(',(A4)+
+
+MODE2:  MOVE.B  #'(',(A4)+
         MOVE.B  #'A',(A4)+
         MOVE.B  D5,D6
         JSR     HEX3B
         MOVE.B  #')',(A4)+
         RTS
-AINDIRPOST:
-        MOVE.B  #'(',(A4)+
+
+MODE3:  MOVE.B  #'(',(A4)+
         MOVE.B  #'A',(A4)+
         MOVE.B  D5,D6
         JSR     HEX3B
         MOVE.B  #')',(A4)+
         MOVE.B  #'+',(A4)+
         RTS
-AINDIRPRE:
-        MOVE.B  #'-',(A4)+
+
+MODE4:  MOVE.B  #'-',(A4)+
         MOVE.B  #'(',(A4)+
         MOVE.B  #'A',(A4)+
         MOVE.B  D5,D6
@@ -930,28 +897,42 @@ AINDIRPRE:
         MOVE.B  #')',(A4)+
         RTS
 
-MODE7:
-        MOVE.B  D5,D1
+MODE7:  MOVE.B  D5,D1
         ANDI.B  #$7,D1
         CMPI.B  #$00,D1
-        BEQ     ABSSHORT
+        BEQ     READWORD
         CMPI.B  #$01,D1
-        BEQ     ABSLONG
+        BEQ     READLONG
         CMPI.B  #$04,D1
-        BEQ     LITERAL
+        BEQ     READIMM
         BRA     ERREA
-ABSSHORT:
-        MOVE.B  #'$',(A4)+
-        JMP     READWORD
-ABSLONG:
-        MOVE.B  #'$',(A4)+
-        JMP     READLONG
-LITERAL:
-        JMP     READIMM
         
-*------------------
+*-------Read Words After Opcode-------
+READIMM:
+        MOVE.B  #'#',(A4)+
+        CMPI.B  #0,D7
+        BEQ     READBYTE
+        CMPI.B  #1,D7
+        BEQ     READWORD
+        CMPI.B  #2,D7
+        BEQ     READLONG
+        BRA     ERREA
+READBYTE:
+        MOVE.B  #'$',(A4)+
+        MOVE.W  (A2)+,D6
+        JMP     HEX8B
+READWORD:
+        MOVE.B  #'$',(A4)+
+        MOVE.W  (A2)+,D6
+        JMP     HEX16B
+READLONG:        
+        MOVE.B  #'$',(A4)+
+        MOVE.L  (A2)+,D6
+        JMP     HEX32B
+        
+*----------------------------------------------------------
 *MOVEM EA Section
-*------------------
+*----------------------------------------------------------
 MOVEMEA:
         BTST    #10,D3
         BNE     REVORDER
@@ -1026,8 +1007,7 @@ SERIES:
         BTST    #2,D1
         BNE     STARTRANGE
 
-        ;Continue range
-        MOVE.B  #0,-(A4)
+        MOVE.B  #0,-(A4)    ;Continue range
         MOVE.B  #0,-(A4)
 STARTRANGE:
         BCLR    #2,D1
