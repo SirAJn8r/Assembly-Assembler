@@ -11,12 +11,8 @@
 *----------------------------------------------------------
 
 START:
-                            ;D0 (temp var) is used for trap/printing
         CLR.W   D2          ;D2 stores the current number of lines on the screen
                             ;D3 stores the current opcode being read
-                            ;D4 (temp var) is used for the clr buffer index
-                            ;D5 (temp var) is used for reading addresses from inputs
-                            ;D6 (temp var) is used for the hex print (AToI) input parameter
                             ;D7 stores the current opcode's size
                             ;A2 stores the start/current address
                             ;A3 stores the end address
@@ -70,16 +66,16 @@ REPORFIN:
 *----------------------------------------------------------
 
 LOOP:
-        ADDI.W  #1,D2
-        CMPI.W  #30,D2
-        BGE     WAITUSER    ;If 30 lines are on the screen, pause
-
         JSR     CLRBUF      ;Clear printing buffer
         JSR     MEMPRINT    ;Add the memory address
         MOVE.W  (A2)+,D3    ;Reads the next command
 
         CMPA.W  A2,A3       ;Continue loop until start = end (not inclusive)
         BLE     REPORFIN    ;Then ask if the user is done
+        
+        ADDI.W  #1,D2
+        CMPI.W  #30,D2
+        BGE     WAITUSER    ;If 30 lines are on the screen, pause
 
         MOVE.B  #$FF,D7     ;Reset the size tracker
         JSR     OPXXXX      ;Add the operation/operands
@@ -1282,10 +1278,6 @@ ERREAMSG:
         DC.B    'Found Invalid EA Mode',0
 
         END     START
-
-
-
-
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
