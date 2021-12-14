@@ -1,25 +1,25 @@
 *-----------------------------------------------------------
 * Title      : Assembly Disassembler
 * Written by : Jesse Oteba and Alex Lambert
-* Date       : 11/30/2021
+* Date       : 12/15/2021
 * Description: Decodes binary opcodes into assembly code
 *-----------------------------------------------------------
-        ORG     $1000     
-
-*----------------------------------------------------------
-*Initialization Section
-*----------------------------------------------------------
-
+        ORG     $1000
 START:
-        CLR.W   D2          ;D2 stores the current number of lines on the screen
-                            ;D3 stores the current opcode being read
-                            ;D7 stores the current opcode's size
-                            ;A2 stores the start/current address
-                            ;A3 stores the end address
-                            ;A4 stores the print buffer
-        
+
+*---Permanent Variables---
+    ;D2 stores the current number of lines on the screen
+    ;D3 stores the current opcode being read
+    ;D7 stores the current opcode's size
+    ;A2 stores the start/current address
+    ;A3 stores the end address
+    ;A4 stores the print buffer
+
 *----------------------------------------------------------
-*Input Section
+*Input/Initialization Section
+*----------------------------------------------------------
+* Temp uses D0,D1,A1 for printing
+* Temp uses D5 to use HEXTOBIN function
 *----------------------------------------------------------
 
 STARTADDR:
@@ -40,16 +40,14 @@ ENDADDR:
         
         CLR.W   D2
         BRA     LOOP
-JERRINS:
-        JMP     ERRIN
-        
-WAITUSER:
+
+WAITUSER:                   ;Wait for user enter key
         CLR.W   D2
         MOVE.B  #5,D0
         TRAP    #15
         BRA     LOOP
 
-REPORFIN:
+REPORFIN:                   ;Repeat Or Finish Program
         LEA     REPORFINMSG,A1
         MOVE.B  #13,D0
         TRAP    #15         ;Print out repeat or finish message
@@ -77,18 +75,21 @@ LOOP:
         CMPI.W  #30,D2
         BGE     WAITUSER    ;If 30 lines are on the screen, pause
 
-        MOVE.B  #$FF,D7     ;Reset the size tracker
-        JSR     OPXXXX      ;Add the operation/operands
-        JSR     PRNTBUF     ;Print the printing buffer 
+        MOVE.B  #$FF,D7     ;Set the size tracker to invalid
+        JSR     OPCODE      ;Parse and print the command
+        JSR     PRNTBUF     ;Print the printing buffer
         
         BRA     LOOP
 
 *----------------------------------------------------------
 *Main Loop Helper Funcions Section
 *----------------------------------------------------------
+* CLRBUFFER temp uses D4 as an index
+* MEMPRINT temp uses D6
+* PRNTBUF temp uses D0 and A1
+*----------------------------------------------------------
 
 CLRBUF:
-        CLR.L   D4
         MOVE.W  #BUFSIZE,D4
         LEA     BUFFER,A4
 CLRBUFLOOP:
@@ -101,12 +102,7 @@ CLRBUFLOOP:
         
 MEMPRINT:
         MOVE.L  A2,D6
-        SWAP    D6
-        JSR     HEX16B
-        
-        SWAP    D6
-        JSR     HEX16B
-        
+        JSR     HEX32B        
         MOVE.B  #$9,(A4)+
         RTS
 
@@ -119,64 +115,67 @@ PRNTBUF:
 *----------------------------------------------------------
 *Hex to Binary Section (ITOA)
 *----------------------------------------------------------
+* Temp uses D0, D1, and A1 to take input
+* Stores output in D5
+* Temp uses D4 as an index
+*----------------------------------------------------------
 
 HEXTOBIN:
         CLR.L   D5          ;Clear output
         MOVE.B  #2,D0
         TRAP    #15         ;Read input into A1
-        CMPI.W  #4,D1       ;Make sure D1 = 4 bytes
-        BEQ     H2BWORD
-        CMPI.W  #8,D1
-        BEQ     H2BLONG
-        BRA     JERRINS
-
-H2BLONG:                    ;Reads 8 chars as a long of binary
-        MOVE.B  #8,D4
-        BRA     H2BLOOP
-H2BWORD:                   ;Reads 4 chars as a word of binary 
-        MOVE.B  #4,D4
-        CLR.W   D5          ;Clear output
+        MOVE.B  D1,D4       ;Start i at length, which must be 4 or 8
+        CMPI.W  #4,D4
+        BEQ     H2BLOOP
+        CMPI.W  #8,D4
+        BEQ     H2BLOOP
+        BRA     JERRIN
 
 H2BLOOP:
         MOVE.B  (A1)+,D1    ;Get next char
         ROL.L   #4,D5       ;Make room for the next output
-        JSR     H2BCHAR     ;Read the char into D5
+        BRA     H2BCHAR     ;Read the char into D5        
+CONTH2BLOOP:
         SUBI.B  #1,D4
         BNE     H2BLOOP
         RTS
+
 H2BCHAR:
-        MOVE.B  D1,D7
-        ANDI.B  #$F0,D7
-        CMPI.B  #$30,D7
+        MOVE.B  D1,D0
+        ANDI.B  #$F0,D0
+        CMPI.B  #$30,D0
         BEQ     NUM         ;Go to Number parser if it's 0-9
-        CMPI.B  #$40,D7
+        CMPI.B  #$40,D0
         BEQ     LETTER      ;Go to Letter parser if it's A-F
-        CMPI.B  #$60,D7
+        CMPI.B  #$60,D0
         BEQ     LETTER      ;Go to Letter parser if it's a-f
         BRA     JERRIN
-NUM:                        ;Lowest ascii nibble is exactly the binary number
-        MOVE.B  D1,D7
-        ANDI.B  #$0F,D7
-        OR.B    D7,D5
-        RTS
-LETTER:                     ;Lowest ascii nibble for caps and lowercase
-        MOVE.B  D1,D7       ; after adding 9 is the binary number
-        ADD.B   #9,D7
-        ANDI.B  #$0F,D7
-        CMPI.B  #$06,D7
-        BLT     JERRIN
-        CMPI.B  #$00,D7
-        BEQ     JERRIN
-        OR.B    D7,D5
-        RTS
 
-JERRIN  JSR     ERRIN
-        JMP     STARTADDR
+NUM:    MOVE.B  D1,D0       ;Lowest ascii nibble is exactly the binary number
+        ANDI.B  #$0F,D0
+        OR.B    D0,D5
+        BRA     CONTH2BLOOP
+
+LETTER: MOVE.B  D1,D0       ;Lowest ascii nibble for both caps and lowercase
+        ADD.B   #9,D0       ; after adding 9 is the binary number
+        ANDI.B  #$0F,D0
+        CMPI.B  #$06,D0
+        BLT     JERRIN
+        CMPI.B  #$00,D0
+        BEQ     JERRIN
+        OR.B    D0,D5
+        BRA     CONTH2BLOOP
+
+JERRIN  JMP     ERRIN
 
 *----------------------------------------------------------
 *Print in Hex Section (ATOI)
 *----------------------------------------------------------
-* Put input into D6
+* Takes input into as D6
+* Temp uses D7 and A0
+* NOTE: Hex3B destroys some data
+*----------------------------------------------------------
+
 
 HEX32B: ;Uses Bits 32-0 of D6 to print out 8 Hex Chars
         SWAP    D6
@@ -196,16 +195,12 @@ HEX8B:  ;Uses Bits 7-0 of D6 to print out 2 Hex Chars
 HEX4B:  ;Uses Bits 3-0 of D6 to print out 1 Hex Char
         JMP     PRNTHEX
 HEX3B:  ;Uses Bits 2-0 of D6 to print out 1 Hex Char
-        MOVE.B  D6,D0
         ANDI.B  #$7,D6
-        JSR     PRNTHEX
-        MOVE.B  D0,D6
-        RTS
+        JMP     PRNTHEX
         
 PRNTHEX:
-        CLR.L   D7
         MOVE.B  D6,D7
-        ANDI.B  #$0F,D7
+        ANDI.L  #$0F,D7
         
         LEA     ITOA,A0
         ADDA.L  D7,A0
@@ -215,85 +210,70 @@ PRNTHEX:
 *----------------------------------------------------------
 *Get Opcode Section
 *----------------------------------------------------------
+* Temp uses D4
+*----------------------------------------------------------
 
-OPXXXX:
-        BTST    #15,D3
-        BEQ     OP0XXX
-        JMP     OP1XXX
-
-OP0XXX: BTST    #14,D3
-        BEQ     OP00XX
-        JMP     OP01XX
-
-OP1XXX: BTST    #14,D3
-        BEQ     OP10XX
-        JMP     OP11XX
-
-*----------
-OP00XX: BTST    #13,D3
-        BEQ     OP000X
-        JMP     OP001X
-
-OP01XX: BTST    #13,D3
-        BEQ     OP010X
-        JMP     OP011X
-
-OP10XX: BTST    #13,D3
-        BEQ     OP100X
-        JMP     OP101X
-
-OP11XX: BTST    #13,D3
-        BEQ     OP110X
-        JMP     OP111X
-
-*----------
-OP000X: BTST    #12,D3
-        BEQ     J0000
-        JMP     OP0001
-J0000:  JMP     OP0000
-        
-OP001X: BTST    #12,D3
-        BEQ     J0010
-        JMP     OP0011
-J0010:  JMP     OP0010
-        
-OP010X: BTST    #12,D3
-        BEQ     J0100
-        JMP     OP0101
-J0100:  JMP     OP0100
-        
-OP011X: BTST    #12,D3
-        BEQ     J0110
-        JMP     OP0111
-J0110:  JMP     OP0110
-
-OP100X: BTST    #12,D3
-        BEQ     J1000
-        JMP     OP1001
-J1000:  JMP     OP1000
-
-OP101X: BTST    #12,D3
-        BEQ     J1010
-        JMP     OP1011
-J1010:  JMP     ERROP
-
-OP110X: BTST    #12,D3
-        BEQ     J1100
-        JMP     OP1101
-J1100:  JMP     OP1100
-
-OP111X: BTST    #12,D3
-        BEQ     J1110
+OPCODE: MOVE.W  D3,D4
+        ROL.W   #4,D4
+        ANDI.B  #$0F,D4
+        CMPI.B  #%0000,D4
+        BEQ     JOP0000
+        CMPI.B  #%0001,D4
+        BEQ     JOP0001
+        CMPI.B  #%0010,D4
+        BEQ     JOP0010
+        CMPI.B  #%0011,D4
+        BEQ     JOP0011
+        CMPI.B  #%0100,D4
+        BEQ     JOP0100
+        CMPI.B  #%0101,D4
+        BEQ     JOP0101
+        CMPI.B  #%0110,D4
+        BEQ     JOP0110
+        CMPI.B  #%0111,D4
+        BEQ     JOP0111
+        CMPI.B  #%1000,D4
+        BEQ     JOP1000
+        CMPI.B  #%1001,D4
+        BEQ     JOP1001
+        CMPI.B  #%1010,D4
+        BEQ     JOP1010
+        CMPI.B  #%1011,D4
+        BEQ     JOP1011
+        CMPI.B  #%1100,D4
+        BEQ     JOP1100
+        CMPI.B  #%1101,D4
+        BEQ     JOP1101
+        CMPI.B  #%1110,D4
+        BEQ     JOP1110
+        CMPI.B  #%1111,D4
+        BEQ     JOP1111
         JMP     ERROP
-J1110:  JMP     OP1110
-  
+
+JOP0000 JMP     OP0000
+JOP0001:
+JOP0010:
+JOP0011 JMP     OP00XX
+JOP0100 JMP     OP0100
+JOP0101 JMP     OP0101
+JOP0110 JMP     OP0110
+JOP0111 JMP     OP0111
+JOP1000 JMP     OP1000
+JOP1001 JMP     OP1001
+JOP1010 JMP     ERROP
+JOP1011 JMP     OP1011
+JOP1100 JMP     OP1100
+JOP1101 JMP     OP1101
+JOP1110 JMP     OP1110
+JOP1111 JMP     ERROP
+
 *----------------------------------------------------------
 *Opcode to Command Section
 *----------------------------------------------------------
- 
-*------
-OP0000:      
-        MOVE.W  D3,D4
+* Temp uses D4
+*----------------------------------------------------------
+
+OP0000: MOVE.W  D3,D4
         ROL.W   #7,D4
         ANDI.B  #$07,D4
         
@@ -316,10 +296,7 @@ JCMPI:  JMP     CMPI
 JEORI:  JMP     EORI
 
 *----------
-OP0001:
-OP0010:
-OP0011:        
-        MOVE.W  D3,D4
+OP00XX: MOVE.W  D3,D4
         ROR.W   #6,D4
         ANDI.B  #$07,D4
         
@@ -329,8 +306,7 @@ OP0011:
 JMOVE:  JMP     MOVE
 
 *----------
-OP0100:  
-        MOVE.W  D3,D4
+OP0100: MOVE.W  D3,D4
         ROR.W   #7,D4
         ANDI.B  #$07,D4
         CMPI.B  #$01,D4
@@ -351,15 +327,13 @@ JMOVEM: JMP     MOVEM
 JNOP:   JMP     NOP
 
 *----------
-OP0101:
-        BTST    #8,D3
+OP0101: BTST    #8,D3
         BNE     JSUBQ
         JMP     ADDQ
 JSUBQ:  JMP     SUBQ
 
 *----------
-OP0110:
-        MOVE.W  D3,D4
+OP0110: MOVE.W  D3,D4
         ROR.W   #8,D4
         ANDI.B  #$0F,D4
         
@@ -373,12 +347,10 @@ JBRA:   JMP     BRA
 JBSR:   JMP     BSR
 
 *----------
-OP0111:
-        JMP     MOVEQ
+OP0111: JMP     MOVEQ
 
 *----------
-OP1000:
-        MOVE.W  D3,D4
+OP1000: MOVE.W  D3,D4
         ROR.W   #6,D4
         ANDI.B  #$07,D4
         
@@ -392,20 +364,17 @@ JDIVU:  JMP     DIVU
 JDIVS:  JMP     DIVS
 
 *----------
-OP1001:
-        JMP     SUB
+OP1001: JMP     SUB
 
 *----------
 OP1011:
         BTST    #8,D3
         BEQ     JCMP
         JMP     EOR
-JCMP:
-        JMP     CMP
+JCMP:   JMP     CMP
 
 *----------
-OP1100:
-        MOVE.W  D3,D4
+OP1100: MOVE.W  D3,D4
         ROR.W   #6,D4
         ANDI.B  #$07,D4
         
@@ -419,8 +388,7 @@ JMULU:  JMP     MULU
 JMULS:  JMP     MULS
 
 *----------
-OP1101:
-        BTST    #7,D3
+OP1101: BTST    #7,D3
         BEQ     JADD
         BTST    #6,D3
         BEQ     JADD
@@ -428,163 +396,122 @@ OP1101:
 JADD:   JMP     ADD
 
 *----------
-OP1110: 
-        BTST    #4,D3
+OP1110: BTST    #4,D3
         BNE     JROX
         BTST    #3,D3
-        BEQ     ASAS
-        JMP     LSLS
+        BEQ     ASX
+        JMP     LSX
 
-JROX:   JMP     ERRCOM
-
-ASAS:   BTST    #8,D3
+ASX:    BTST    #8,D3
         BNE     JASL
         JMP     ASR
-JASL:   JMP     ASL
-
-LSLS:   BTST    #8,D3
+LSX:    BTST    #8,D3
         BNE     JLSL
         JMP     LSR
+
+JASL:   JMP     ASL
 JLSL:   JMP     LSL
+JROX:   JMP     ERRCOM
         
 *----------------------------------------------------------
 *Command Section
 *----------------------------------------------------------
+* Uses no temp variables
+*----------------------------------------------------------
 
-*--------------
-ORI:
-        MOVE.B  #'O',(A4)+
+ORI:    MOVE.B  #'O',(A4)+
         MOVE.B  #'R',(A4)+
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
         JSR     READIMM
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
-        
-        JSR     EA5
-        RTS
+        JMP     EA5
 
-*--------------
-ANDI:
-        MOVE.B  #'A',(A4)+
+ANDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #'N',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
         JSR     READIMM
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
-        
-        JSR     EA5
-        RTS
+        JMP     EA5
 
-*--------------
-ADDI:
-        MOVE.B  #'A',(A4)+
+ADDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+ 
-        
         JSR     READIMM
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
-        
-        JSR     EA5
-        RTS
+        JMP     EA5
 
-*--------------
-EORI:
-        MOVE.B  #'E',(A4)+
+EORI:   MOVE.B  #'E',(A4)+
         MOVE.B  #'O',(A4)+
         MOVE.B  #'R',(A4)+
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-         
         JSR     READIMM
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
-        
-        JSR     EA5
-        RTS
+        JMP     EA5
 
-*--------------
-CMPI:
-        MOVE.B  #'C',(A4)+
+CMPI:   MOVE.B  #'C',(A4)+
         MOVE.B  #'M',(A4)+
         MOVE.B  #'P',(A4)+
         MOVE.B  #'I',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-         
         JSR     READIMM
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
-        
-        JSR     EA5
-        RTS
+        JMP     EA5
 
-*--------------
-MOVE:
-        MOVE.B  #'M',(A4)+
+MOVE:   MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
         MOVE.B  #'V',(A4)+
         MOVE.B  #'E',(A4)+
         JSR     BLW13
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     D11S5
-        RTS
+        JMP     D11S5
 
-*--------------
-MOVEA:
-        MOVE.B  #'M',(A4)+
+MOVEA:  MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
         MOVE.B  #'V',(A4)+
         MOVE.B  #'E',(A4)+
         MOVE.B  #'A',(A4)+
         JSR     LW13
         MOVE.B  #$9,(A4)+
-        
-        JSR     D11S5
-        RTS
+        JMP     D11S5
 
-*--------------
-NOP:
-        MOVE.B  #'N',(A4)+
+NOP:    MOVE.B  #'N',(A4)+
         MOVE.B  #'O',(A4)+
         MOVE.B  #'P',(A4)+
         RTS
 
-*--------------
-MOVEM:
-        MOVE.B  #'M',(A4)+
+MOVEM:  MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
         MOVE.B  #'V',(A4)+
         MOVE.B  #'E',(A4)+
         MOVE.B  #'M',(A4)+
         JSR     WL6
         MOVE.B  #$9,(A4)+
-        
-        JSR     MOVEMEA
-        RTS
+        JMP     MOVEMEA
 
-*--------------
-LEA:
-        MOVE.B  #'L',(A4)+
+LEA:    MOVE.B  #'L',(A4)+
         MOVE.B  #'E',(A4)+
         MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
@@ -592,39 +519,27 @@ LEA:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     AR11EA5
-        RTS
+        JMP     AR11EA5
 
-*--------------
-SUBQ:
-        MOVE.B  #'S',(A4)+
+SUBQ:   MOVE.B  #'S',(A4)+
         MOVE.B  #'U',(A4)+
         MOVE.B  #'B',(A4)+
         MOVE.B  #'Q',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     DT11EA5
-        RTS
+        JMP     DT11EA5
 
-*--------------
-ADDQ:
-        MOVE.B  #'A',(A4)+
+ADDQ:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'Q',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     DT11EA5
-        RTS
+        JMP     DT11EA5
 
-*--------------
-BRA:
-        MOVE.B  #'B',(A4)+
+BRA:    MOVE.B  #'B',(A4)+
         MOVE.B  #'R',(A4)+
         MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
@@ -632,13 +547,9 @@ BRA:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     DP7
-        RTS
+        JMP     DP7
 
-*--------------
-BSR:
-        MOVE.B  #'B',(A4)+
+BSR:    MOVE.B  #'B',(A4)+
         MOVE.B  #'S',(A4)+
         MOVE.B  #'R',(A4)+
         MOVE.B  #' ',(A4)+
@@ -646,13 +557,9 @@ BSR:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     DP7
-        RTS
+        JMP     DP7
 
-*--------------
-MOVEQ:
-        MOVE.B  #'M',(A4)+
+MOVEQ:  MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
         MOVE.B  #'V',(A4)+
         MOVE.B  #'E',(A4)+
@@ -660,13 +567,9 @@ MOVEQ:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11D7
-        RTS
+        JMP     R11D7
 
-*--------------
-DIVU:
-        MOVE.B  #'D',(A4)+
+DIVU:   MOVE.B  #'D',(A4)+
         MOVE.B  #'I',(A4)+
         MOVE.B  #'V',(A4)+
         MOVE.B  #'U',(A4)+
@@ -674,13 +577,9 @@ DIVU:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11EA5
-        RTS
+        JMP     R11EA5
 
-*--------------
-DIVS:
-        MOVE.B  #'D',(A4)+
+DIVS:   MOVE.B  #'D',(A4)+
         MOVE.B  #'I',(A4)+
         MOVE.B  #'V',(A4)+
         MOVE.B  #'S',(A4)+
@@ -688,52 +587,36 @@ DIVS:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11EA5
-        RTS
+        JMP     R11EA5
 
-*--------------
-SUB:
-        MOVE.B  #'S',(A4)+
+SUB:    MOVE.B  #'S',(A4)+
         MOVE.B  #'U',(A4)+
         MOVE.B  #'B',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11DEA5
-        RTS
+        JMP     R11DEA5
 
-*--------------
-CMP:
-        MOVE.B  #'C',(A4)+
+CMP:    MOVE.B  #'C',(A4)+
         MOVE.B  #'M',(A4)+
         MOVE.B  #'P',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11EA5
-        RTS
+        JMP     R11EA5
 
-*--------------
-EOR:
-        MOVE.B  #'E',(A4)+
+EOR:    MOVE.B  #'E',(A4)+
         MOVE.B  #'O',(A4)+
         MOVE.B  #'R',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11DEA5
-        RTS
+        JMP     R11DEA5
 
-*--------------
-MULU:
-        MOVE.B  #'M',(A4)+
+MULU:   MOVE.B  #'M',(A4)+
         MOVE.B  #'U',(A4)+
         MOVE.B  #'L',(A4)+
         MOVE.B  #'U',(A4)+
@@ -741,13 +624,9 @@ MULU:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11EA5
-        RTS
+        JMP     R11EA5
 
-*--------------
-MULS:
-        MOVE.B  #'M',(A4)+
+MULS:   MOVE.B  #'M',(A4)+
         MOVE.B  #'U',(A4)+
         MOVE.B  #'L',(A4)+
         MOVE.B  #'S',(A4)+
@@ -755,140 +634,107 @@ MULS:
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11EA5
-        RTS
+        JMP     R11EA5
 
-*--------------
-ADDA:
-        MOVE.B  #'A',(A4)+
+ADDA:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'A',(A4)+
         JSR     WL8
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     AR11EA5
-        RTS
+        JMP     AR11EA5
 
-*--------------
-ADD:
-        MOVE.B  #'A',(A4)+
+ADD:    MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
         MOVE.B  #'D',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     R11DEA5
-        RTS
+        JMP     R11DEA5
 
-*--------------
-ASL:
-        MOVE.B  #'A',(A4)+
+ASL:    MOVE.B  #'A',(A4)+
         MOVE.B  #'S',(A4)+
         MOVE.B  #'L',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     SHIFTS
-        RTS
+        JMP     SHIFTS
 
-*--------------
-ASR:
-        MOVE.B  #'A',(A4)+
+ASR:    MOVE.B  #'A',(A4)+
         MOVE.B  #'S',(A4)+
         MOVE.B  #'R',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     SHIFTS
-        RTS
+        JMP     SHIFTS
 
-*--------------
-LSL:
-        MOVE.B  #'L',(A4)+
+LSL:    MOVE.B  #'L',(A4)+
         MOVE.B  #'S',(A4)+
         MOVE.B  #'L',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     SHIFTS
-        RTS
+        JMP     SHIFTS
 
-*--------------
-LSR:
-        MOVE.B  #'L',(A4)+
+LSR:    MOVE.B  #'L',(A4)+
         MOVE.B  #'S',(A4)+
         MOVE.B  #'R',(A4)+
         JSR     BWL7
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        
-        JSR     SHIFTS
-        RTS
+        JMP     SHIFTS
 
 *----------------------------------------------------------
 *Size Section
 *----------------------------------------------------------
+* Stores the size into D7 bits 0-1
+*----------------------------------------------------------
 
-BWL7:
-        BTST    #7,D3
-        BNE     TSTLONG
+BWL7:   BTST    #7,D3
+        BNE     TSTL6
         BTST    #6,D3
         BEQ     BYTE
         BRA     WORD
-TSTLONG:
-        BTST    #6,D3
+TSTL6:  BTST    #6,D3
         BEQ     LONG
         JMP     ERRSIZE
 
-LW13:
-        BTST    #13,D3
+LW13:   BTST    #13,D3
         BNE     BLW13
         JMP     ERRSIZE
-BLW13:
-        BTST    #13,D3
-        BEQ     TSTBYTE
+
+BLW13:  BTST    #13,D3
+        BEQ     TSTB12
         BTST    #12,D3
         BEQ     LONG
         BRA     WORD
-TSTBYTE:
-        BTST    #12,D3
+TSTB12: BTST    #12,D3
         BNE     BYTE
         JMP     ERRSIZE
 
-WL6:
-        BTST    #6,D3
+WL6:    BTST    #6,D3
         BEQ     WORD
         BRA     LONG
         
-WL8:
-        BTST    #8,D3
+WL8:    BTST    #8,D3
         BEQ     WORD
         BRA     LONG
         
-BYTE:
-        MOVE.B  #'.',(A4)+
+BYTE:   MOVE.B  #'.',(A4)+
         MOVE.B  #'B',(A4)+
         MOVE.B  #0,D7
         RTS
-WORD:
-        MOVE.B  #'.',(A4)+
+WORD:   MOVE.B  #'.',(A4)+
         MOVE.B  #'W',(A4)+
         MOVE.B  #1,D7
         RTS
-LONG:
-        MOVE.B  #'.',(A4)+
+LONG:   MOVE.B  #'.',(A4)+
         MOVE.B  #'L',(A4)+
         MOVE.B  #2,D7
         RTS
@@ -1207,7 +1053,6 @@ CONTMOVEMLOOP:
         SUBI.B  #1,D5
         CMPI.B  #-1,D5
         BNE     MOVEMLOOP
-        
         RTS
         
 *----------------------------------------------------------
@@ -1219,23 +1064,16 @@ ERRIN:
         MOVE.B  #13,D0
         TRAP    #15
         JMP     STARTADDR
-ERROP:
-        LEA     ERROPMSG,A1
-        MOVE.B  #13,D0
-        TRAP    #15
-        JMP     LOOP
-ERRCOM:
-        LEA     ERRCOMMSG,A1
-        MOVE.L  #13,D0
-        TRAP    #15
-        JMP     LOOP
-ERRSIZE:
-        LEA     ERRSIZEMSG,A1
-        MOVE.B  #13,D0
-        TRAP    #15
-        RTS
-ERREA:
-        LEA     ERREAMSG,A1
+
+ERROP   LEA     ERROPMSG,A1
+        BRA     PRINTERR
+ERRCOM  LEA     ERRCOMMSG,A1
+        BRA     PRINTERR
+ERRSIZE LEA     ERRSIZEMSG,A1
+        BRA     PRINTERR
+ERREA   LEA     ERREAMSG,A1
+        
+PRINTERR:
         MOVE.B  #13,D0
         TRAP    #15
         JMP     LOOP
