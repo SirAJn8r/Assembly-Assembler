@@ -14,12 +14,15 @@ START:
     ;A2 stores the start/current address
     ;A3 stores the end address
     ;A4 stores the print buffer
+    
+*---Purposes of other Variables---
+    ;D0,D1,A0,A1 only used for I/O
+    ;D4,D5 used for temp internal variables
+    ;D6 is used to output from ATOI (HEXTOBIN) and input to ITOA (HEXnB)
+    ;A5,A6 used for temp internal varaibles
 
 *----------------------------------------------------------
 *Input/Initialization Section
-*----------------------------------------------------------
-* Temp uses D0,D1,A1 for printing
-* Temp uses D5 to use HEXTOBIN function
 *----------------------------------------------------------
 
 STARTADDR:
@@ -28,7 +31,7 @@ STARTADDR:
         TRAP    #15         ;Print out start address message
         LEA     INPADDR,A1
         JSR     HEXTOBIN    ;Read input into Hex into D5
-        MOVEA.L D5,A2       ;Move address into A2
+        MOVEA.L D6,A2       ;Move address into A2
 
 ENDADDR:
         LEA     ENDMSG,A1
@@ -36,7 +39,7 @@ ENDADDR:
         TRAP    #15         ;Print out end address message
         LEA     INPADDR,A1
         JSR     HEXTOBIN    ;Read input into Hex into D5
-        MOVEA.L D5,A3       ;Move address into A3
+        MOVEA.L D6,A3       ;Move address into A3
         
         CLR.W   D2
         BRA     LOOP
@@ -85,8 +88,6 @@ LOOP:
 *Main Loop Helper Funcions Section
 *----------------------------------------------------------
 * CLRBUFFER temp uses D4 as an index
-* MEMPRINT temp uses D6
-* PRNTBUF temp uses D0 and A1
 *----------------------------------------------------------
 
 CLRBUF:
@@ -113,15 +114,14 @@ PRNTBUF:
         RTS
 
 *----------------------------------------------------------
-*Hex to Binary Section (ITOA)
+*Hex to Binary Section (ATOI)
 *----------------------------------------------------------
-* Temp uses D0, D1, and A1 to take input
-* Stores output in D5
+* Stores output in D6
 * Temp uses D4 as an index
 *----------------------------------------------------------
 
 HEXTOBIN:
-        CLR.L   D5          ;Clear output
+        CLR.L   D6          ;Clear output
         MOVE.B  #2,D0
         TRAP    #15         ;Read input into A1
         MOVE.B  D1,D4       ;Start i at length, which must be 4 or 8
@@ -133,7 +133,7 @@ HEXTOBIN:
 
 H2BLOOP:
         MOVE.B  (A1)+,D1    ;Get next char
-        ROL.L   #4,D5       ;Make room for the next output
+        ROL.L   #4,D6       ;Make room for the next output
         BRA     H2BCHAR     ;Read the char into D5        
 CONTH2BLOOP:
         SUBI.B  #1,D4
@@ -153,7 +153,7 @@ H2BCHAR:
 
 NUM:    MOVE.B  D1,D0       ;Lowest ascii nibble is exactly the binary number
         ANDI.B  #$0F,D0
-        OR.B    D0,D5
+        OR.B    D0,D6
         BRA     CONTH2BLOOP
 
 LETTER: MOVE.B  D1,D0       ;Lowest ascii nibble for both caps and lowercase
@@ -163,16 +163,16 @@ LETTER: MOVE.B  D1,D0       ;Lowest ascii nibble for both caps and lowercase
         BLT     JERRIN
         CMPI.B  #$00,D0
         BEQ     JERRIN
-        OR.B    D0,D5
+        OR.B    D0,D6
         BRA     CONTH2BLOOP
 
 JERRIN  JMP     ERRIN
 
 *----------------------------------------------------------
-*Print in Hex Section (ATOI)
+*Print in Hex Section (ITOA)
 *----------------------------------------------------------
 * Takes input into as D6
-* Temp uses D7 and A0
+* Temp uses D4
 * NOTE: Hex3B destroys some data
 *----------------------------------------------------------
 
@@ -199,11 +199,11 @@ HEX3B:  ;Uses Bits 2-0 of D6 to print out 1 Hex Char
         JMP     PRNTHEX
         
 PRNTHEX:
-        MOVE.B  D6,D7
-        ANDI.L  #$0F,D7
+        MOVE.B  D6,D4
+        ANDI.L  #$0F,D4
         
         LEA     ITOA,A0
-        ADDA.L  D7,A0
+        ADDA.L  D4,A0
         MOVE.B  (A0),(A4)+
         RTS
 
@@ -415,8 +415,6 @@ JROX:   JMP     ERRCOM
         
 *----------------------------------------------------------
 *Command Section
-*----------------------------------------------------------
-* Uses no temp variables
 *----------------------------------------------------------
 
 ORI:    MOVE.B  #'O',(A4)+
@@ -693,8 +691,6 @@ LSR:    MOVE.B  #'L',(A4)+
 *----------------------------------------------------------
 *Size Section
 *----------------------------------------------------------
-* Stores the size into D7 bits 0-1
-*----------------------------------------------------------
 
 BWL7:   BTST    #7,D3
         BNE     TSTL6
@@ -742,7 +738,8 @@ LONG:   MOVE.B  #'.',(A4)+
 *----------------------------------------------------------
 *EA Section
 *----------------------------------------------------------
-* 
+* Temp uses D6 to use GETEA
+* Temp uses D5 for parsing input
 *----------------------------------------------------------
 
 PRNTDT11:
@@ -751,19 +748,19 @@ PRNTDT11:
         JMP     HEX3B
 
 EA5:    
-        MOVE.B  D3,D5
+        MOVE.B  D3,D6
         JMP     GETEA5
 
 D11S5:  
         JSR     EA5
         
-        MOVE.W  D3,D4
-        ROL.W   #7,D4
-        ANDI.W  #$7,D4      ;Isolate dest reg
         MOVE.W  D3,D5
-        ROR.W   #3,D5
-        ANDI.W  #$38,D5     ;Isolate dest mode
-        OR.W    D4,D5       ;Combine in EA5-format
+        ROL.W   #7,D5
+        ANDI.W  #$7,D5      ;Isolate dest reg
+        MOVE.W  D3,D6
+        ROR.W   #3,D6
+        ANDI.W  #$38,D6     ;Isolate dest mode
+        OR.W    D5,D6       ;Combine in EA5-format
 
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
@@ -802,17 +799,17 @@ DT11EA5:
         JMP     EA5
         
 DP7:
-        MOVE.L  A2,D4
+        MOVE.L  A2,D5
         CLR.L   D6
         MOVE.B  D3,D6
         TST.B   D6
         BEQ     DP2WORD
         EXT.W   D6
-        ADD.L   D4,D6
+        ADD.L   D5,D6
         JMP     HEX16B
 DP2WORD:
         MOVE.W  (A2)+,D6
-        ADD.L   D4,D6
+        ADD.L   D5,D6
         JMP     HEX16B
 
 R11DT7:
@@ -844,46 +841,42 @@ FINSHIFT:
 *----------------------------------------------------------
 *GETEA5 Section
 *----------------------------------------------------------
-* Take input as EA5-formatting within D5
-* Temp uses D1 to parse D5
-* Temp uses D6 to use HEX3B
+* Take input as EA5-formatting within D6
+* Temp uses D5 to parse input
+* D6 likely will be modified as it calls HEX3B
 *----------------------------------------------------------
 
-GETEA5: MOVE.B  D5,D1
-        LSR.B   #3,D1
-        ANDI.B  #$7,D1
-        CMPI.B  #$00,D1
+GETEA5: MOVE.B  D6,D5
+        LSR.B   #3,D5
+        ANDI.B  #$7,D5
+        CMPI.B  #$00,D5
         BEQ     MODE0
-        CMPI.B  #$01,D1
+        CMPI.B  #$01,D5
         BEQ     MODE1
-        CMPI.B  #$02,D1
+        CMPI.B  #$02,D5
         BEQ     MODE2
-        CMPI.B  #$03,D1
+        CMPI.B  #$03,D5
         BEQ     MODE3
-        CMPI.B  #$04,D1
+        CMPI.B  #$04,D5
         BEQ     MODE4
-        CMPI.B  #$07,D1
+        CMPI.B  #$07,D5
         BEQ     MODE7
         BRA    ERREA
 
 MODE0:  MOVE.B  #'D',(A4)+
-        MOVE.B  D5,D6
         JMP     HEX3B
 
 MODE1:  MOVE.B  #'A',(A4)+
-        MOVE.B  D5,D6
         JMP     HEX3B
 
 MODE2:  MOVE.B  #'(',(A4)+
         MOVE.B  #'A',(A4)+
-        MOVE.B  D5,D6
         JSR     HEX3B
         MOVE.B  #')',(A4)+
         RTS
 
 MODE3:  MOVE.B  #'(',(A4)+
         MOVE.B  #'A',(A4)+
-        MOVE.B  D5,D6
         JSR     HEX3B
         MOVE.B  #')',(A4)+
         MOVE.B  #'+',(A4)+
@@ -892,18 +885,17 @@ MODE3:  MOVE.B  #'(',(A4)+
 MODE4:  MOVE.B  #'-',(A4)+
         MOVE.B  #'(',(A4)+
         MOVE.B  #'A',(A4)+
-        MOVE.B  D5,D6
         JSR     HEX3B
         MOVE.B  #')',(A4)+
         RTS
 
-MODE7:  MOVE.B  D5,D1
-        ANDI.B  #$7,D1
-        CMPI.B  #$00,D1
+MODE7:  MOVE.B  D6,D5
+        ANDI.B  #$7,D5
+        CMPI.B  #$00,D5
         BEQ     READWORD
-        CMPI.B  #$01,D1
+        CMPI.B  #$01,D5
         BEQ     READLONG
-        CMPI.B  #$04,D1
+        CMPI.B  #$04,D5
         BEQ     READIMM
         BRA     ERREA
         
@@ -933,6 +925,13 @@ READLONG:
 *----------------------------------------------------------
 *MOVEM EA Section
 *----------------------------------------------------------
+* Temp uses D4 to track info
+* Temp uses D5 to count the loop
+* Temp uses D6 to store the register list
+* Temp uses A5 to point to the printing values
+* Temp uses A6 to read buffer to check if / is necessary
+*----------------------------------------------------------
+
 MOVEMEA:
         BTST    #10,D3
         BNE     REVORDER
@@ -952,7 +951,7 @@ MOVEMLIST:
         MOVE.W  (A2)+,D6    ;Regs to move
         
         MOVEQ   #7,D5       ;Start counter from 7 to 0
-        CLR.B   D1          ;B2 = exactly second in series (so add -)
+        CLR.B   D4          ;B2 = exactly second in series (so add -)
                             ;B1 = has there been a reg already (so add comma)
                             ;B0 = was one immediately before (so remove previous to add new reg)    
         LEA     MOVMA07,A5  ;Load printing values
@@ -995,22 +994,22 @@ REMSLASH:
 MOVEMLOOP:
         BTST    D5,D6       ;Test i-th bit of regs
         BEQ     NOREG       ;Update D1 and continue
-        BTST    #0,D1
+        BTST    #0,D4
         BNE     SERIES      ;Start/Continue range
         
-        BSET    #2,D1
-        BSET    #1,D1       ;Test if there has been at least 1 reg, and set that
+        BSET    #2,D4
+        BSET    #1,D4       ;Test if there has been at least 1 reg, and set that
         BEQ     ADDREG      ;After at least 1 reg, start adding '/'
         BRA     ADDSLASHREG
 
 SERIES:
-        BTST    #2,D1
+        BTST    #2,D4
         BNE     STARTRANGE
 
         MOVE.B  #0,-(A4)    ;Continue range
         MOVE.B  #0,-(A4)
 STARTRANGE:
-        BCLR    #2,D1
+        BCLR    #2,D4
         MOVE.B  #'-',(A4)+
         BRA     ADDREG
 
@@ -1027,8 +1026,8 @@ ADDREG:
 
 *---------
 NOREG:
-        BCLR    #0,D1
-        BCLR    #2,D1
+        BCLR    #0,D4
+        BCLR    #2,D4
 CONTMOVEMLOOP:
         SUBI.B  #1,D5
         CMPI.B  #-1,D5
@@ -1039,8 +1038,7 @@ CONTMOVEMLOOP:
 *Error Catching Section
 *----------------------------------------------------------
 
-ERRIN:
-        LEA     ERRINMSG,A1
+ERRIN   LEA     ERRINMSG,A1
         MOVE.B  #13,D0
         TRAP    #15
         JMP     STARTADDR
