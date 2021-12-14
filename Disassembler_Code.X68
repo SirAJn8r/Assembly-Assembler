@@ -21,7 +21,6 @@ START:
                             ;A2 stores the start/current address
                             ;A3 stores the end address
                             ;A4 stores the print buffer
-        LEA     MOVEMADDR,A6 ;A6 stores the MOVEM storage location
         
 *----------------------------------------------------------
 *Input Section
@@ -584,11 +583,7 @@ MOVEM:
         JSR     WL6
         MOVE.B  #$9,(A4)+
         
-        JSR     READWORD
-        MOVE.B  #',',(A4)+
-        MOVE.B  #' ',(A4)+
-        
-        JSR     EA5
+        JSR     MOVEMEA
         RTS
 
 *--------------
@@ -1040,9 +1035,9 @@ READLONG:
         MOVE.L  (A2)+,D6
         JMP     HEX32B
 
-*--------------
-*Place input into D5
-*--------------
+*------------------
+*Place input into D5 before using GETEA5
+*------------------
 GETEA5:
         MOVE.B  D5,D1
         LSR.B   #3,D1
@@ -1112,6 +1107,113 @@ ABSLONG:
 LITERAL:
         JMP     READIMM
         
+*------------------
+*MOVEM EA Section
+*------------------
+MOVEMEA:
+        BTST    #10,D3
+        BNE     REVORDER
+
+FORORDER:
+        JSR     MOVEMLIST
+        MOVE.B  #',',(A4)+
+        MOVE.B  #' ',(A4)+
+        JMP     EA5
+REVORDER:
+        JSR     EA5
+        MOVE.B  #',',(A4)+
+        MOVE.B  #' ',(A4)+
+        JMP     MOVEMLIST
+*---------
+MOVEMLIST:
+        MOVE.W  (A2)+,D6    ;Regs to move
+        
+        MOVEQ   #7,D5       ;Start counter from 7 to 0
+        CLR.B   D1          ;B2 = exactly second in series (so add -)
+                            ;B1 = has there been a reg already (so add comma)
+                            ;B0 = was one immediately before (so remove previous to add new reg)    
+        LEA     MOVMA07,A5  ;Load printing values
+        JSR     MOVEMLOOP
+        
+        JSR     CHECKADDSLASH
+        ROL.W   #8,D6       ;Swap halves
+        
+        MOVEQ   #7,D5       ;Set up again
+        CLR.B   D1
+        LEA     MOVMD07,A5
+        JSR     MOVEMLOOP
+        
+        JSR     CHECKREMSLASH
+        RTS
+
+*---------
+CHECKADDSLASH:
+        MOVE.L  A4,A6
+        SUBA.L  #1,A6
+        CMP.B   #' ',(A6)
+        BNE     ADDSLASH
+        RTS
+ADDSLASH:
+        MOVE.B  #'/',(A4)+
+        RTS
+        
+CHECKREMSLASH:
+        MOVE.L  A4,A6
+        SUBA.L  #1,A6
+        CMP.B   #'/',(A6)
+        BEQ     REMSLASH
+        RTS
+REMSLASH:
+        MOVE.B  #0,-(A4)
+        MOVE.B  #0,(A4)
+        RTS
+
+*---------
+MOVEMLOOP:
+        BTST    D5,D6       ;Test i-th bit of regs
+        BEQ     NOREG       ;Update D1 and continue
+        BTST    #0,D1
+        BNE     SERIES      ;Start/Continue range
+        
+        BSET    #2,D1
+        BSET    #1,D1       ;Test if there has been at least 1 reg, and set that
+        BEQ     ADDREG      ;After at least 1 reg, start adding '/'
+        BRA     ADDSLASHREG
+
+SERIES:
+        BTST    #2,D1
+        BNE     STARTRANGE
+
+        ;Continue range
+        MOVE.B  #0,-(A4)
+        MOVE.B  #0,-(A4)
+STARTRANGE:
+        BCLR    #2,D1
+        MOVE.B  #'-',(A4)+
+        BRA     ADDREG
+
+*---------
+ADDSLASHREG:
+        MOVE.B  #'/',(A4)+
+ADDREG:
+        MOVEA.L A5,A6
+        ADDA.L  D5,A6
+        ADDA.L  D5,A6       ;A6 = A5 + 2*i
+        MOVE.B  (A6)+,(A4)+
+        MOVE.B  (A6)+,(A4)+
+        BRA     CONTMOVEMLOOP
+
+*---------
+NOREG:
+        BCLR    #0,D1
+        BCLR    #2,D1
+CONTMOVEMLOOP:
+        SUBI.B  #1,D5
+        CMPI.B  #-1,D5
+        BNE     MOVEMLOOP
+        
+        RTS
+        
 *----------------------------------------------------------
 *Error Catching Section
 *----------------------------------------------------------
@@ -1148,37 +1250,26 @@ ERREA:
 
 END:    SIMHALT
 
-*--
-ERR         DC.B    'error',0
-counter     DS.B    1
-hexlength   DS.B    1
-OpCodeSize  DS.W    1
-OpCodeB     DS.W    1
-bitsSize    DS.B    1
-saveAddress DS.L    1
-
-bitsOfSize  DS.B    1
-ImmDataSize DC.B    $10
-ImmData    DS.B     ImmDataSize
-*--
-
 BUFSIZE DC.B    $40
 BUFFER: DS.B    BUFSIZE
 
-INPADDR     DS.B    9
-MOVEMADDR   EQU     $9000        
+INPADDR     DS.B    9      
 
 CR:     EQU     $0D
 LF:     EQU     $0A
 
 ITOA:   DC.B    '0123456789ABCDEF'
+MOVMA70 DC.B    'A7','A6','A5','A4','A3','A2','A1','A0'
+MOVMD70 DC.B    'D7','D6','D5','D4','D3','D2','D1','D0'
+MOVMD07 DC.B    'A0','A1','A2','A3','A4','A5','A6','A7'
+MOVMA07 DC.B    'D0','D1','D2','D3','D4','D5','D6','D7'
 
 STARTMSG:
-        DC.B    CR,LF,'Input the starting address for the decoder: ',0
+        DC.B    CR,LF,'Input the starting address for the decoder:',0
 ENDMSG:
-        DC.B    CR,LF,'Input the ending address for the decoder: ',0
+        DC.B    CR,LF,'Input the ending address for the decoder:',0
 REPORFINMSG:
-        DC.B    CR,LF,'Would you like to run the program again? (Y/N): ',0
+        DC.B    CR,LF,'Would you like to run the program again? (Y/N):',0
 ERRINMSG:
         DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
 ERROPMSG:
