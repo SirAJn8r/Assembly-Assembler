@@ -428,6 +428,7 @@ ORI:    MOVE.B  #'O',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
+        ;Not Mode 1 or Imm
 
 ANDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #'N',(A4)+
@@ -440,6 +441,7 @@ ANDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
+        ;Not Mode 1 or Imm
 
 ADDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
@@ -452,6 +454,7 @@ ADDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
+        ;Not Mode 1 or Imm
 
 EORI:   MOVE.B  #'E',(A4)+
         MOVE.B  #'O',(A4)+
@@ -464,6 +467,7 @@ EORI:   MOVE.B  #'E',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
+        ;Not Mode 1 or Imm
 
 CMPI:   MOVE.B  #'C',(A4)+
         MOVE.B  #'M',(A4)+
@@ -476,6 +480,7 @@ CMPI:   MOVE.B  #'C',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
+        ;Not Mode 1 or Imm
 
 MOVE:   MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
@@ -485,6 +490,7 @@ MOVE:   MOVE.B  #'M',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     D11S5
+        ;Not Mode 1 for Dest (handles itself)
 
 MOVEA:  MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
@@ -494,6 +500,7 @@ MOVEA:  MOVE.B  #'M',(A4)+
         JSR     LW13
         MOVE.B  #$9,(A4)+
         JMP     D11S5
+        ;Only Mode 1 for Dest (handles itself)
 
 NOP:    MOVE.B  #'N',(A4)+
         MOVE.B  #'O',(A4)+
@@ -508,6 +515,7 @@ MOVEM:  MOVE.B  #'M',(A4)+
         JSR     WL6
         MOVE.B  #$9,(A4)+
         JMP     MOVEMEA
+        ;Never Mode 0,1, or Imm. Can't be An+ or -An depending on mode
 
 LEA:    MOVE.B  #'L',(A4)+
         MOVE.B  #'E',(A4)+
@@ -518,6 +526,7 @@ LEA:    MOVE.B  #'L',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     AR11EA5
+        ;EA is only Mode 2 or absolute
 
 SUBQ:   MOVE.B  #'S',(A4)+
         MOVE.B  #'U',(A4)+
@@ -527,6 +536,7 @@ SUBQ:   MOVE.B  #'S',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     DT11EA5
+        ;EA is not Imm
 
 ADDQ:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
@@ -536,6 +546,7 @@ ADDQ:   MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     DT11EA5
+        ;EA is not Imm
 
 BRA:    MOVE.B  #'B',(A4)+
         MOVE.B  #'R',(A4)+
@@ -576,6 +587,7 @@ DIVU:   MOVE.B  #'D',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11EA5
+        ;EA isn't Mode 1
 
 DIVS:   MOVE.B  #'D',(A4)+
         MOVE.B  #'I',(A4)+
@@ -586,6 +598,7 @@ DIVS:   MOVE.B  #'D',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11EA5
+        ;EA isn't Mode 1
 
 SUB:    MOVE.B  #'S',(A4)+
         MOVE.B  #'U',(A4)+
@@ -595,6 +608,7 @@ SUB:    MOVE.B  #'S',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11DEA5
+        ;EA is anything
 
 CMP:    MOVE.B  #'C',(A4)+
         MOVE.B  #'M',(A4)+
@@ -603,7 +617,8 @@ CMP:    MOVE.B  #'C',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
-        JMP     R11EA5
+        JMP     R11EA5
+        ;EA is anything
 
 EOR:    MOVE.B  #'E',(A4)+
         MOVE.B  #'O',(A4)+
@@ -613,6 +628,7 @@ EOR:    MOVE.B  #'E',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11DEA5
+        ;EA isn't Mode 1
 
 MULU:   MOVE.B  #'M',(A4)+
         MOVE.B  #'U',(A4)+
@@ -623,6 +639,7 @@ MULU:   MOVE.B  #'M',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11EA5
+        ;EA isn't Mode 1
 
 MULS:   MOVE.B  #'M',(A4)+
         MOVE.B  #'U',(A4)+
@@ -633,6 +650,7 @@ MULS:   MOVE.B  #'M',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11EA5
+        ;EA isn't Mode 1
 
 ADDA:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
@@ -642,6 +660,7 @@ ADDA:   MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     AR11EA5
+        ;EA is anything
 
 ADD:    MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
@@ -651,6 +670,8 @@ ADD:    MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11DEA5
+        ;If from EA, it's anything
+        ;If to EA, not Mode 0, 1, or Imm
 
 ASL:    MOVE.B  #'A',(A4)+
         MOVE.B  #'S',(A4)+
