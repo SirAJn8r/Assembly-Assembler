@@ -508,7 +508,6 @@ MOVEM:  MOVE.B  #'M',(A4)+
         JSR     WL6
         MOVE.B  #$9,(A4)+
         JMP     MOVEMEA
-        ;Never Mode 0,1, or Imm. Can't be An+ or -An depending on mode
 
 LEA:    MOVE.B  #'L',(A4)+
         MOVE.B  #'E',(A4)+
@@ -652,8 +651,6 @@ ADD:    MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11DEA5
-        ;If from EA, it's anything
-        ;If to EA, not Mode 0, 1, or Imm
 
 ASL:    MOVE.B  #'A',(A4)+
         MOVE.B  #'S',(A4)+
@@ -766,7 +763,6 @@ EA5CHECKLIT:
         CMPI.B  #$3C,D5     ;Not Literal
         BEQ     JERREA
         RTS
-JERREA: JMP     ERREA
 
 D11S5:  
         MOVE.B  D3,D6
@@ -811,7 +807,7 @@ R11EA5NOTM1:
         BEQ     JERREA
 R11EA5: 
         MOVE.B  D3,D6
-        JMP     GETEA5
+        JSR     GETEA5
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #'D',(A4)+
@@ -883,6 +879,8 @@ FINSHIFT:
         MOVE.B  #'D',(A4)+
         MOVE.W  D3,D6
         JMP     HEX3B
+
+JERREA: JMP     ERREA
 
 *----------------------------------------------------------
 *GETEA5 Section
@@ -977,17 +975,33 @@ READLONG:
 * Temp uses A5 to point to the printing values
 * Temp uses A6 to read buffer to check if / is necessary
 *----------------------------------------------------------
+        ;Never Mode 0,1, or Imm. Can't be An+ or -An depending on mode
 
 MOVEMEA:
+        MOVE.B  D3,D6
+        ANDI.B  #$38,D6
+        CMPI.B  #$8,D6      ;Not Mode 1
+        BEQ     JERREA
+        CMPI.B  #$0,D6      ;Not Mode 0
+        BEQ     JERREA
+
         BTST    #10,D3
         BNE     REVORDER
 
 FORORDER:
+        ANDI.B  #$38,D6
+        CMPI.B  #$18,D6      ;Not Mode 3
+        BEQ     JERREA
+        
         JSR     MOVEMLIST
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
 REVORDER:
+        ANDI.B  #$38,D6
+        CMPI.B  #$20,D6      ;Not Mode 4
+        BEQ     JERREA
+        
         JSR     EA5
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
