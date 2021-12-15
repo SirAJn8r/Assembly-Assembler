@@ -1113,7 +1113,10 @@ ERREA   LEA     ERREAMSG,A1
 PRINTERR:
         MOVE.B  #13,D0
         TRAP    #15
-        JMP     LOOP
+        MOVE.W  D3,D6
+        JSR     HEX16B
+        JSR     PRNTBUF
+        JMP     STARTADDR
 
 *----------------------------------------------------------
 *Variable Section (And End Simulation)
@@ -1142,13 +1145,13 @@ REPORFINMSG:
 ERRINMSG:
         DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
 ERROPMSG:
-        DC.B    'Found Invalid Opcode',0
+        DC.B    'Found Invalid Opcode:',0
 ERRCOMMSG:
-        DC.B    'Found Not Implemented Command',0
+        DC.B    'Found Not Implemented Command:',0
 ERRSIZEMSG:
-        DC.B    'Found Invalid Size',0
+        DC.B    'Found Invalid Size:',0
 ERREAMSG:
-        DC.B    'Found Invalid EA Mode',0
+        DC.B    'Found Invalid EA Mode:',0
 
         END     START
 

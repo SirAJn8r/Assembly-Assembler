@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 12/15/2021 1:14:47 AM
+Created On: 12/15/2021 2:47:23 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      : Assembly Disassembler
@@ -30,18 +30,18 @@ Created On: 12/15/2021 1:14:47 AM
 00001000                            26  *----------------------------------------------------------
 00001000                            27  
 00001000                            28  STARTADDR:
-00001000  43F9 000039BE             29          LEA     STARTMSG,A1
+00001000  43F9 000039D2             29          LEA     STARTMSG,A1
 00001006  103C 000D                 30          MOVE.B  #13,D0
 0000100A  4E4F                      31          TRAP    #15         ;Print out start address message
-0000100C  43F9 00003985             32          LEA     INPADDR,A1
+0000100C  43F9 00003999             32          LEA     INPADDR,A1
 00001012  4EB9 000010CC             33          JSR     HEXTOBIN    ;Read input into Hex into D5
 00001018  2446                      34          MOVEA.L D6,A2       ;Move address into A2
 0000101A                            35  
 0000101A                            36  ENDADDR:
-0000101A  43F9 000039EC             37          LEA     ENDMSG,A1
+0000101A  43F9 00003A00             37          LEA     ENDMSG,A1
 00001020  103C 000D                 38          MOVE.B  #13,D0
 00001024  4E4F                      39          TRAP    #15         ;Print out end address message
-00001026  43F9 00003985             40          LEA     INPADDR,A1
+00001026  43F9 00003999             40          LEA     INPADDR,A1
 0000102C  4EB9 000010CC             41          JSR     HEXTOBIN    ;Read input into Hex into D5
 00001032  2646                      42          MOVEA.L D6,A3       ;Move address into A3
 00001034                            43          
@@ -55,7 +55,7 @@ Created On: 12/15/2021 1:14:47 AM
 00001042  6000 0026                 51          BRA     LOOP
 00001046                            52  
 00001046                            53  REPORFIN:                   ;Repeat Or Finish Program
-00001046  43F9 00003A18             54          LEA     REPORFINMSG,A1
+00001046  43F9 00003A2C             54          LEA     REPORFINMSG,A1
 0000104C  103C 000D                 55          MOVE.B  #13,D0
 00001050  4E4F                      56          TRAP    #15         ;Print out repeat or finish message
 00001052  103C 0005                 57          MOVE.B  #5,D0
@@ -64,7 +64,7 @@ Created On: 12/15/2021 1:14:47 AM
 0000105C  67A2                      60          BEQ     STARTADDR
 0000105E  0C01 004E                 61          CMPI.B  #'N',D1     ;End if N
 00001062  66E2                      62          BNE     REPORFIN    ;Re-ask if anything else
-00001064  4EF9 00001CBE             63          JMP     END
+00001064  4EF9 00001CC8             63          JMP     END
 0000106A                            64  
 0000106A                            65  *----------------------------------------------------------
 0000106A                            66  *Main Loop Section
@@ -95,14 +95,14 @@ Created On: 12/15/2021 1:14:47 AM
 00001096                            91  *----------------------------------------------------------
 00001096                            92  
 00001096                            93  CLRBUF:
-00001096  383C 1CC2                 94          MOVE.W  #BUFSIZE,D4
-0000109A  49F9 00001CC3             95          LEA     BUFFER,A4
+00001096  383C 1CCC                 94          MOVE.W  #BUFSIZE,D4
+0000109A  49F9 00001CCD             95          LEA     BUFFER,A4
 000010A0                            96  CLRBUFLOOP:
 000010A0  18FC 0000                 97          MOVE.B  #0,(A4)+
 000010A4  5344                      98          SUBI.W  #1,D4
 000010A6  6EF8                      99          BGT     CLRBUFLOOP
 000010A8                           100  
-000010A8  49F9 00001CC3            101          LEA     BUFFER,A4
+000010A8  49F9 00001CCD            101          LEA     BUFFER,A4
 000010AE  4E75                     102          RTS
 000010B0                           103          
 000010B0                           104  MEMPRINT:
@@ -113,7 +113,7 @@ Created On: 12/15/2021 1:14:47 AM
 000010BE                           109  
 000010BE                           110  PRNTBUF:
 000010BE  103C 000D                111          MOVE.B  #13,D0
-000010C2  43F9 00001CC3            112          LEA     BUFFER,A1
+000010C2  43F9 00001CCD            112          LEA     BUFFER,A1
 000010C8  4E4F                     113          TRAP    #15
 000010CA  4E75                     114          RTS
 000010CC                           115  
@@ -206,7 +206,7 @@ Created On: 12/15/2021 1:14:47 AM
 00001188  1806                     202          MOVE.B  D6,D4
 0000118A  0284 0000000F            203          ANDI.L  #$0F,D4
 00001190                           204          
-00001190  41F9 0000398E            205          LEA     ITOA,A0
+00001190  41F9 000039A2            205          LEA     ITOA,A0
 00001196  D1C4                     206          ADDA.L  D4,A0
 00001198  18D0                     207          MOVE.B  (A0),(A4)+
 0000119A  4E75                     208          RTS
@@ -909,7 +909,7 @@ Created On: 12/15/2021 1:14:47 AM
 00001AAC  6700 0046                905          BEQ     MODE4
 00001AB0  0C05 0007                906          CMPI.B  #$07,D5
 00001AB4  6700 0054                907          BEQ     MODE7
-00001AB8  6000 01F4                908          BRA    ERREA
+00001AB8  6000 01F4                908          BRA     ERREA
 00001ABC                           909  
 00001ABC  18FC 0044                910  MODE0:  MOVE.B  #'D',(A4)+
 00001AC0  4EF8 117E                911          JMP     HEX3B
@@ -979,183 +979,185 @@ Created On: 12/15/2021 1:14:47 AM
 00001B6A                           975  * Temp uses A5 to point to the printing values
 00001B6A                           976  * Temp uses A6 to read buffer to check if / is necessary
 00001B6A                           977  *----------------------------------------------------------
-00001B6A                           978          ;Never Mode 0,1, or Imm. Can't be An+ or -An depending on mode
-00001B6A                           979  
-00001B6A                           980  MOVEMEA:
-00001B6A  1C03                     981          MOVE.B  D3,D6
-00001B6C  0206 0038                982          ANDI.B  #$38,D6
-00001B70  0C06 0008                983          CMPI.B  #$8,D6      ;Not Mode 1
-00001B74  6700 FF04                984          BEQ     JERREA
-00001B78  0C06 0000                985          CMPI.B  #$0,D6      ;Not Mode 0
-00001B7C  6700 FEFC                986          BEQ     JERREA
-00001B80                           987  
-00001B80  0803 000A                988          BTST    #10,D3
-00001B84  6600 0020                989          BNE     REVORDER
-00001B88                           990  
-00001B88                           991  FORORDER:
-00001B88  0206 0038                992          ANDI.B  #$38,D6
-00001B8C  0C06 0018                993          CMPI.B  #$18,D6      ;Not Mode 3
-00001B90  6700 FEE8                994          BEQ     JERREA
-00001B94                           995          
-00001B94  4EB9 00001BC4            996          JSR     MOVEMLIST
-00001B9A  18FC 002C                997          MOVE.B  #',',(A4)+
-00001B9E  18FC 0020                998          MOVE.B  #' ',(A4)+
-00001BA2  4EF8 190C                999          JMP     EA5
-00001BA6                          1000  REVORDER:
-00001BA6  0206 0038               1001          ANDI.B  #$38,D6
-00001BAA  0C06 0020               1002          CMPI.B  #$20,D6      ;Not Mode 4
-00001BAE  6700 FECA               1003          BEQ     JERREA
-00001BB2                          1004          
-00001BB2  4EB8 190C               1005          JSR     EA5
-00001BB6  18FC 002C               1006          MOVE.B  #',',(A4)+
-00001BBA  18FC 0020               1007          MOVE.B  #' ',(A4)+
-00001BBE  4EF9 00001BC4           1008          JMP     MOVEMLIST
-00001BC4                          1009  *---------
-00001BC4                          1010  MOVEMLIST:
-00001BC4  3C1A                    1011          MOVE.W  (A2)+,D6    ;Regs to move
-00001BC6                          1012          
-00001BC6  7A07                    1013          MOVEQ   #7,D5       ;Start counter from 7 to 0
-00001BC8  4204                    1014          CLR.B   D4          ;B2 = exactly second in series (so add -)
-00001BCA                          1015                              ;B1 = has there been a reg already (so add comma)
-00001BCA                          1016                              ;B0 = was one immediately before (so remove previous to add new reg)    
-00001BCA  4BF9 000039AE           1017          LEA     MOVMA07,A5  ;Load printing values
-00001BD0  4EB9 00001C22           1018          JSR     MOVEMLOOP
-00001BD6                          1019          
-00001BD6  4EB9 00001BF6           1020          JSR     CHECKADDSLASH
-00001BDC  E15E                    1021          ROL.W   #8,D6       ;Swap halves
-00001BDE                          1022          
-00001BDE  7A07                    1023          MOVEQ   #7,D5       ;Set up again
-00001BE0  4201                    1024          CLR.B   D1
-00001BE2  4BF9 0000399E           1025          LEA     MOVMD07,A5
-00001BE8  4EB9 00001C22           1026          JSR     MOVEMLOOP
-00001BEE                          1027          
-00001BEE  4EB9 00001C0A           1028          JSR     CHECKREMSLASH
-00001BF4  4E75                    1029          RTS
-00001BF6                          1030  
-00001BF6                          1031  *---------
-00001BF6                          1032  CHECKADDSLASH:
-00001BF6  2C4C                    1033          MOVE.L  A4,A6
-00001BF8  538E                    1034          SUBA.L  #1,A6
-00001BFA  0C16 0020               1035          CMP.B   #' ',(A6)
-00001BFE  6600 0004               1036          BNE     ADDSLASH
-00001C02  4E75                    1037          RTS
-00001C04                          1038  ADDSLASH:
-00001C04  18FC 002F               1039          MOVE.B  #'/',(A4)+
-00001C08  4E75                    1040          RTS
-00001C0A                          1041          
-00001C0A                          1042  CHECKREMSLASH:
-00001C0A  2C4C                    1043          MOVE.L  A4,A6
-00001C0C  538E                    1044          SUBA.L  #1,A6
-00001C0E  0C16 002F               1045          CMP.B   #'/',(A6)
-00001C12  6700 0004               1046          BEQ     REMSLASH
-00001C16  4E75                    1047          RTS
-00001C18                          1048  REMSLASH:
-00001C18  193C 0000               1049          MOVE.B  #0,-(A4)
-00001C1C  18BC 0000               1050          MOVE.B  #0,(A4)
-00001C20  4E75                    1051          RTS
-00001C22                          1052  
-00001C22                          1053  *---------
-00001C22                          1054  MOVEMLOOP:
-00001C22  0B06                    1055          BTST    D5,D6       ;Test i-th bit of regs
-00001C24  6700 0048               1056          BEQ     NOREG       ;Update D1 and continue
-00001C28  0804 0000               1057          BTST    #0,D4
-00001C2C  6600 0012               1058          BNE     SERIES      ;Start/Continue range
-00001C30                          1059          
-00001C30  08C4 0002               1060          BSET    #2,D4
-00001C34  08C4 0001               1061          BSET    #1,D4       ;Test if there has been at least 1 reg, and set that
-00001C38  6700 0026               1062          BEQ     ADDREG      ;After at least 1 reg, start adding '/'
-00001C3C  6000 001E               1063          BRA     ADDSLASHREG
-00001C40                          1064  
-00001C40                          1065  SERIES:
-00001C40  0804 0002               1066          BTST    #2,D4
-00001C44  6600 000A               1067          BNE     STARTRANGE
-00001C48                          1068  
-00001C48  193C 0000               1069          MOVE.B  #0,-(A4)    ;Continue range
-00001C4C  193C 0000               1070          MOVE.B  #0,-(A4)
-00001C50                          1071  STARTRANGE:
-00001C50  0884 0002               1072          BCLR    #2,D4
-00001C54  18FC 002D               1073          MOVE.B  #'-',(A4)+
-00001C58  6000 0006               1074          BRA     ADDREG
-00001C5C                          1075  
-00001C5C                          1076  *---------
-00001C5C                          1077  ADDSLASHREG:
-00001C5C  18FC 002F               1078          MOVE.B  #'/',(A4)+
-00001C60                          1079  ADDREG:
-00001C60  2C4D                    1080          MOVEA.L A5,A6
-00001C62  DDC5                    1081          ADDA.L  D5,A6
-00001C64  DDC5                    1082          ADDA.L  D5,A6       ;A6 = A5 + 2*i
-00001C66  18DE                    1083          MOVE.B  (A6)+,(A4)+
-00001C68  18DE                    1084          MOVE.B  (A6)+,(A4)+
-00001C6A  6000 000A               1085          BRA     CONTMOVEMLOOP
-00001C6E                          1086  
-00001C6E                          1087  *---------
-00001C6E                          1088  NOREG:
-00001C6E  0884 0000               1089          BCLR    #0,D4
-00001C72  0884 0002               1090          BCLR    #2,D4
-00001C76                          1091  CONTMOVEMLOOP:
-00001C76  5305                    1092          SUBI.B  #1,D5
-00001C78  0C05 00FF               1093          CMPI.B  #-1,D5
-00001C7C  66A4                    1094          BNE     MOVEMLOOP
-00001C7E  4E75                    1095          RTS
-00001C80                          1096          
-00001C80                          1097  *----------------------------------------------------------
-00001C80                          1098  *Error Catching Section
-00001C80                          1099  *----------------------------------------------------------
-00001C80                          1100  
-00001C80  43F9 00003A4A           1101  ERRIN   LEA     ERRINMSG,A1
-00001C86  103C 000D               1102          MOVE.B  #13,D0
-00001C8A  4E4F                    1103          TRAP    #15
-00001C8C  4EF8 1000               1104          JMP     STARTADDR
-00001C90                          1105  
-00001C90  43F9 00003A79           1106  ERROP   LEA     ERROPMSG,A1
-00001C96  6000 001C               1107          BRA     PRINTERR
-00001C9A  43F9 00003A8E           1108  ERRCOM  LEA     ERRCOMMSG,A1
-00001CA0  6000 0012               1109          BRA     PRINTERR
-00001CA4  43F9 00003AAC           1110  ERRSIZE LEA     ERRSIZEMSG,A1
-00001CAA  6000 0008               1111          BRA     PRINTERR
-00001CAE  43F9 00003ABF           1112  ERREA   LEA     ERREAMSG,A1
-00001CB4                          1113          
-00001CB4                          1114  PRINTERR:
-00001CB4  103C 000D               1115          MOVE.B  #13,D0
-00001CB8  4E4F                    1116          TRAP    #15
-00001CBA  4EF8 106A               1117          JMP     LOOP
-00001CBE                          1118  
-00001CBE                          1119  *----------------------------------------------------------
-00001CBE                          1120  *Variable Section (And End Simulation)
-00001CBE                          1121  *----------------------------------------------------------
-00001CBE                          1122  
-00001CBE  FFFF FFFF               1123  END:    SIMHALT
-00001CC2                          1124  
-00001CC2= 40                      1125  BUFSIZE DC.B    $40
-00001CC3                          1126  BUFFER: DS.B    BUFSIZE
-00003985                          1127  
-00003985                          1128  INPADDR     DS.B    9      
-0000398E                          1129  
-0000398E  =0000000D               1130  CR:     EQU     $0D
-0000398E  =0000000A               1131  LF:     EQU     $0A
-0000398E                          1132  
-0000398E= 30 31 32 33 34 35 ...   1133  ITOA:   DC.B    '0123456789ABCDEF'
-0000399E= 41 30 41 31 41 32 ...   1134  MOVMD07 DC.B    'A0','A1','A2','A3','A4','A5','A6','A7'
-000039AE= 44 30 44 31 44 32 ...   1135  MOVMA07 DC.B    'D0','D1','D2','D3','D4','D5','D6','D7'
-000039BE                          1136  
-000039BE                          1137  STARTMSG:
-000039BE= 0D 0A 49 6E 70 75 ...   1138          DC.B    CR,LF,'Input the starting address for the decoder:',0
-000039EC                          1139  ENDMSG:
-000039EC= 0D 0A 49 6E 70 75 ...   1140          DC.B    CR,LF,'Input the ending address for the decoder:',0
-00003A18                          1141  REPORFINMSG:
-00003A18= 0D 0A 57 6F 75 6C ...   1142          DC.B    CR,LF,'Would you like to run the program again? (Y/N):',0
-00003A4A                          1143  ERRINMSG:
-00003A4A= 0D 0A 50 6C 65 61 ...   1144          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
-00003A79                          1145  ERROPMSG:
-00003A79= 46 6F 75 6E 64 20 ...   1146          DC.B    'Found Invalid Opcode',0
-00003A8E                          1147  ERRCOMMSG:
-00003A8E= 46 6F 75 6E 64 20 ...   1148          DC.B    'Found Not Implemented Command',0
-00003AAC                          1149  ERRSIZEMSG:
-00003AAC= 46 6F 75 6E 64 20 ...   1150          DC.B    'Found Invalid Size',0
-00003ABF                          1151  ERREAMSG:
-00003ABF= 46 6F 75 6E 64 20 ...   1152          DC.B    'Found Invalid EA Mode',0
-00003AD5                          1153  
-00003AD5                          1154          END     START
+00001B6A                           978  
+00001B6A                           979  MOVEMEA:
+00001B6A  1C03                     980          MOVE.B  D3,D6
+00001B6C  0206 0038                981          ANDI.B  #$38,D6
+00001B70  0C06 0008                982          CMPI.B  #$8,D6      ;Not Mode 1
+00001B74  6700 FF04                983          BEQ     JERREA
+00001B78  0C06 0000                984          CMPI.B  #$0,D6      ;Not Mode 0
+00001B7C  6700 FEFC                985          BEQ     JERREA
+00001B80                           986  
+00001B80  0803 000A                987          BTST    #10,D3
+00001B84  6600 0020                988          BNE     REVORDER
+00001B88                           989  
+00001B88                           990  FORORDER:
+00001B88  0206 0038                991          ANDI.B  #$38,D6
+00001B8C  0C06 0018                992          CMPI.B  #$18,D6      ;Not Mode 3
+00001B90  6700 FEE8                993          BEQ     JERREA
+00001B94                           994          
+00001B94  4EB9 00001BC4            995          JSR     MOVEMLIST
+00001B9A  18FC 002C                996          MOVE.B  #',',(A4)+
+00001B9E  18FC 0020                997          MOVE.B  #' ',(A4)+
+00001BA2  4EF8 190C                998          JMP     EA5
+00001BA6                           999  REVORDER:
+00001BA6  0206 0038               1000          ANDI.B  #$38,D6
+00001BAA  0C06 0020               1001          CMPI.B  #$20,D6      ;Not Mode 4
+00001BAE  6700 FECA               1002          BEQ     JERREA
+00001BB2                          1003          
+00001BB2  4EB8 190C               1004          JSR     EA5
+00001BB6  18FC 002C               1005          MOVE.B  #',',(A4)+
+00001BBA  18FC 0020               1006          MOVE.B  #' ',(A4)+
+00001BBE  4EF9 00001BC4           1007          JMP     MOVEMLIST
+00001BC4                          1008  *---------
+00001BC4                          1009  MOVEMLIST:
+00001BC4  3C1A                    1010          MOVE.W  (A2)+,D6    ;Regs to move
+00001BC6                          1011          
+00001BC6  7A07                    1012          MOVEQ   #7,D5       ;Start counter from 7 to 0
+00001BC8  4204                    1013          CLR.B   D4          ;B2 = exactly second in series (so add -)
+00001BCA                          1014                              ;B1 = has there been a reg already (so add comma)
+00001BCA                          1015                              ;B0 = was one immediately before (so remove previous to add new reg)    
+00001BCA  4BF9 000039C2           1016          LEA     MOVMA07,A5  ;Load printing values
+00001BD0  4EB9 00001C22           1017          JSR     MOVEMLOOP
+00001BD6                          1018          
+00001BD6  4EB9 00001BF6           1019          JSR     CHECKADDSLASH
+00001BDC  E15E                    1020          ROL.W   #8,D6       ;Swap halves
+00001BDE                          1021          
+00001BDE  7A07                    1022          MOVEQ   #7,D5       ;Set up again
+00001BE0  4201                    1023          CLR.B   D1
+00001BE2  4BF9 000039B2           1024          LEA     MOVMD07,A5
+00001BE8  4EB9 00001C22           1025          JSR     MOVEMLOOP
+00001BEE                          1026          
+00001BEE  4EB9 00001C0A           1027          JSR     CHECKREMSLASH
+00001BF4  4E75                    1028          RTS
+00001BF6                          1029  
+00001BF6                          1030  *---------
+00001BF6                          1031  CHECKADDSLASH:
+00001BF6  2C4C                    1032          MOVE.L  A4,A6
+00001BF8  538E                    1033          SUBA.L  #1,A6
+00001BFA  0C16 0020               1034          CMP.B   #' ',(A6)
+00001BFE  6600 0004               1035          BNE     ADDSLASH
+00001C02  4E75                    1036          RTS
+00001C04                          1037  ADDSLASH:
+00001C04  18FC 002F               1038          MOVE.B  #'/',(A4)+
+00001C08  4E75                    1039          RTS
+00001C0A                          1040          
+00001C0A                          1041  CHECKREMSLASH:
+00001C0A  2C4C                    1042          MOVE.L  A4,A6
+00001C0C  538E                    1043          SUBA.L  #1,A6
+00001C0E  0C16 002F               1044          CMP.B   #'/',(A6)
+00001C12  6700 0004               1045          BEQ     REMSLASH
+00001C16  4E75                    1046          RTS
+00001C18                          1047  REMSLASH:
+00001C18  193C 0000               1048          MOVE.B  #0,-(A4)
+00001C1C  18BC 0000               1049          MOVE.B  #0,(A4)
+00001C20  4E75                    1050          RTS
+00001C22                          1051  
+00001C22                          1052  *---------
+00001C22                          1053  MOVEMLOOP:
+00001C22  0B06                    1054          BTST    D5,D6       ;Test i-th bit of regs
+00001C24  6700 0048               1055          BEQ     NOREG       ;Update D1 and continue
+00001C28  0804 0000               1056          BTST    #0,D4
+00001C2C  6600 0012               1057          BNE     SERIES      ;Start/Continue range
+00001C30                          1058          
+00001C30  08C4 0002               1059          BSET    #2,D4
+00001C34  08C4 0001               1060          BSET    #1,D4       ;Test if there has been at least 1 reg, and set that
+00001C38  6700 0026               1061          BEQ     ADDREG      ;After at least 1 reg, start adding '/'
+00001C3C  6000 001E               1062          BRA     ADDSLASHREG
+00001C40                          1063  
+00001C40                          1064  SERIES:
+00001C40  0804 0002               1065          BTST    #2,D4
+00001C44  6600 000A               1066          BNE     STARTRANGE
+00001C48                          1067  
+00001C48  193C 0000               1068          MOVE.B  #0,-(A4)    ;Continue range
+00001C4C  193C 0000               1069          MOVE.B  #0,-(A4)
+00001C50                          1070  STARTRANGE:
+00001C50  0884 0002               1071          BCLR    #2,D4
+00001C54  18FC 002D               1072          MOVE.B  #'-',(A4)+
+00001C58  6000 0006               1073          BRA     ADDREG
+00001C5C                          1074  
+00001C5C                          1075  *---------
+00001C5C                          1076  ADDSLASHREG:
+00001C5C  18FC 002F               1077          MOVE.B  #'/',(A4)+
+00001C60                          1078  ADDREG:
+00001C60  2C4D                    1079          MOVEA.L A5,A6
+00001C62  DDC5                    1080          ADDA.L  D5,A6
+00001C64  DDC5                    1081          ADDA.L  D5,A6       ;A6 = A5 + 2*i
+00001C66  18DE                    1082          MOVE.B  (A6)+,(A4)+
+00001C68  18DE                    1083          MOVE.B  (A6)+,(A4)+
+00001C6A  6000 000A               1084          BRA     CONTMOVEMLOOP
+00001C6E                          1085  
+00001C6E                          1086  *---------
+00001C6E                          1087  NOREG:
+00001C6E  0884 0000               1088          BCLR    #0,D4
+00001C72  0884 0002               1089          BCLR    #2,D4
+00001C76                          1090  CONTMOVEMLOOP:
+00001C76  5305                    1091          SUBI.B  #1,D5
+00001C78  0C05 00FF               1092          CMPI.B  #-1,D5
+00001C7C  66A4                    1093          BNE     MOVEMLOOP
+00001C7E  4E75                    1094          RTS
+00001C80                          1095          
+00001C80                          1096  *----------------------------------------------------------
+00001C80                          1097  *Error Catching Section
+00001C80                          1098  *----------------------------------------------------------
+00001C80                          1099  
+00001C80  43F9 00003A5E           1100  ERRIN   LEA     ERRINMSG,A1
+00001C86  103C 000D               1101          MOVE.B  #13,D0
+00001C8A  4E4F                    1102          TRAP    #15
+00001C8C  4EF8 1000               1103          JMP     STARTADDR
+00001C90                          1104  
+00001C90  43F9 00003A8D           1105  ERROP   LEA     ERROPMSG,A1
+00001C96  6000 001C               1106          BRA     PRINTERR
+00001C9A  43F9 00003AA3           1107  ERRCOM  LEA     ERRCOMMSG,A1
+00001CA0  6000 0012               1108          BRA     PRINTERR
+00001CA4  43F9 00003AC2           1109  ERRSIZE LEA     ERRSIZEMSG,A1
+00001CAA  6000 0008               1110          BRA     PRINTERR
+00001CAE  43F9 00003AD6           1111  ERREA   LEA     ERREAMSG,A1
+00001CB4                          1112          
+00001CB4                          1113  PRINTERR:
+00001CB4  103C 000D               1114          MOVE.B  #13,D0
+00001CB8  4E4F                    1115          TRAP    #15
+00001CBA  3C03                    1116          MOVE.W  D3,D6
+00001CBC  4EB8 1158               1117          JSR     HEX16B
+00001CC0  4EB8 10BE               1118          JSR     PRNTBUF
+00001CC4  4EF8 1000               1119          JMP     STARTADDR
+00001CC8                          1120  
+00001CC8                          1121  *----------------------------------------------------------
+00001CC8                          1122  *Variable Section (And End Simulation)
+00001CC8                          1123  *----------------------------------------------------------
+00001CC8                          1124  
+00001CC8  FFFF FFFF               1125  END:    SIMHALT
+00001CCC                          1126  
+00001CCC= 40                      1127  BUFSIZE DC.B    $40
+00001CCD                          1128  BUFFER: DS.B    BUFSIZE
+00003999                          1129  
+00003999                          1130  INPADDR     DS.B    9      
+000039A2                          1131  
+000039A2  =0000000D               1132  CR:     EQU     $0D
+000039A2  =0000000A               1133  LF:     EQU     $0A
+000039A2                          1134  
+000039A2= 30 31 32 33 34 35 ...   1135  ITOA:   DC.B    '0123456789ABCDEF'
+000039B2= 41 30 41 31 41 32 ...   1136  MOVMD07 DC.B    'A0','A1','A2','A3','A4','A5','A6','A7'
+000039C2= 44 30 44 31 44 32 ...   1137  MOVMA07 DC.B    'D0','D1','D2','D3','D4','D5','D6','D7'
+000039D2                          1138  
+000039D2                          1139  STARTMSG:
+000039D2= 0D 0A 49 6E 70 75 ...   1140          DC.B    CR,LF,'Input the starting address for the decoder:',0
+00003A00                          1141  ENDMSG:
+00003A00= 0D 0A 49 6E 70 75 ...   1142          DC.B    CR,LF,'Input the ending address for the decoder:',0
+00003A2C                          1143  REPORFINMSG:
+00003A2C= 0D 0A 57 6F 75 6C ...   1144          DC.B    CR,LF,'Would you like to run the program again? (Y/N):',0
+00003A5E                          1145  ERRINMSG:
+00003A5E= 0D 0A 50 6C 65 61 ...   1146          DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
+00003A8D                          1147  ERROPMSG:
+00003A8D= 46 6F 75 6E 64 20 ...   1148          DC.B    'Found Invalid Opcode:',0
+00003AA3                          1149  ERRCOMMSG:
+00003AA3= 46 6F 75 6E 64 20 ...   1150          DC.B    'Found Not Implemented Command:',0
+00003AC2                          1151  ERRSIZEMSG:
+00003AC2= 46 6F 75 6E 64 20 ...   1152          DC.B    'Found Invalid Size:',0
+00003AD6                          1153  ERREAMSG:
+00003AD6= 46 6F 75 6E 64 20 ...   1154          DC.B    'Found Invalid EA Mode:',0
+00003AED                          1155  
+00003AED                          1156          END     START
 
 No errors detected
 No warnings generated
@@ -1180,8 +1182,8 @@ ASX                 1412
 BLW13               18A0
 BRA                 1622
 BSR                 1648
-BUFFER              1CC3
-BUFSIZE             1CC2
+BUFFER              1CCD
+BUFSIZE             1CCC
 BWL7                1870
 BYTE                18DA
 CHECKADDSLASH       1BF6
@@ -1202,21 +1204,21 @@ DT11EA5             19F2
 EA5                 190C
 EA5CHECKLIT         1928
 EA5CHECKM1LIT       191A
-END                 1CBE
+END                 1CC8
 ENDADDR             101A
-ENDMSG              39EC
+ENDMSG              3A00
 EOR                 1728
 EORI                14D6
 ERRCOM              1C9A
-ERRCOMMSG           3A8E
+ERRCOMMSG           3AA3
 ERREA               1CAE
-ERREAMSG            3ABF
+ERREAMSG            3AD6
 ERRIN               1C80
-ERRINMSG            3A4A
+ERRINMSG            3A5E
 ERROP               1C90
-ERROPMSG            3A79
+ERROPMSG            3A8D
 ERRSIZE             1CA4
-ERRSIZEMSG          3AAC
+ERRSIZEMSG          3AC2
 FINSHIFT            1A64
 FORORDER            1B88
 GETEA5              1A80
@@ -1228,8 +1230,8 @@ HEX3B               117E
 HEX4B               1178
 HEX8B               1168
 HEXTOBIN            10CC
-INPADDR             3985
-ITOA                398E
+INPADDR             3999
+ITOA                39A2
 JADD                13F6
 JADDI               12B4
 JANDI               12BA
@@ -1292,8 +1294,8 @@ MOVEMEA             1B6A
 MOVEMLIST           1BC4
 MOVEMLOOP           1C22
 MOVEQ               166E
-MOVMA07             39AE
-MOVMD07             399E
+MOVMA07             39C2
+MOVMD07             39B2
 MULS                1772
 MULU                174C
 NOP                 1582
@@ -1327,7 +1329,7 @@ READLONG            1B60
 READWORD            1B56
 REMSLASH            1C18
 REPORFIN            1046
-REPORFINMSG         3A18
+REPORFINMSG         3A2C
 REVORDER            1BA6
 SERIES              1C40
 SHIFTREG            1A60
@@ -1335,7 +1337,7 @@ SHIFTS              1A4C
 SKIPLITCHECK        196E
 START               1000
 STARTADDR           1000
-STARTMSG            39BE
+STARTMSG            39D2
 STARTRANGE          1C50
 SUB                 16E0
 SUBQ                15DA
