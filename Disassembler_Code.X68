@@ -905,7 +905,7 @@ GETEA5: MOVE.B  D6,D5
         BEQ     MODE4
         CMPI.B  #$07,D5
         BEQ     MODE7
-        BRA    ERREA
+        BRA     ERREA
 
 MODE0:  MOVE.B  #'D',(A4)+
         JMP     HEX3B
@@ -975,7 +975,6 @@ READLONG:
 * Temp uses A5 to point to the printing values
 * Temp uses A6 to read buffer to check if / is necessary
 *----------------------------------------------------------
-        ;Never Mode 0,1, or Imm. Can't be An+ or -An depending on mode
 
 MOVEMEA:
         MOVE.B  D3,D6
@@ -1152,6 +1151,7 @@ ERREAMSG:
         DC.B    'Found Invalid EA Mode',0
 
         END     START
+
 
 *~Font name~Courier New~
 *~Font size~10~
