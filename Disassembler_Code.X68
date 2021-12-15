@@ -428,7 +428,6 @@ ORI:    MOVE.B  #'O',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
-        ;Not Mode 1 or Imm
 
 ANDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #'N',(A4)+
@@ -441,7 +440,6 @@ ANDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
-        ;Not Mode 1 or Imm
 
 ADDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
@@ -454,7 +452,6 @@ ADDI:   MOVE.B  #'A',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
-        ;Not Mode 1 or Imm
 
 EORI:   MOVE.B  #'E',(A4)+
         MOVE.B  #'O',(A4)+
@@ -467,7 +464,6 @@ EORI:   MOVE.B  #'E',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
-        ;Not Mode 1 or Imm
 
 CMPI:   MOVE.B  #'C',(A4)+
         MOVE.B  #'M',(A4)+
@@ -480,7 +476,6 @@ CMPI:   MOVE.B  #'C',(A4)+
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     EA5
-        ;Not Mode 1 or Imm
 
 MOVE:   MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
@@ -490,7 +485,7 @@ MOVE:   MOVE.B  #'M',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     D11S5
-        ;Not Mode 1 for Dest (handles itself)
+        ;Not Mode 1 or Imm for Dest
 
 MOVEA:  MOVE.B  #'M',(A4)+
         MOVE.B  #'O',(A4)+
@@ -500,7 +495,6 @@ MOVEA:  MOVE.B  #'M',(A4)+
         JSR     LW13
         MOVE.B  #$9,(A4)+
         JMP     D11S5
-        ;Only Mode 1 for Dest (handles itself)
 
 NOP:    MOVE.B  #'N',(A4)+
         MOVE.B  #'O',(A4)+
@@ -536,7 +530,6 @@ SUBQ:   MOVE.B  #'S',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     DT11EA5
-        ;EA is not Imm
 
 ADDQ:   MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
@@ -546,7 +539,6 @@ ADDQ:   MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     DT11EA5
-        ;EA is not Imm
 
 BRA:    MOVE.B  #'B',(A4)+
         MOVE.B  #'R',(A4)+
@@ -608,7 +600,6 @@ SUB:    MOVE.B  #'S',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11DEA5
-        ;EA is anything
 
 CMP:    MOVE.B  #'C',(A4)+
         MOVE.B  #'M',(A4)+
@@ -618,7 +609,6 @@ CMP:    MOVE.B  #'C',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     R11EA5
-        ;EA is anything
 
 EOR:    MOVE.B  #'E',(A4)+
         MOVE.B  #'O',(A4)+
@@ -660,7 +650,6 @@ ADDA:   MOVE.B  #'A',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #$9,(A4)+
         JMP     AR11EA5
-        ;EA is anything
 
 ADD:    MOVE.B  #'A',(A4)+
         MOVE.B  #'D',(A4)+
@@ -770,10 +759,20 @@ PRNTDT11:
 
 EA5:    
         MOVE.B  D3,D6
-        JMP     GETEA5
+        ANDI.B  #$38,D6
+        CMPI.B  #$8,D6      ;Not Mode 1
+        BEQ     JERREA
+        MOVE.B  D3,D6
+        ANDI.B  #$3F,D6
+        CMPI.B  #$3C,D6     ;Not Literal
+        BEQ     JERREA
+        JMP     GETEA5      ;Otherwise good
+
+JERREA: JMP     ERREA
 
 D11S5:  
-        JSR     EA5
+        MOVE.B  D3,D6
+        JSR     GETEA5
         
         MOVE.W  D3,D5
         ROL.W   #7,D5
@@ -783,6 +782,13 @@ D11S5:
         ANDI.W  #$38,D6     ;Isolate dest mode
         OR.W    D5,D6       ;Combine in EA5-format
 
+        MOVE.B  D3,D5
+        ANDI.B  #$38,D5
+        CMPI.B  #$8,D5      ;If MOVEA, skip the literal check
+        BEQ     SKIPLITCHECK
+        CMPI.B  #$3C,D6
+        BEQ     JERREA      ;Not Literal
+SKIPLITCHECK:
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         JMP     GETEA5
@@ -790,34 +796,39 @@ D11S5:
 R11DEA5:
         BTST    #8,D3       ;If B8 is on, reverse the order
         BEQ     R11EA5
-        
+     
         MOVE.B  #'D',(A4)+
         JMP     PRNTDT11
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
-        JMP     EA5
+        MOVE.B  D3,D6
+        JMP     GETEA5
 
 R11EA5: 
-        JSR     EA5
+        MOVE.B  D3,D6
+        JMP     GETEA5
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #'D',(A4)+
         JMP     PRNTDT11
         
 AR11EA5:
-        JSR     EA5
+        MOVE.B  D3,D6
+        JMP     GETEA5
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
         MOVE.B  #'A',(A4)+
         JMP     PRNTDT11
 
 DT11EA5:
+        ;EA is not Imm
         MOVE.B  #'#',(A4)+
         MOVE.B  #'$',(A4)+
         JSR     PRNTDT11
         MOVE.B  #',',(A4)+
         MOVE.B  #' ',(A4)+
-        JMP     EA5
+        MOVE.B  D3,D6
+        JMP     GETEA5
         
 DP7:
         MOVE.L  A2,D5
@@ -1113,6 +1124,7 @@ ERREAMSG:
         DC.B    'Found Invalid EA Mode',0
 
         END     START
+
 *~Font name~Courier New~
 *~Font size~10~
 *~Tab type~1~
