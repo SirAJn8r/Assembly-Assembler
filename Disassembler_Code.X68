@@ -41,8 +41,12 @@ ENDADDR:
         JSR     HEXTOBIN    ;Read input into Hex into D5
         MOVEA.L D6,A3       ;Move address into A3
         
+        CMPA.L  A2,A3
+        BLT     JERRINSIZE  ;A2 < A3
         CLR.W   D2
         BRA     LOOP
+JERRINSIZE:
+        JMP     ERRINSIZE
 
 WAITUSER:                   ;Wait for user enter key
         CLR.W   D2
@@ -166,7 +170,7 @@ LETTER: MOVE.B  D1,D0       ;Lowest ascii nibble for both caps and lowercase
         OR.B    D0,D6
         BRA     CONTH2BLOOP
 
-JERRIN  JMP     ERRIN
+JERRIN: JMP     ERRIN
 
 *----------------------------------------------------------
 *Print in Hex Section (ITOA)
@@ -1102,6 +1106,12 @@ ERRIN   LEA     ERRINMSG,A1
         TRAP    #15
         JMP     STARTADDR
 
+ERRINSIZE:
+        LEA     ERRINSIZEMSG,A1
+        MOVE.B  #13,D0
+        TRAP    #15
+        JMP     STARTADDR
+
 ERROP   LEA     ERROPMSG,A1
         BRA     PRINTERR
 ERRCOM  LEA     ERRCOMMSG,A1
@@ -1144,6 +1154,8 @@ REPORFINMSG:
         DC.B    CR,LF,'Would you like to run the program again? (Y/N):',0
 ERRINMSG:
         DC.B    CR,LF,'Please enter 4 digit hexadecimal inputs only',0
+ERRINSIZEMSG:
+        DC.B    CR,LF,'Please make sure the starting address is smaller than the ending address',0
 ERROPMSG:
         DC.B    'Found Invalid Opcode:',0
 ERRCOMMSG:
